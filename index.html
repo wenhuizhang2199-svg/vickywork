@@ -146,20 +146,159 @@ async function importScriptFile(){
 }
 
 function renderTools(){
-  document.getElementById('toolsModules').innerHTML = `
-    <div class="module">
-      <div class="module-icon">💱</div>
-      <h3>汇率换算</h3>
-      <p>常用跨境货币实时计算</p>
-      <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px;">
-        <div style="display:flex;gap:5px;align-items:center;">
-          <input class="input" id="exRate" type="number" value="7.25" placeholder="汇率(USD->CNY)" style="width:110px;" oninput="calcExchange()">
-          <span style="font-size:12px;color:var(--muted)">USD汇率</span>
+  // 全球主要货币配置列表
+const CURRENCIES = [
+  { code: 'CNY', name: '人民币 CN' },
+  { code: 'USD', name: '美元 US' },
+  { code: 'EUR', name: '欧元 EU' },
+  { code: 'GBP', name: '英镑 GB' },
+  { code: 'JPY', name: '日元 JP' },
+  { code: 'CAD', name: '加元 CA' },
+  { code: 'AUD', name: '澳元 AU' },
+  { code: 'HKD', name: '港币 HK' },
+  { code: 'SGD', name: '新加坡元 SG' },
+  { code: 'MXN', name: '墨西哥比索 MX' },
+  { code: 'BRL', name: '巴西雷亚尔 BR' },
+  { code: 'INR', name: '印度卢比 IN' },
+  { code: 'KRW', name: '韩元 KR' },
+  { code: 'RUB', name: '俄罗斯卢布 RU' }
+];
+
+// 默认基础汇率表 (以 USD 为基准)
+let ratesTable = JSON.parse(localStorage.getItem('vicky_rates')) || {
+  USD: 1, CNY: 7.10, EUR: 0.92, GBP: 0.79, JPY: 147.00, CAD: 1.37, AUD: 1.52,
+  HKD: 7.82, SGD: 1.35, MXN: 18.20, BRL: 5.45, INR: 83.50, KRW: 1350.00, RUB: 88.50
+};
+
+let currentSubTab = 'exchange';
+
+function renderTools(){
+  const toolsBox = document.getElementById('toolsModules');
+  if(!toolsBox) return;
+
+  toolsBox.style.gridTemplateColumns = '1fr';
+  toolsBox.innerHTML = `
+    <div style="display:flex;gap:10px;margin-bottom:16px;">
+      <button class="btn ${currentSubTab==='exchange'?'primary':''}" onclick="switchToolTab('exchange')">💱 汇率换算</button>
+      <button class="btn ${currentSubTab==='profit'?'primary':''}" onclick="switchToolTab('profit')">📊 利润计算</button>
+      <button class="btn ${currentSubTab==='unit'?'primary':''}" onclick="switchToolTab('unit')">📐 尺寸/抛重</button>
+    </div>
+    <div id="toolSubView"></div>
+  `;
+
+  renderToolSubView();
+}
+
+function switchToolTab(tab){
+  currentSubTab = tab;
+  renderTools();
+}
+
+function renderToolSubView(){
+  const container = document.getElementById('toolSubView');
+  if(currentSubTab === 'exchange'){
+    container.innerHTML = `
+      <div class="card">
+        <div class="head">
+          <div class="title">💱 汇率换算</div>
+          <span class="subtle" id="rateTip">当前为内置参考汇率，建议联网更新</span>
         </div>
-        <input class="input" id="exAmt" type="number" placeholder="输入外币金额 ($)" oninput="calcExchange()">
-        <div style="font-weight:bold;color:var(--accent);font-size:15px;" id="exRes">折合人民币: ¥0.00</div>
+        <div class="row" style="align-items:center;margin-bottom:16px;">
+          <input class="input" id="exAmount" type="number" value="100" style="flex:2;" oninput="calcExchangeAll()">
+          <select class="select" id="exBase" style="width:110px;" onchange="calcExchangeAll()">
+            ${CURRENCIES.map(c=>`<option value="${c.code}">${c.code}</option>`).join('')}
+          </select>
+          <button class="btn primary" id="updateBtn" onclick="fetchOnlineRates()">🔄 在线更新汇率</button>
+        </div>
+        <div style="background:#fff0f5;border-radius:14px;padding:16px;border:1px solid #ffd0e0;">
+          <div class="subtle" id="exHeader" style="margin-bottom:10px;font-weight:bold;">100 USD ≈</div>
+          <div id="exchangeResultList" style="display:flex;flex-direction:column;gap:10px;"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <div class="head">
+          <div class="title">✍️ 汇率表 (可按实际结汇价手动修改)</div>
+        </div>
+        <div id="rateEditList" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:12px;"></div>
+      </div>
+    `;
+    renderRateEditTable();
+    calcExchangeAll();
+  } else if(currentSubTab === 'profit') {
+    container.innerHTML = `<div class="card"><h3>📊 利润计算器</h3><p class="subtle">可在此处接入利润计算逻辑</p></div>`;
+  } else {
+    container.innerHTML = `<div class="card"><h3>📐 尺寸与抛重换算</h3><p class="subtle">可在此处接入体积重换算逻辑</p></div>`;
+  }
+}
+
+// 实时计算各币种换算结果
+function calcExchangeAll(){
+  const amt = parseFloat(document.getElementById('exAmount').value) || 0;
+  const base = document.getElementById('exBase').value;
+  document.getElementById('exHeader').textContent = `${amt} ${base} ≈`;
+
+  const baseInUSD = ratesTable[base] || 1;
+  const listEl = document.getElementById('exchangeResultList');
+
+  listEl.innerHTML = CURRENCIES.filter(c => c.code !== base).map(c => {
+    const rateToUSD = ratesTable[c.code] || 1;
+    const converted = ((amt / baseInUSD) * rateToUSD).toFixed(c.code === 'JPY' || c.code === 'KRW' ? 2 : 3);
+    return `
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #f3d4e0;">
+        <span>${c.name}</span>
+        <b>${converted} ${c.code}</b>
+      </div>
+    `;
+  }).join('');
+}
+
+// 渲染可手动修改的汇率输入表
+function renderRateEditTable(){
+  const editBox = document.getElementById('rateEditList');
+  editBox.innerHTML = CURRENCIES.map(c => `
+    <div style="display:flex;align-items:center;justify-content:space-between;background:#fafbfe;padding:8px 12px;border-radius:10px;border:1px solid var(--line);">
+      <span style="font-size:13px;font-weight:600;">${c.name}</span>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span class="subtle" style="font-size:11px;">1 USD =</span>
+        <input class="input" type="number" step="0.0001" value="${ratesTable[c.code] || 1}" style="width:90px;padding:4px 6px;text-align:right;" onchange="updateSingleRate('${c.code}', this.value)">
       </div>
     </div>
+  `).join('');
+}
+
+// 手动修改单项汇率并保存
+function updateSingleRate(code, val){
+  ratesTable[code] = parseFloat(val) || 1;
+  localStorage.setItem('vicky_rates', JSON.stringify(ratesTable));
+  calcExchangeAll();
+}
+
+// 在线获取最新汇率接口
+async function fetchOnlineRates(){
+  const btn = document.getElementById('updateBtn');
+  btn.textContent = '⏳ 更新中...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+    const data = await res.json();
+    if(data && data.rates){
+      Object.keys(data.rates).forEach(code => {
+        ratesTable[code] = data.rates[code];
+      });
+      localStorage.setItem('vicky_rates', JSON.stringify(ratesTable));
+      document.getElementById('rateTip').textContent = `✅ 已更新至最新在线汇率 (${data.date})`;
+      renderRateEditTable();
+      calcExchangeAll();
+    }
+  } catch(e) {
+    alert('网络连接超时，请检查网络后重试。');
+  } finally {
+    btn.textContent = '🔄 在线更新汇率';
+    btn.disabled = false;
+  }
+}
 
     <div class="module">
       <div class="module-icon">💰</div>
