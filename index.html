@@ -145,11 +145,88 @@ async function importScriptFile(){
  const el=document.getElementById('scriptFile');el.click();el.onchange=async()=>{const f=el.files[0];if(!f)return;let text='';if(/\.(txt|md|csv|json)$/i.test(f.name))text=await f.text();document.getElementById('cTitle').value=f.name.replace(/\.[^.]+$/,'');document.getElementById('cBody').value=text;document.getElementById('cIcon').value='💬';editSection='service';document.getElementById('contentModalTitle').textContent='导入客服话术';document.getElementById('contentModal').classList.add('show');el.value=''}
 }
 
-function renderTools(){document.getElementById('toolsModules').innerHTML=[['💱','汇率换算','常用货币换算'],['💰','利润计算','售价、成本、平台费、物流费'],['📏','单位转换','长度、重量等常见单位']].map(x=>`<div class="module"><div class="module-icon">${x[0]}</div><h3>${x[1]}</h3><p>${x[2]}</p><button class="btn primary" onclick="alert('${x[1]}：下一版加入实际计算器')">打开工具</button></div>`).join('')}
+function renderTools(){
+  document.getElementById('toolsModules').innerHTML = `
+    <div class="module">
+      <div class="module-icon">💱</div>
+      <h3>汇率换算</h3>
+      <p>常用跨境货币实时计算</p>
+      <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;gap:5px;align-items:center;">
+          <input class="input" id="exRate" type="number" value="7.25" placeholder="汇率(USD->CNY)" style="width:110px;" oninput="calcExchange()">
+          <span style="font-size:12px;color:var(--muted)">USD汇率</span>
+        </div>
+        <input class="input" id="exAmt" type="number" placeholder="输入外币金额 ($)" oninput="calcExchange()">
+        <div style="font-weight:bold;color:var(--accent);font-size:15px;" id="exRes">折合人民币: ¥0.00</div>
+      </div>
+    </div>
 
-function renderSettings(){
- document.getElementById('setName').value=state.appearance.name;document.getElementById('setSub').value=state.appearance.sub;document.getElementById('setColor').value=state.appearance.color;document.getElementById('setTip').value=state.appearance.tip;
- document.getElementById('navSettings').innerHTML=state.nav.map((n,i)=>`<div class="custom-row"><div class="custom-icon">${esc(n.icon)}</div><input class="input" value="${esc(n.name)}" onchange="editNav(${i},'name',this.value)"><input class="input" type="color" value="${n.color||state.appearance.color}" onchange="editNav(${i},'color',this.value)"><div><button class="btn small" onclick="editNavIcon(${i})">改图标</button> ${n.fixed?'':'<button class="btn small danger" onclick="deleteNav('+i+')">删除</button>'}</div></div>`).join('')
+    <div class="module">
+      <div class="module-icon">💰</div>
+      <h3>利润计算</h3>
+      <p>售价、成本、佣金与物流费</p>
+      <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">
+        <input class="input" id="pPrice" type="number" placeholder="售价 ($)" oninput="calcProfit()">
+        <input class="input" id="pCost" type="number" placeholder="产品成本 (¥)" oninput="calcProfit()">
+        <input class="input" id="pShip" type="number" placeholder="头程+尾程运费 (¥)" oninput="calcProfit()">
+        <input class="input" id="pFeeRate" type="number" value="15" placeholder="平台佣金率 (%)" oninput="calcProfit()">
+        <div style="font-weight:bold;color:var(--accent);font-size:13px;margin-top:4px;" id="pRes">毛利: ¥0.00 | 利润率: 0%</div>
+      </div>
+    </div>
+
+    <div class="module">
+      <div class="module-icon">📏</div>
+      <h3>单位转换</h3>
+      <p>跨境常见尺寸与重量换算</p>
+      <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;gap:5px;">
+          <input class="input" id="uLb" type="number" placeholder="磅 (lb)" oninput="calcUnit('lb')">
+          <input class="input" id="uKg" type="number" placeholder="千克 (kg)" oninput="calcUnit('kg')">
+        </div>
+        <div style="display:flex;gap:5px;">
+          <input class="input" id="uIn" type="number" placeholder="英寸 (in)" oninput="calcUnit('in')">
+          <input class="input" id="uCm" type="number" placeholder="厘米 (cm)" oninput="calcUnit('cm')">
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function calcExchange(){
+  const rate = parseFloat(document.getElementById('exRate').value) || 0;
+  const amt = parseFloat(document.getElementById('exAmt').value) || 0;
+  document.getElementById('exRes').textContent = `折合人民币: ¥${(amt * rate).toFixed(2)}`;
+}
+
+function calcProfit(){
+  const price = parseFloat(document.getElementById('pPrice').value) || 0;
+  const cost = parseFloat(document.getElementById('pCost').value) || 0;
+  const ship = parseFloat(document.getElementById('pShip').value) || 0;
+  const feeRate = (parseFloat(document.getElementById('pFeeRate').value) || 0) / 100;
+  const rate = parseFloat(document.getElementById('exRate')?.value || 7.25);
+  
+  const revenueRmb = price * rate;
+  const platformFeeRmb = revenueRmb * feeRate;
+  const profit = revenueRmb - cost - ship - platformFeeRmb;
+  const margin = revenueRmb > 0 ? ((profit / revenueRmb) * 100).toFixed(1) : 0;
+  
+  document.getElementById('pRes').textContent = `毛利: ¥${profit.toFixed(2)} | 利润率: ${margin}%`;
+}
+
+function calcUnit(type){
+  if(type === 'lb'){
+    const v = parseFloat(document.getElementById('uLb').value) || 0;
+    document.getElementById('uKg').value = v ? (v * 0.453592).toFixed(2) : '';
+  }else if(type === 'kg'){
+    const v = parseFloat(document.getElementById('uKg').value) || 0;
+    document.getElementById('uLb').value = v ? (v / 0.453592).toFixed(2) : '';
+  }else if(type === 'in'){
+    const v = parseFloat(document.getElementById('uIn').value) || 0;
+    document.getElementById('uCm').value = v ? (v * 2.54).toFixed(2) : '';
+  }else if(type === 'cm'){
+    const v = parseFloat(document.getElementById('uCm').value) || 0;
+    document.getElementById('uIn').value = v ? (v / 2.54).toFixed(2) : '';
+  }
 }
 function saveAppearance(){state.appearance.name=document.getElementById('setName').value.trim()||'VickyWork';state.appearance.sub=document.getElementById('setSub').value.trim()||'跨境运营工作台';state.appearance.color=document.getElementById('setColor').value;state.appearance.tip=document.getElementById('setTip').value.trim();persist();alert('外观已保存')}
 function editNav(i,k,v){state.nav[i][k]=v;persist()}function editNavIcon(i){const v=prompt('输入新的图标，例如 💬 / 📦 / 🌍',state.nav[i].icon);if(v){state.nav[i].icon=v;persist()}}function deleteNav(i){if(confirm('删除这个导航板块？其中的内容不会自动删除。')){const id=state.nav[i].id;state.nav.splice(i,1);const v=document.getElementById(id);if(v)v.remove();persist()}}
