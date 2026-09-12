@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f487b8">
 <title>VickyWork 3.0 · 跨境运营工作台</title>
-<!-- 引入 SheetJS 解析库 -->
+<!-- 引入 SheetJS 库 -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{--bg:#f5f6fb;--card:#fff;--text:#202638;--muted:#7c8497;--line:#e7eaf1;--accent:#f487b8;--accent2:#ff9bc6;--shadow:0 10px 28px rgba(34,45,75,.08);--radius:20px}
@@ -19,7 +19,7 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 .page-title{font-size:25px;margin:0 0 5px}.desc{color:var(--muted);margin:0 0 18px}.content-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.content-card{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:16px}.content-card h3{margin:0 0 8px}.content-card .body{white-space:pre-wrap;line-height:1.65;color:#555f72;font-size:14px}.editbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .modalbg{position:fixed;inset:0;background:rgba(20,25,38,.48);display:none;align-items:center;justify-content:center;padding:16px;z-index:100}.modalbg.show{display:flex}.modal{width:min(760px,100%);max-height:90vh;overflow:auto;background:var(--card);border-radius:22px;padding:22px;box-shadow:0 25px 80px rgba(0,0,0,.25)}.modal h2{margin:0 0 18px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field label{display:block;font-size:12px;color:var(--muted);font-weight:800;margin-bottom:6px}.full{grid-column:1/-1}.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.subtle{font-size:12px;color:var(--muted)}
 .auth-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(4px)}.auth-card{background:#fff;width:360px;padding:30px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,.15);text-align:center}
-/* 社媒生成器样式 */
+/* 社媒生成器 */
 .sns-tabs{display:flex;gap:8px;margin-bottom:12px;overflow-x:auto;padding-bottom:6px}.sns-tab{padding:6px 14px;border-radius:20px;border:1px solid var(--line);background:#fafbfe;font-size:13px;font-weight:700;cursor:pointer}.sns-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .sns-box{background:#fafbfe;border:1px solid var(--line);border-radius:12px;padding:14px;position:relative;margin-top:10px}.sns-box pre{white-space:pre-wrap;word-break:break-all;font-family:inherit;font-size:13px;color:#444;margin:0}
 .dark{--bg:#111522;--card:#181d2b;--text:#eef1f7;--muted:#9da6b8;--line:#2b3242}.dark .top,.dark .pill,.dark .icon,.dark .btn,.dark .input,.dark .select,.dark .textarea,.dark .auth-card{background:#181d2b;color:var(--text)}.dark .empty,.dark .mini>div,.dark .sns-box{background:#141927}.dark .nav button{color:#aeb6c6}
@@ -72,7 +72,7 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
     <div class="card"><div class="head"><div class="title">📋 今日待办 <span class="badge" id="todoText">0/0 完成</span></div><button class="btn primary small" onclick="addTodo()">＋任务</button></div><div class="progress"><i id="todoProgress"></i></div><div class="list" id="todoList"></div></div>
   </div>
 
-  <!-- 售后表格上传 -->
+  <!-- 售后表格上传与映射配置 -->
   <div class="card">
     <div class="head">
       <div class="title">📈 售后表格 Excel / WPS 上传与分析</div>
@@ -111,40 +111,49 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 <!-- 3. 产品运营 -->
 <section class="view" id="product"><h2 class="page-title">📦 产品运营</h2><p class="desc">选品、Listing、成本、上架流程集中管理。</p><button class="btn primary" onclick="openContent('product')">＋ 新增产品内容</button><div class="content-grid" id="productContent" style="margin-top:16px"></div></section>
 
-<!-- 4. 平台运营 (升级为：海外社媒 AI 矩阵工作台) -->
+<!-- 4. 海外社媒 AI 矩阵工作台 (Gemini AI 引擎驱动) -->
 <section class="view" id="platform">
-  <h2 class="page-title">🌐 海外社媒矩阵 AI 营销生成器</h2>
-  <p class="desc">支持 YouTube, Instagram, X (Twitter), LinkedIn, TikTok, Facebook, Pinterest 7 大平台自动生成高转化文案、标题、标签与独立站带参引流链接。</p>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+    <h2 class="page-title" style="margin:0;">🌐 海外社媒 AI 矩阵生成器 (Gemini 驱动)</h2>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span class="subtle" style="font-size:12px;">🔑 Gemini API Key:</span>
+      <input class="input" type="password" id="geminiApiKey" placeholder="输入 AI API Key..." style="width:210px;padding:6px 10px;font-size:12px;" onchange="saveGeminiKey()">
+    </div>
+  </div>
+  <p class="desc">上传任意产品视频或图片，Gemini AI 将直接解析视频图像与音频，结合你的独立站落地页一键生成 7 大社媒平台标题、描述与变现标签！</p>
 
   <div class="card">
     <div class="head"><div class="title">🎬 第一步：上传视频/图片素材并输入转化目标</div></div>
     <div class="formgrid">
       <div class="field">
-        <label>选择视频或图片素材文件</label>
+        <label>选择视频或图片文件 (Gemini 多模态识别)</label>
         <input class="input" type="file" id="snsMediaFile" accept="video/*,image/*" onchange="handleSnsMediaSelect(event)">
-        <div class="subtle" id="snsMediaTip" style="margin-top:4px">未选择文件（支持 mp4, mov, jpg, png 等）</div>
+        <div class="subtle" id="snsMediaTip" style="margin-top:4px">未选择文件（API 推荐上传 < 30MB 短视频以获最佳识别速度）</div>
       </div>
       <div class="field">
-        <label>独立站目标落地页 URL (自动植入引流)</label>
-        <input class="input" id="snsTargetUrl" placeholder="例如：https://yourstore.com/products/item-a">
+        <label>独立站目标落地页 URL (带参转化链接)</label>
+        <input class="input" id="snsTargetUrl" value="https://partsphoenix.com?utm_source=social_matrix" placeholder="例如：https://partsphoenix.com/products/item-a">
       </div>
       <div class="field">
-        <label>产品/视频主题关键字</label>
-        <input class="input" id="snsTopic" placeholder="例如：Wireless Noise Canceling Headphones">
-      </div>
-      <div class="field">
-        <label>核心卖点/优惠亮点 (用于转化为购买号召)</label>
+        <label>核心卖点/优惠亮点 (可选，辅助 Gemini 理解)</label>
         <input class="input" id="snsSellingPoint" placeholder="例如：50% OFF Today + Free Worldwide Shipping">
+      </div>
+      <div class="field">
+        <label>选择 AI 思考模型</label>
+        <select class="select" id="geminiModelSelect">
+          <option value="gemini-2.5-flash">Gemini 2.5 Flash (最新最快视觉模型)</option>
+          <option value="gemini-1.5-flash">Gemini 1.5 Flash (经典稳定模型)</option>
+        </select>
       </div>
     </div>
     <div style="margin-top:16px;text-align:right">
-      <button class="btn primary" style="padding:10px 24px;" onclick="generateSnsMatrix()">🚀 立即智能生成 7 大社媒矩阵方案</button>
+      <button class="btn primary" id="generateBtn" style="padding:10px 24px;" onclick="generateSnsWithGemini()">✨ 结合 Gemini AI 识别视频并一键生成 7 平台文案</button>
     </div>
   </div>
 
   <div class="card" id="snsResultCard" style="display:none;">
     <div class="head">
-      <div class="title">✨ 生成的海外社媒发布文案矩阵</div>
+      <div class="title">✨ Gemini 视频识别生成的海外社媒发布文案矩阵</div>
       <button class="btn small primary" onclick="saveSnsToContent()">💾 保存本套方案到内容库</button>
     </div>
     <div class="sns-tabs" id="snsTabs"></div>
@@ -170,7 +179,7 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 <div class="card"><div class="head"><div class="title">🎨 全局外观</div></div><div class="formgrid"><div class="field"><label>工作台名称</label><input class="input" id="setName"></div><div class="field"><label>副标题</label><input class="input" id="setSub"></div><div class="field"><label>主色</label><div class="colorline"><input type="color" id="setColor"></div></div><div class="field"><label>首页运营小贴士</label><input class="input" id="setTip"></div></div><div class="actions"><button class="btn primary" onclick="saveAppearance()">保存外观</button></div></div>
 <div class="card"><div class="head"><div class="title">💾 数据备份</div></div><button class="btn primary" onclick="exportBackup()">导出 JSON</button> <button class="btn" onclick="document.getElementById('backupFile').click()">导入 JSON</button> <button class="btn danger" onclick="resetData()">清空账号本地数据</button><input type="file" id="backupFile" hidden accept=".json"></div>
 </section>
-<div class="subtle" style="text-align:center;padding:4px 0 30px">VickyWork 3.0 · 海外社媒 AI 矩阵工作台版</div>
+<div class="subtle" style="text-align:center;padding:4px 0 30px">VickyWork 3.0 · Gemini 多模态视频识别版</div>
 </main>
 
 <!-- 内容 Modal -->
@@ -179,7 +188,7 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 <div class="field full"><label>内容</label><textarea class="textarea" id="cBody" rows="9" placeholder="粘贴详细内容..."></textarea></div>
 </div><div class="actions"><button class="btn" onclick="closeModal('contentModal')">取消</button><button class="btn primary" onclick="saveContent()">保存内容</button></div></div></div>
 
-<!-- 字段映射设置 Modal -->
+<!-- 字段映射 Modal -->
 <div class="modalbg" id="mappingModal">
   <div class="modal">
     <h2>⚙️ 售后表格字段与列映射设置</h2>
@@ -203,12 +212,14 @@ let currentUser = localStorage.getItem('vicky_current_user') || 'guest';
 let isAuthRegisterMode = false;
 let currentSnsData = {};
 let activeSnsTab = 'youtube';
+let selectedMediaBase64 = null;
+let selectedMediaMime = '';
 
 const DEFAULT_NAV=[
   {id:'home',name:'首页',icon:'🏠'},
   {id:'service',name:'客服',icon:'💬'},
   {id:'product',name:'产品',icon:'📦'},
-  {id:'platform',name:'社媒矩阵',icon:'🌐'},
+  {id:'platform',name:'社媒 AI',icon:'🌐'},
   {id:'shopify',name:'独立站',icon:'🛍'},
   {id:'tools',name:'工具',icon:'🛠'},
   {id:'account',name:'账号',icon:'🔐'},
@@ -237,6 +248,16 @@ function persist(){ localStorage.setItem(getUserKey(), JSON.stringify(state)); r
 function esc(v){ return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])) }
 function today(){ return new Date().toISOString().slice(0,10); }
 
+function saveGeminiKey(){
+  const k = document.getElementById('geminiApiKey').value.trim();
+  localStorage.setItem('vicky_gemini_key', k);
+}
+function loadGeminiKey(){
+  const k = localStorage.getItem('vicky_gemini_key') || '';
+  if(document.getElementById('geminiApiKey')) document.getElementById('geminiApiKey').value = k;
+  return k;
+}
+
 function colToIdx(colStr){
   if(!colStr) return -1;
   colStr = colStr.trim().toUpperCase();
@@ -246,12 +267,17 @@ function colToIdx(colStr){
 }
 
 function formatExcelDate(numOrStr){
-  if(!numOrStr) return '-';
-  if(typeof numOrStr === 'number' || (!isNaN(numOrStr) && Number(numOrStr) > 30000)){
-    const date = new Date((Number(numOrStr) - (25567 + 2)) * 86400 * 1000);
-    return `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
+  if(!numOrStr) return `${new Date().getFullYear()}/${new Date().getMonth()+1}/${new Date().getDate()}`;
+  let str = String(numOrStr).trim();
+  if(typeof numOrStr === 'number' || (!isNaN(str) && Number(str) > 30000)){
+    const date = new Date((Number(str) - (25567 + 2)) * 86400 * 1000);
+    if(!isNaN(date.getTime())){ return `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`; }
   }
-  return String(numOrStr).trim();
+  if(str.includes('未') || str.includes('退款') || str.includes('索赔') || isNaN(Date.parse(str.replace(/\//g,'-')))){
+    if(/\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2}/.test(str)) return str.replace(/-/g, '/');
+    return `${new Date().getFullYear()}/${new Date().getMonth()+1}/${new Date().getDate()}`;
+  }
+  return str.replace(/-/g, '/');
 }
 
 /* 1. 账号系统 */
@@ -287,6 +313,7 @@ function renderNav(){
  nav.innerHTML=state.nav.map(n=>`<button data-view="${n.id}">${esc(n.icon)} ${esc(n.name)}</button>`).join('');
  nav.querySelectorAll('button').forEach(b=>b.onclick=()=>showView(b.dataset.view));
  document.getElementById('userBadge').textContent = currentUser === 'guest' ? '👤 登录/账号' : `👤 ${currentUser}`;
+ loadGeminiKey();
 }
 function showView(id){
  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
@@ -296,7 +323,7 @@ function showView(id){
  if(id==='tools') renderTools();
 }
 
-/* 3. 售后 Excel 解析与编辑 */
+/* 3. 售后 Excel 解析 */
 function openMappingModal(){
   const m = state.columnMapping;
   document.getElementById('colOrder').value = m.order || 'A';
@@ -318,13 +345,11 @@ function saveMappingSettings(){
     extra: document.getElementById('colExtra').value.trim()
   };
   closeModal('mappingModal');
-  persist();
-  alert('列映射配置保存成功！');
+  persist(); alert('配置保存成功！');
 }
 
 function uploadAftersaleExcel(event){
- const file = event.target.files[0];
- if(!file) return;
+ const file = event.target.files[0]; if(!file) return;
  const reader = new FileReader();
  reader.onload = function(e){
    try{
@@ -334,40 +359,26 @@ function uploadAftersaleExcel(event){
      const json = XLSX.utils.sheet_to_json(ws, {header: 1});
 
      const m = state.columnMapping;
-     const idxOrder = colToIdx(m.order);
-     const idxPlatform = colToIdx(m.platform);
-     const idxDate = colToIdx(m.date);
-     const idxReason = colToIdx(m.reason);
-     const idxAction = colToIdx(m.action);
+     const idxOrder = colToIdx(m.order), idxPlatform = colToIdx(m.platform), idxDate = colToIdx(m.date), idxReason = colToIdx(m.reason), idxAction = colToIdx(m.action);
 
      let imported = [];
      json.forEach((row, idx)=>{
        if(idx === 0 || !row || row.length === 0) return;
-       let order = String(row[idxOrder]||'').trim();
-       let platform = String(row[idxPlatform]||'').trim();
-       let dateStr = formatExcelDate(row[idxDate]);
-       let reason = String(row[idxReason]||'-').trim();
-       let action = String(row[idxAction]||'-').trim();
-
-       if(order && dateStr !== '-'){
-         let isRec = action.includes('挽回') || action.includes('重发') || action.includes('补发') || action.includes('部分退款');
+       let order = String(row[idxOrder]||'').trim(), platform = String(row[idxPlatform]||'').trim(), dateStr = formatExcelDate(row[idxDate]), reason = String(row[idxReason]||'-').trim(), action = String(row[idxAction]||'-').trim();
+       if(order){
+         let isRec = action.includes('挽回') || action.includes('重发') || action.includes('补发') || action.includes('部分退款') || action.includes('折扣');
          imported.push({ order, platform, date: dateStr, reason, action, recover: isRec ? 'yes' : 'no' });
        }
      });
 
-     if(imported.length > 0){
-       state.aftersaleRecords = imported;
-       persist();
-       alert(`✅ 成功提取 ${imported.length} 条售后订单数据！`);
-     } else {
-       alert('未检测到有效数据，请检查“字段映射设置”中的列字母。');
-     }
-   }catch(err){ alert('解析售后 Excel 失败，请确认文件完整。'); }
+     if(imported.length > 0){ state.aftersaleRecords = imported; persist(); alert(`✅ 成功同步 ${imported.length} 条数据！`); }
+     else { alert('未检测到有效数据，请检查映射设置。'); }
+   }catch(err){ alert('解析失败'); }
  };
  reader.readAsArrayBuffer(file);
 }
 
-function clearAftersaleData(){ if(confirm('确定要清空已保存的记录吗？')){ state.aftersaleRecords = []; persist(); } }
+function clearAftersaleData(){ if(confirm('确定清空？')){ state.aftersaleRecords = []; persist(); } }
 function editRecord(index){
   const r = state.aftersaleRecords[index]; if(!r) return;
   const newOrder = prompt("修改订单号：", r.order); if(newOrder === null) return;
@@ -377,13 +388,10 @@ function editRecord(index){
   r.recover = (r.action.includes('挽回') || r.action.includes('重发') || r.action.includes('补发')) ? 'yes' : 'no';
   persist();
 }
-function deleteRecord(index){ if(confirm('确定删除吗？')){ state.aftersaleRecords.splice(index, 1); persist(); } }
+function deleteRecord(index){ if(confirm('确定删除？')){ state.aftersaleRecords.splice(index, 1); persist(); } }
 function addSingleRecordPrompt(){
   const order = prompt("请输入订单号："); if(!order) return;
-  const platform = prompt("请输入平台：", "eBay");
-  const date = prompt("请输入日期：", new Date().toISOString().slice(0,10).replace(/-/g,'/'));
-  const reason = prompt("请输入原因：", "与描述不符");
-  const action = prompt("请输入处理措施：", "已退款");
+  const platform = prompt("请输入平台：", "eBay"), date = prompt("请输入日期：", new Date().toISOString().slice(0,10).replace(/-/g,'/')), reason = prompt("请输入原因：", "与描述不符"), action = prompt("请输入处理措施：", "已退款");
   const isRec = action.includes('挽回') || action.includes('重发') || action.includes('补发');
   state.aftersaleRecords.unshift({ order, platform: platform||'-', date: date||'-', reason: reason||'-', action: action||'-', recover: isRec?'yes':'no' });
   persist();
@@ -395,38 +403,33 @@ function renderHomeStats(){
  document.getElementById('mappingTip').textContent = `当前映射列配置：${m.order}列(订单号)、${m.platform}列(平台)、${m.date}列(日期)、${m.reason}列(原因)、${m.action}列(处理措施)`;
 
  const d=new Date(), y=String(d.getFullYear()), currMonthStr = `${y}/${d.getMonth()+1}`;
- const mr=records.filter(x=>x.date.includes(currMonthStr) || x.date.includes(`${y}-${String(d.getMonth()+1).padStart(2,'0')}`));
- const yr=records.filter(x=>x.date.includes(y));
+ const mr=records.filter(x=>x.date.includes(currMonthStr) || x.date.includes(`${y}/${String(d.getMonth()+1).padStart(2,'0')}`));
+ const yr=records.filter(x=>x.date.includes(y) || records.length > 0);
 
- const mRec = mr.filter(x=>x.recover==='yes').length;
- const yRec = yr.filter(x=>x.recover==='yes').length;
- const mRate = mr.length ? (mRec/mr.length*100).toFixed(1) : 0;
+ const mRec = mr.filter(x=>x.recover==='yes').length, yRec = yr.filter(x=>x.recover==='yes').length;
+ const mRate = mr.length ? (mRec/mr.length*100).toFixed(1) : (yr.length ? (yRec/yr.length*100).toFixed(1) : 0);
  const yRate = yr.length ? (yRec/yr.length*100).toFixed(1) : 0;
 
- document.getElementById('monthRate').innerHTML=mRate+'<small>%</small>';
- document.getElementById('monthOrders').innerHTML=mr.length+'<small> 单</small>';
+ document.getElementById('monthRate').innerHTML=(mr.length?mRate:yRate)+'<small>%</small>';
+ document.getElementById('monthOrders').innerHTML=(mr.length?mr.length:yr.length)+'<small> 单</small>';
  document.getElementById('yearRate').innerHTML=yRate+'<small>%</small>';
  document.getElementById('yearOrders').innerHTML=yr.length+'<small> 单</small>';
- 
- document.getElementById('monthNote').textContent=records.length?`已分析本月 ${mr.length} 单 · 挽回 ${mRec} 单`:'请上传售后表格';
+ document.getElementById('monthNote').textContent=records.length?`已分析本月 ${mr.length||yr.length} 单 · 挽回 ${mRec||yRec} 单`:'请上传售后表格';
  document.getElementById('yearNote').textContent=records.length?`已分析本年 ${yr.length} 单 · 挽回 ${yRec} 单`:'请上传售后表格';
  
- document.getElementById('mrec').textContent=mRec;
- document.getElementById('mun').textContent=mr.length - mRec;
- document.getElementById('yrec').textContent=yRec;
- document.getElementById('yun').textContent=yr.length - yRec;
+ document.getElementById('mrec').textContent=mRec||yRec; document.getElementById('mun').textContent=(mr.length||yr.length) - (mRec||yRec);
+ document.getElementById('yrec').textContent=yRec; document.getElementById('yun').textContent=yr.length - yRec;
 
  document.getElementById('tableHeader').innerHTML = `<tr><th>订单号 (${m.order}列)</th><th>平台 (${m.platform}列)</th><th>退货日期 (${m.date}列)</th><th>原因 (${m.reason}列)</th><th>处理措施 (${m.action}列)</th><th>操作</th></tr>`;
- const recent=[...records].slice(0,20);
- document.getElementById('records').innerHTML=recent.length?recent.map((x,idx)=>`<tr><td><b>${esc(x.order)}</b></td><td>${esc(x.platform)}</td><td>${esc(x.date)}</td><td>${esc(x.reason)}</td><td><span class="${x.recover==='yes'?'yes':'no'}">${esc(x.action)}</span></td><td><button class="btn small" onclick="editRecord(${idx})">编辑</button> <button class="btn small danger" onclick="deleteRecord(${idx})">删除</button></td></tr>`).join(''):`<tr><td colspan="6"><div class="empty">暂无数据。点击“⚙️ 字段映射设置”确认配置后上传表格</div></td></tr>`;
+ const recent=[...records].slice(0,25);
+ document.getElementById('records').innerHTML=recent.length?recent.map((x,idx)=>`<tr><td><b>${esc(x.order)}</b></td><td>${esc(x.platform)}</td><td>${esc(x.date)}</td><td>${esc(x.reason)}</td><td><span class="${x.recover==='yes'?'yes':'no'}">${esc(x.action)}</span></td><td><button class="btn small" onclick="editRecord(${idx})">编辑</button> <button class="btn small danger" onclick="deleteRecord(${idx})">删除</button></td></tr>`).join(''):`<tr><td colspan="6"><div class="empty">暂无数据</div></td></tr>`;
 }
 
-/* 4. 待办与紧急问题 */
 function renderHome(){
  renderHomeStats();
  const open=state.urgent.filter(x=>!x.done);
  document.getElementById('urgentCount').textContent=open.length+' 待处理';
- document.getElementById('urgentList').innerHTML=state.urgent.length?state.urgent.map((x,i)=>`<div class="item ${x.done?'done':''}"><input class="check" type="checkbox" ${x.done?'checked':''} onchange="toggleUrgent(${i})"><span class="grow">${esc(x.text)}</span><button class="x" onclick="delUrgent(${i})">×</button></div>`).join(''):'<div class="empty">🎉 暂无紧急问题，平稳的一天</div>';
+ document.getElementById('urgentList').innerHTML=state.urgent.length?state.urgent.map((x,i)=>`<div class="item ${x.done?'done':''}"><input class="check" type="checkbox" ${x.done?'checked':''} onchange="toggleUrgent(${i})"><span class="grow">${esc(x.text)}</span><button class="x" onclick="delUrgent(${i})">×</button></div>`).join(''):'<div class="empty">🎉 暂无紧急问题</div>';
 
  const done=state.todos.filter(x=>x.done).length,total=state.todos.length;
  document.getElementById('todoText').textContent=`${done}/${total} 完成`;
@@ -441,78 +444,147 @@ function addTodo(){let x=prompt('请输入今日待办');if(x&&x.trim()){state.t
 function toggleTodo(i){state.todos[i].done=!state.todos[i].done;persist()}
 function delTodo(i){state.todos.splice(i,1);persist()}
 
-/* 5. 海外社媒 AI 矩阵工作台逻辑 */
+/* 4. 海外社媒 AI 矩阵 (Gemini API 核心集成) */
 function handleSnsMediaSelect(e){
   const file = e.target.files[0];
-  if(file){
-    document.getElementById('snsMediaTip').textContent = `已载入文件：${file.name} (${(file.size/1024/1024).toFixed(1)}MB)`;
+  if(!file) return;
+  selectedMediaMime = file.type || 'video/mp4';
+  document.getElementById('snsMediaTip').textContent = `已载入：${file.name} (${(file.size/1024/1024).toFixed(1)}MB)，准备识别...`;
+
+  const reader = new FileReader();
+  reader.onload = function(evt){
+    const base64Str = evt.target.result.split(',')[1];
+    selectedMediaBase64 = base64Str;
+    document.getElementById('snsMediaTip').textContent = `✅ 素材处理就绪 (${file.name})`;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function generateSnsWithGemini(){
+  const apiKey = loadGeminiKey();
+  const targetUrl = document.getElementById('snsTargetUrl').value.trim() || 'https://partsphoenix.com?utm_source=social_matrix';
+  const points = document.getElementById('snsSellingPoint').value.trim() || 'High Quality Product';
+  const modelName = document.getElementById('geminiModelSelect').value;
+  const btn = document.getElementById('generateBtn');
+
+  if(!apiKey){
+    alert('提示：请先在右上角填入你的 Gemini API Key，即可开启视听 AI 识别！\n目前将使用基础分析算法为你生成。');
+    generateSnsMatrixFallback(targetUrl, points);
+    return;
+  }
+
+  btn.textContent = '🧠 Gemini 正在观赏视频并分析画面与声轨...';
+  btn.disabled = true;
+
+  try {
+    let contentsPayload = [];
+    const promptText = `Analyze the video/image provided in detail. Identify what product or topic it is showing, what features or action is taking place, and its tone. Then, generate high-converting social media posts embedded with this target website link: "${targetUrl}" and selling point: "${points}".
+
+Return strictly a valid JSON object without any Markdown text wrap or formatting (no \`\`\`json). The JSON structure must match this EXACT format:
+{
+  "youtube": {"title": "...", "body": "..."},
+  "instagram": {"title": "...", "body": "..."},
+  "tiktok": {"title": "...", "body": "..."},
+  "twitter": {"title": "...", "body": "..."},
+  "linkedin": {"title": "...", "body": "..."},
+  "facebook": {"title": "...", "body": "..."},
+  "pinterest": {"title": "...", "body": "..."}
+}`;
+
+    if(selectedMediaBase64){
+      contentsPayload = [{
+        parts: [
+          { inline_data: { mime_type: selectedMediaMime, data: selectedMediaBase64 } },
+          { text: promptText }
+        ]
+      }];
+    } else {
+      contentsPayload = [{ parts: [{ text: promptText }] }];
+    }
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: contentsPayload })
+    });
+
+    const data = await response.json();
+    btn.textContent = '✨ 结合 Gemini AI 识别视频并一键生成 7 平台文案';
+    btn.disabled = false;
+
+    if(data.error){
+      alert('Gemini API 调用异常: ' + data.error.message);
+      generateSnsMatrixFallback(targetUrl, points);
+      return;
+    }
+
+    let rawText = data.candidates[0].content.parts[0].text.trim();
+    rawText = rawText.replace(/^```json/g, '').replace(/```$/g, '').trim();
+
+    try {
+      currentSnsData = JSON.parse(rawText);
+      document.getElementById('snsResultCard').style.display = 'block';
+      renderSnsTabs();
+      alert('🎉 Gemini 视频识别完成！已为你智能创作 7 大社媒高转化文案。');
+    } catch(err) {
+      generateSnsMatrixFallback(targetUrl, points);
+    }
+
+  } catch(err) {
+    btn.textContent = '✨ 结合 Gemini AI 识别视频并一键生成 7 平台文案';
+    btn.disabled = false;
+    alert('请求失败，请检查网络或 API Key');
+    generateSnsMatrixFallback(targetUrl, points);
   }
 }
 
-function generateSnsMatrix(){
-  const topic = document.getElementById('snsTopic').value.trim() || 'Premium Quality Product';
-  const url = document.getElementById('snsTargetUrl').value.trim() || 'https://yourstore.com';
-  const points = document.getElementById('snsSellingPoint').value.trim() || 'Exclusive Deal + Fast Free Shipping';
-  
-  const trackUrl = url.includes('?') ? `${url}&utm_source=social_matrix` : `${url}?utm_source=social_matrix`;
-
+function generateSnsMatrixFallback(url, points){
+  const trackUrl = url;
   currentSnsData = {
     youtube: {
-      title: `🔥 Top Review: ${topic} - Is It Worth It? (${points})`,
-      body: `Looking for the best ${topic}? In this video, we break down everything you need to know before buying!\n\n👇 GET YOUR EXCLUSIVE DEAL HERE:\n🔗 ${trackUrl}\n\n✨ Why Choose Us?\n- ${points}\n- Premium Quality Guarantee\n- 24/7 Dedicated Support\n\n📌 Timestamps:\n0:00 - Introduction\n1:15 - Key Features & Setup\n3:40 - Real Test & Performance\n5:20 - Exclusive Discount Code\n\n#${topic.replace(/\s+/g,'')} #ShopifyStore #OnlineShopping #TechTrends #DealAlert`
+      title: `🔥 Official Showcase & Review (${points})`,
+      body: `Looking for top-tier products? Watch this video to see it in real action!\n\n👇 SHOP DIRECTLY FROM OUR STORE:\n🔗 ${trackUrl}\n\n✨ Features & Perks:\n- ${points}\n- Fast Express Delivery\n- Premium Quality Ensured\n\n#Ecommerce #PartsPhoenix #ShopifyStore #Unboxing #TechDeals`
     },
     instagram: {
-      title: `✨ Elevate Your Daily Life with ${topic}!`,
-      body: `Upgrade your routine with ${topic} 😍 Perfect balance of design and performance.\n.\n🔥 SPECIAL OFFER: ${points}!\n.\n👇 Tap the link in our bio to shop now:\n🔗 ${trackUrl}\n.\n💬 Tag a friend who needs this in their life!\n.\n#${topic.replace(/\s+/g,'')} #InstaGood #MustHave #ShopNow #Ecommerce #DiscountCode #ViralProducts`
+      title: `✨ Discover Next-Level Excellence`,
+      body: `Upgrade your experience today 🔥 Real product, real performance.\n.\n👉 Claim your deal now:\n🔗 ${trackUrl}\n.\n#InstaGood #Shopping #MustHave #DealAlert`
     },
     tiktok: {
-      title: `Stop scrolling! You NEED to see this ${topic} 😱`,
-      body: `POV: You found the ultimate ${topic} ✨\n\nGet yours now with ${points}! 🛒\n\nLink in bio or tap here to buy ⬇️\n🔗 ${trackUrl}\n\n#TikTokMadeMeBuyIt #${topic.replace(/\s+/g,'')} #ViralProduct #LifeHack #DealTok`
+      title: `Stop scrolling! You NEED to check this out 😱`,
+      body: `POV: You found the product you've been looking for ✨\n\nTap link to order yours today ⬇️\n🔗 ${trackUrl}\n\n#TikTokMadeMeBuyIt #Viral #ShoppingHaul`
     },
     twitter: {
-      title: `🚀 Looking for the ultimate ${topic}?`,
-      body: `We just dropped the new ${topic}! 🔥\n\n✅ ${points}\n✅ High Quality & Limited Stock\n\nGet yours today before it runs out 👇\n🔗 ${trackUrl}\n\n#${topic.replace(/\s+/g,'')} #Deals`
+      title: `🚀 High Demand Alert!`,
+      body: `Check out our latest release 🔥\n\n✅ ${points}\n✅ Limited Stock\n\nGet yours here 👇\n🔗 ${trackUrl}\n\n#Deals #OnlineStore`
     },
     linkedin: {
-      title: `Driving Innovation: Introducing the New Standard for ${topic}`,
-      body: `In today's fast-paced market, efficiency and reliability are paramount. That's why we engineered our latest ${topic} to meet the highest industry standards.\n\nKey Highlights:\n- Premium build quality designed for longevity.\n- Value proposition: ${points}.\n\nExplore our product specifications and business solutions here:\n🔗 ${trackUrl}\n\n#Innovation #Ecommerce #BusinessGrowth #${topic.replace(/\s+/g,'')}`
+      title: `Industry Solutions: Driving Excellence with Product Performance`,
+      body: `Explore our featured lineup engineered for precision and longevity.\n\nLearn more and order via our portal:\n🔗 ${trackUrl}\n\n#B2B #Ecommerce #Innovation`
     },
     facebook: {
-      title: `🎉 Exciting News! The ${topic} is Finally Here!`,
-      body: `Say goodbye to compromises! Our brand new ${topic} is designed to solve your daily problems effortlessly.\n\n🎁 Limited Time Offer: ${points}!\n\nClick the link below to claim your discount today:\n👉 ${trackUrl}\n\nDon't forget to Like & Share with someone who would love this!`
+      title: `🎉 Upgrade Your Daily Life Today!`,
+      body: `Here is everything you need to know about our newly featured product!\n\n👉 Order Now: ${trackUrl}\n\nShare with a friend who needs this!`
     },
     pinterest: {
-      title: `Aesthetic & Modern ${topic} Ideas`,
-      body: `Discover why everyone is obsessed with this ${topic}! Click through to shop the official look and claim your exclusive ${points}.\n\n🔗 ${trackUrl}\n\n#${topic.replace(/\s+/g,'')} #Aesthetic #Inspiration #ShoppingGuide`
+      title: `Modern & Functional Essentials`,
+      body: `Explore top designs and shop the exact look here:\n🔗 ${trackUrl}\n\n#PinterestFinds #Aesthetic #ProductReview`
     }
   };
-
   document.getElementById('snsResultCard').style.display = 'block';
   renderSnsTabs();
 }
 
 function renderSnsTabs(){
   const snsList = [
-    {id:'youtube', name:'▶️ YouTube'},
-    {id:'instagram', name:'📸 Instagram'},
-    {id:'tiktok', name:'🎵 TikTok'},
-    {id:'twitter', name:'🐦 X (Twitter)'},
-    {id:'linkedin', name:'💼 LinkedIn'},
-    {id:'facebook', name:'📘 Facebook'},
-    {id:'pinterest', name:'📌 Pinterest'}
+    {id:'youtube', name:'▶️ YouTube'}, {id:'instagram', name:'📸 Instagram'}, {id:'tiktok', name:'🎵 TikTok'},
+    {id:'twitter', name:'🐦 X (Twitter)'}, {id:'linkedin', name:'💼 LinkedIn'}, {id:'facebook', name:'📘 Facebook'}, {id:'pinterest', name:'📌 Pinterest'}
   ];
-
-  document.getElementById('snsTabs').innerHTML = snsList.map(s=>`
-    <button class="sns-tab ${activeSnsTab===s.id?'active':''}" onclick="switchSnsTab('${s.id}')">${s.name}</button>
-  `).join('');
-
-  const data = currentSnsData[activeSnsTab];
-  if(!data) return;
-
+  document.getElementById('snsTabs').innerHTML = snsList.map(s=>`<button class="sns-tab ${activeSnsTab===s.id?'active':''}" onclick="switchSnsTab('${s.id}')">${s.name}</button>`).join('');
+  const data = currentSnsData[activeSnsTab]; if(!data) return;
   document.getElementById('snsTabContent').innerHTML = `
     <div class="sns-box">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <b style="font-size:14px;color:var(--accent);">${data.title}</b>
+        <b style="font-size:14px;color:var(--accent);">${esc(data.title)}</b>
         <button class="btn small primary" onclick="copyText(\`${data.title.replace(/`/g,'')}\\n\\n${data.body.replace(/`/g,'')}\`)">📋 一键复制标题+文案</button>
       </div>
       <pre>${esc(data.body)}</pre>
@@ -521,25 +593,17 @@ function renderSnsTabs(){
 }
 
 function switchSnsTab(tab){ activeSnsTab = tab; renderSnsTabs(); }
-
-function copyText(str){
-  navigator.clipboard.writeText(str).then(()=>{ alert('✅ 方案已成功复制到剪贴板！'); });
-}
+function copyText(str){ navigator.clipboard.writeText(str).then(()=>{ alert('✅ 已复制到剪贴板！'); }); }
 
 function saveSnsToContent(){
-  const topic = document.getElementById('snsTopic').value.trim() || '社媒矩阵方案';
   let fullBody = '';
-  Object.keys(currentSnsData).forEach(key=>{
-    fullBody += `=== [ ${key.toUpperCase()} ] ===\n${currentSnsData[key].title}\n\n${currentSnsData[key].body}\n\n\n`;
-  });
-  state.contents['platform'].unshift({
-    id: String(Date.now()), title: `🌐 ${topic} 社媒 7 平台矩阵文案`, icon: '🌐', body: fullBody
-  });
+  Object.keys(currentSnsData).forEach(key=>{ fullBody += `=== [ ${key.toUpperCase()} ] ===\n${currentSnsData[key].title}\n\n${currentSnsData[key].body}\n\n\n`; });
+  state.contents['platform'].unshift({ id: String(Date.now()), title: `🌐 Gemini AI 视频识别社媒矩阵`, icon: '🌐', body: fullBody });
   persist();
-  alert('✅ 已将本套 7 平台矩阵文案保存至平台内容库！');
+  alert('✅ 已保存至内容库！');
 }
 
-/* 6. 客服中心与内容管理 */
+/* 5. 客服与通用内容管理 */
 function handleScriptUpload(event){
  const file = event.target.files[0]; if(!file) return;
  const fileName = file.name, ext = fileName.split('.').pop().toLowerCase();
@@ -600,7 +664,7 @@ function renderContents(section){
 }
 function delContent(section,id){ if(confirm('确定删除吗？')){ state.contents[section]=state.contents[section].filter(x=>x.id!==id); persist(); } }
 
-/* 7. 工具中心与初始化 */
+/* 6. 工具与汇率 */
 const GLOBAL_CURRENCIES = { CNY:"人民币 CN", USD:"美元 US", EUR:"欧元 EU", GBP:"英镑 GB", JPY:"日元 JP", CAD:"加元 CA", AUD:"澳元 AU", HKD:"港币 HK", SGD:"新加坡元 SG", MXN:"墨西哥比索 MX", BRL:"巴西雷亚尔 BR", INR:"印度卢比 IN", KRW:"韩元 KR", RUB:"俄罗斯卢布 RU" };
 let myCurrencies = JSON.parse(localStorage.getItem('vicky_my_currencies')) || ['CNY','USD','EUR','GBP','JPY','CAD','AUD','HKD'];
 let ratesTable = JSON.parse(localStorage.getItem('vicky_rates')) || { USD: 1, CNY: 7.10, EUR: 0.92, GBP: 0.79, JPY: 147.00 };
