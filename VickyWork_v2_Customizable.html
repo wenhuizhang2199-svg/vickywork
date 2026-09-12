@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f487b8">
+<title>VickyWork 2.0 · 跨境运营工作台</title>
+<style>
+:root{--bg:#f5f6fb;--card:#fff;--text:#202638;--muted:#7c8497;--line:#e7eaf1;--accent:#f487b8;--accent2:#ff9bc6;--shadow:0 10px 28px rgba(34,45,75,.08);--radius:20px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,"Segoe UI","Microsoft YaHei",Arial,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}
+.top{height:68px;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;position:sticky;top:0;z-index:30}.brand{display:flex;align-items:center;gap:9px;min-width:245px}.logo{font-size:26px}.brand b{font-size:21px;color:var(--accent)}.brand span{font-size:12px;color:var(--muted)}.nav{display:flex;gap:4px;flex:1}.nav button{border:0;background:transparent;padding:10px 12px;border-radius:12px;color:#596174;font-weight:700}.nav button:hover{background:#fff0f7}.nav button.active{background:var(--accent);color:#fff}.topright{display:flex;gap:8px;align-items:center}.pill,.icon{border:1px solid var(--line);background:#fff;border-radius:12px;padding:9px 11px;color:#626b7e}.icon{width:40px;height:40px;padding:0}
+main{max-width:1400px;margin:28px auto;padding:0 24px}.view{display:none}.view.active{display:block}.hero{padding:28px;border-radius:24px;background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff;position:relative;overflow:hidden;box-shadow:0 15px 36px rgba(244,135,184,.2);margin-bottom:18px}.hero h1{margin:0 0 6px;font-size:28px}.hero p{margin:0 0 18px;opacity:.93}.tip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.4);border-radius:13px;padding:11px 14px;position:relative;z-index:1}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.stat{padding:20px;border-radius:20px;color:#fff;min-height:145px;box-shadow:var(--shadow);position:relative;overflow:hidden}.stat:after{content:"";width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.12);position:absolute;right:-25px;bottom:-45px}.s1{background:linear-gradient(135deg,#ff9b0d,#ff8617)}.s2{background:linear-gradient(135deg,#318fe3,#1bb8ce)}.s3{background:linear-gradient(135deg,#f23d54,#f54165)}.s4{background:linear-gradient(135deg,#21ae79,#2dc88f)}.stat .t{font-weight:800}.stat .v{font-size:34px;font-weight:900;margin:13px 0 3px}.stat small{font-size:17px}.stat .n{font-size:12px;opacity:.94}
+.grid2{display:grid;grid-template-columns:1.05fr .95fr;gap:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}.head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}.title{font-size:18px;font-weight:850;display:flex;gap:8px;align-items:center}.btn{border:1px solid var(--line);background:#fff;color:#3d4658;border-radius:11px;padding:9px 13px;font-weight:750}.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}.btn.danger{color:#d84058}.btn.small{padding:7px 10px;font-size:13px}.input,.select,.textarea{width:100%;border:1px solid var(--line);background:#fbfcff;border-radius:11px;padding:10px 12px;outline:0}.input:focus,.select:focus,.textarea:focus{border-color:#e9a4c3;box-shadow:0 0 0 3px rgba(244,135,184,.1)}.row{display:flex;gap:9px}.row>*:first-child{flex:1}.list{display:flex;flex-direction:column;gap:8px;margin-top:12px}.item{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:11px;padding:10px 12px}.item.done{text-decoration:line-through;color:#999}.grow{flex:1}.x{border:0;background:transparent;color:#a3a9b5;font-size:18px}.check{accent-color:var(--accent)}.empty{background:#fafbfe;border-radius:12px;padding:25px;text-align:center;color:var(--muted)}.progress{height:8px;background:#edf0f5;border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px}.badge{font-size:12px;padding:5px 9px;border-radius:999px;background:#fff0f3;color:#df4560}
+.mini{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.mini>div{background:#fafbfe;border:1px solid var(--line);padding:14px;border-radius:13px}.mini span{font-size:12px;color:var(--muted)}.mini b{display:block;font-size:23px;margin-top:6px}
+table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;padding:11px;border-bottom:1px solid var(--line);font-size:13px}th{color:var(--muted)}.tablewrap{overflow:auto}.yes,.no{display:inline-block;border-radius:99px;padding:4px 8px;font-size:11px}.yes{color:#148e59;background:#e9faf2}.no{color:#d8445c;background:#fff0f2}
+.page-title{font-size:25px;margin:0 0 5px}.desc{color:var(--muted);margin:0 0 18px}.modules{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.module{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:19px;box-shadow:var(--shadow);position:relative}.module-icon{font-size:28px}.module h3{margin:9px 0 7px}.module p{color:var(--muted);font-size:13px;line-height:1.6}.module-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}.content-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.content-card{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:16px}.content-card h3{margin:0 0 8px}.content-card .body{white-space:pre-wrap;line-height:1.65;color:#555f72;font-size:14px}.attachments{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.attachment{border:1px solid var(--line);border-radius:10px;padding:7px 9px;background:#fafbfe;font-size:12px}.attachment img{max-width:150px;max-height:110px;border-radius:8px;display:block;margin-bottom:5px}.editbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.modalbg{position:fixed;inset:0;background:rgba(20,25,38,.48);display:none;align-items:center;justify-content:center;padding:16px;z-index:100}.modalbg.show{display:flex}.modal{width:min(760px,100%);max-height:90vh;overflow:auto;background:var(--card);border-radius:22px;padding:22px;box-shadow:0 25px 80px rgba(0,0,0,.25)}.modal h2{margin:0 0 18px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field label{display:block;font-size:12px;color:var(--muted);font-weight:800;margin-bottom:6px}.full{grid-column:1/-1}.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.colorline{display:flex;gap:10px;align-items:center}.colorline input{width:52px;height:38px;padding:2px}.custom-list{display:flex;flex-direction:column;gap:8px}.custom-row{display:grid;grid-template-columns:42px 1fr 110px auto;gap:9px;align-items:center;border:1px solid var(--line);padding:9px;border-radius:12px}.custom-icon{font-size:22px;text-align:center}.subtle{font-size:12px;color:var(--muted)}.filebox{border:1px dashed #d7dce7;border-radius:12px;padding:12px;background:#fafbfe}.preview{margin-top:10px;max-height:150px;max-width:100%;border-radius:10px}
+.dark{--bg:#111522;--card:#181d2b;--text:#eef1f7;--muted:#9da6b8;--line:#2b3242}.dark .top,.dark .pill,.dark .icon,.dark .btn,.dark .input,.dark .select,.dark .textarea{background:#181d2b;color:var(--text)}.dark .empty,.dark .mini>div,.dark .filebox,.dark .attachment{background:#141927}.dark .nav button{color:#aeb6c6}
+@media(max-width:1050px){.nav button{padding:9px 7px}.brand{min-width:200px}.stats{grid-template-columns:1fr 1fr}.modules{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){.top{padding:0 13px}.brand span{display:none}.brand{min-width:auto;flex:1}.nav{display:none;position:absolute;left:0;right:0;top:68px;background:#fff;padding:8px;flex-direction:column;border-bottom:1px solid var(--line)}.nav.open{display:flex}.pill{display:none}main{padding:0 13px;margin-top:18px}.stats{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}.modules,.content-grid{grid-template-columns:1fr}.mini{grid-template-columns:1fr 1fr}.formgrid{grid-template-columns:1fr}.full{grid-column:auto}.custom-row{grid-template-columns:40px 1fr auto}.custom-row select{display:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><div class="logo">🦄</div><b id="brandName">VickyWork</b><span id="brandSub">跨境运营工作台</span></div>
+  <nav class="nav" id="nav"></nav>
+  <div class="topright"><span class="pill" id="date"></span><button class="icon" id="dark">🌙</button><button class="icon" id="hamb">☰</button></div>
+</header>
+
+<main>
+<section class="view active" id="home">
+  <div class="hero"><h1 id="greet">早上好 ☀️</h1><p id="heroDate"></p><div class="tip">💡 <span id="tipText">运营小贴士：每天结束前花 2 分钟记录售后数据，月底复盘会轻松很多。</span></div></div>
+  <div class="stats">
+    <div class="stat s1"><div class="t" id="st1">🎯 本月售后挽回率</div><div class="v" id="monthRate">0<small>%</small></div><div class="n" id="monthNote"></div></div>
+    <div class="stat s2"><div class="t" id="st2">📦 本月售后订单</div><div class="v" id="monthOrders">0<small> 单</small></div><div class="n">已记录的本月售后订单</div></div>
+    <div class="stat s3"><div class="t" id="st3">📅 本年售后挽回率</div><div class="v" id="yearRate">0<small>%</small></div><div class="n" id="yearNote"></div></div>
+    <div class="stat s4"><div class="t" id="st4">📊 本年售后订单</div><div class="v" id="yearOrders">0<small> 单</small></div><div class="n">当前年份累计售后订单</div></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><div class="head"><div class="title">🚨 紧急问题 <span class="badge" id="urgentCount">0 待处理</span></div><button class="btn small" onclick="clearUrgent()">清空已处理</button></div><div class="row"><input class="input" id="urgentInput" placeholder="记录突发问题，例如：差评未响应 / FBA断货预警…"><button class="btn primary" onclick="addUrgent()">添加</button></div><div class="list" id="urgentList"></div></div>
+    <div class="card"><div class="head"><div class="title">📋 今日待办 <span class="badge" id="todoText">0/0 完成</span></div><button class="btn primary small" onclick="addTodo()">＋任务</button></div><div class="progress"><i id="todoProgress"></i></div><div class="list" id="todoList"></div></div>
+  </div>
+  <div class="card"><div class="head"><div class="title">📈 售后数据概览</div><button class="btn primary" onclick="openRecord()">＋ 新增售后</button></div><div class="mini"><div><span>本月已挽回</span><b id="mrec">0</b></div><div><span>本月未挽回</span><b id="mun">0</b></div><div><span>本年已挽回</span><b id="yrec">0</b></div><div><span>本年未挽回</span><b id="yun">0</b></div></div></div>
+  <div class="card"><div class="head"><div class="title">🧾 最近售后记录</div><button class="btn small" onclick="exportBackup()">导出备份</button></div><div class="tablewrap"><table><thead><tr><th>日期</th><th>平台</th><th>订单号</th><th>类型</th><th>挽回</th><th>备注</th><th></th></tr></thead><tbody id="records"></tbody></table></div></div>
+</section>
+
+<section class="view" id="service"><h2 class="page-title">💬 客服中心</h2><p class="desc">所有话术、FAQ、售后模板都可以由你自己创建，并支持图片与文件附件。</p><div class="editbar"><button class="btn primary" onclick="openContent('service')">＋ 新增客服内容</button><button class="btn" onclick="importScriptFile()">📄 上传话术文件</button><span class="subtle">TXT / MD / CSV / JSON 可直接读取文字；其他文件可作为附件保存</span><input type="file" id="scriptFile" hidden accept=".txt,.md,.csv,.json,.pdf,.doc,.docx,.xlsx,.png,.jpg,.jpeg"></div><div class="content-grid" id="serviceContent" style="margin-top:16px"></div></section>
+
+<section class="view" id="product"><h2 class="page-title">📦 产品运营</h2><p class="desc">选品、Listing、成本、上架流程等内容均可自行新增和修改。</p><button class="btn primary" onclick="openContent('product')">＋ 新增产品内容</button><div class="content-grid" id="productContent" style="margin-top:16px"></div></section>
+<section class="view" id="platform"><h2 class="page-title">🌍 平台运营</h2><p class="desc">Amazon / eBay / Walmart 的操作资料、规则和 SOP 集中管理。</p><button class="btn primary" onclick="openContent('platform')">＋ 新增平台内容</button><div class="content-grid" id="platformContent" style="margin-top:16px"></div></section>
+<section class="view" id="shopify"><h2 class="page-title">🛍 独立站</h2><p class="desc">Shopify 页面、SEO、转化、广告和内容资料集中保存。</p><button class="btn primary" onclick="openContent('shopify')">＋ 新增独立站内容</button><div class="content-grid" id="shopifyContent" style="margin-top:16px"></div></section>
+<section class="view" id="tools"><h2 class="page-title">🛠 工具中心</h2><p class="desc">先保留常用工具入口，后续可继续加入实际计算器。</p><div class="modules" id="toolsModules"></div></section>
+<section class="view" id="account"><h2 class="page-title">🔐 账号环境</h2><p class="desc">账号、IP、设备和风控资料可以继续按你的工作方式扩展。</p><button class="btn primary" onclick="openContent('account')">＋ 新增账号资料</button><div class="content-grid" id="accountContent" style="margin-top:16px"></div></section>
+
+<section class="view" id="settings">
+<h2 class="page-title">⚙ 后台自定义</h2><p class="desc">这里就是 VickyWork 的“后台”。以后你不需要改代码，也可以修改导航、图标、颜色、名称和各板块内容。</p>
+<div class="card"><div class="head"><div class="title">🎨 全局外观</div></div><div class="formgrid"><div class="field"><label>工作台名称</label><input class="input" id="setName"></div><div class="field"><label>副标题</label><input class="input" id="setSub"></div><div class="field"><label>主色</label><div class="colorline"><input type="color" id="setColor"><span class="subtle">修改后导航、按钮、进度条等会同步变化</span></div></div><div class="field"><label>首页运营小贴士</label><input class="input" id="setTip"></div></div><div class="actions"><button class="btn primary" onclick="saveAppearance()">保存外观</button></div></div>
+<div class="card"><div class="head"><div class="title">🧭 导航与板块</div><button class="btn primary" onclick="addNav()">＋ 新增板块</button></div><div class="custom-list" id="navSettings"></div><p class="subtle" style="margin-top:12px">图标可以直接输入 emoji，例如 💬、📦、🌍，不需要找图片图标。</p></div>
+<div class="card"><div class="head"><div class="title">💾 数据备份</div></div><button class="btn primary" onclick="exportBackup()">导出 JSON</button> <button class="btn" onclick="document.getElementById('backupFile').click()">导入 JSON</button> <button class="btn danger" onclick="resetData()">清空业务数据</button><input type="file" id="backupFile" hidden accept=".json"></div>
+</section>
+<div class="subtle" style="text-align:center;padding:4px 0 30px">VickyWork 2.0 · 数据优先 · 可自定义 · 浏览器本地版</div>
+</main>
+
+<!-- 售后 -->
+<div class="modalbg" id="recordModal"><div class="modal"><h2>新增售后记录</h2><div class="formgrid">
+<div class="field"><label>日期</label><input class="input" id="rDate" type="date"></div><div class="field"><label>平台</label><select class="select" id="rPlatform"><option>Amazon</option><option>eBay</option><option>Walmart</option><option>独立站</option><option>其他</option></select></div>
+<div class="field"><label>订单号</label><input class="input" id="rOrder"></div><div class="field"><label>售后类型</label><select class="select" id="rType"><option>退款</option><option>退货</option><option>补发</option><option>物流异常</option><option>其他</option></select></div>
+<div class="field full"><label>是否挽回</label><div class="row"><label class="btn"><input type="radio" name="rec" value="yes" checked> 已挽回</label><label class="btn"><input type="radio" name="rec" value="no"> 未挽回</label></div></div>
+<div class="field full"><label>备注</label><textarea class="textarea" id="rNote" rows="3"></textarea></div></div><div class="actions"><button class="btn" onclick="closeModal('recordModal')">取消</button><button class="btn primary" onclick="saveRecord()">保存</button></div></div></div>
+
+<!-- 内容 -->
+<div class="modalbg" id="contentModal"><div class="modal"><h2 id="contentModalTitle">新增内容</h2><div class="formgrid">
+<div class="field"><label>标题</label><input class="input" id="cTitle" placeholder="例如：退款挽回话术"></div><div class="field"><label>图标</label><input class="input" id="cIcon" value="📝" placeholder="例如 💬"></div>
+<div class="field full"><label>内容</label><textarea class="textarea" id="cBody" rows="9" placeholder="可以直接粘贴话术、SOP、FAQ、操作步骤……"></textarea></div>
+<div class="field full"><label>添加图片或文件</label><div class="filebox"><input type="file" id="cFiles" multiple accept="image/*,.txt,.md,.csv,.json,.pdf,.doc,.docx,.xlsx,.xls,.zip"><div class="subtle" style="margin-top:7px">图片会直接显示在内容卡片中；TXT / MD / CSV / JSON 可以读取并填入内容。</div><div id="filePreview"></div></div></div>
+</div><div class="actions"><button class="btn" onclick="closeModal('contentModal')">取消</button><button class="btn primary" onclick="saveContent()">保存内容</button></div></div></div>
+
+<!-- 导航 -->
+<div class="modalbg" id="navModal"><div class="modal"><h2>新增自定义板块</h2><div class="formgrid"><div class="field"><label>名称</label><input class="input" id="nName" placeholder="例如：社媒运营"></div><div class="field"><label>图标</label><input class="input" id="nIcon" value="📌"></div><div class="field"><label>颜色</label><input type="color" id="nColor" value="#f487b8"></div></div><div class="actions"><button class="btn" onclick="closeModal('navModal')">取消</button><button class="btn primary" onclick="saveNav()">添加</button></div></div></div>
+
+<script>
+const KEY='vickywork_v2';
+const DEFAULT_NAV=[
+{id:'home',name:'首页',icon:'🏠',color:'#f487b8',fixed:true},
+{id:'service',name:'客服',icon:'💬',color:'#f487b8'},
+{id:'product',name:'产品',icon:'📦',color:'#f487b8'},
+{id:'platform',name:'平台',icon:'🌍',color:'#f487b8'},
+{id:'shopify',name:'独立站',icon:'🛍',color:'#f487b8'},
+{id:'tools',name:'工具',icon:'🛠',color:'#f487b8'},
+{id:'account',name:'账号',icon:'🔐',color:'#f487b8'},
+{id:'settings',name:'设置',icon:'⚙️',color:'#f487b8',fixed:true}
+];
+const defaultState={appearance:{name:'VickyWork',sub:'跨境运营工作台',color:'#f487b8',tip:'运营小贴士：每天结束前花 2 分钟记录售后数据，月底复盘会轻松很多。'},nav:DEFAULT_NAV,records:[],urgent:[],todos:[],contents:{service:[],product:[],platform:[],shopify:[],account:[]},dark:false};
+let state=JSON.parse(localStorage.getItem(KEY)||'null')||defaultState;
+state.nav=state.nav||DEFAULT_NAV; state.contents=state.contents||defaultState.contents;
+let editSection='service';
+
+function persist(){localStorage.setItem(KEY,JSON.stringify(state));renderAll()}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function today(){return new Date().toISOString().slice(0,10)}
+function month(d){return d.slice(0,7)}
+function year(d){return d.slice(0,4)}
+function recovery(arr){return arr.length?Math.round(arr.filter(x=>x.recover==='yes').length/arr.length*1000)/10:0}
+
+function renderNav(){
+ const nav=document.getElementById('nav');nav.innerHTML=state.nav.map(n=>`<button data-view="${n.id}">${esc(n.icon)} ${esc(n.name)}</button>`).join('');
+ nav.querySelectorAll('button').forEach(b=>b.onclick=()=>showView(b.dataset.view));
+}
+function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===id));document.getElementById('nav').classList.remove('open');window.scrollTo({top:0,behavior:'smooth'})}
+
+function renderHome(){
+ const d=new Date(), y=String(d.getFullYear()),m=String(d.getMonth()+1).padStart(2,'0'),ym=y+'-'+m;
+ const mr=state.records.filter(x=>month(x.date)===ym),yr=state.records.filter(x=>year(x.date)===y);
+ document.getElementById('monthRate').innerHTML=recovery(mr)+'<small>%</small>';document.getElementById('monthOrders').innerHTML=mr.length+'<small> 单</small>';document.getElementById('yearRate').innerHTML=recovery(yr)+'<small>%</small>';document.getElementById('yearOrders').innerHTML=yr.length+'<small> 单</small>';
+ document.getElementById('monthNote').textContent=`本月售后 ${mr.length} 单 · 挽回 ${mr.filter(x=>x.recover==='yes').length} 单`;document.getElementById('yearNote').textContent=`本年售后 ${yr.length} 单 · 挽回 ${yr.filter(x=>x.recover==='yes').length} 单`;
+ document.getElementById('mrec').textContent=mr.filter(x=>x.recover==='yes').length;document.getElementById('mun').textContent=mr.filter(x=>x.recover==='no').length;document.getElementById('yrec').textContent=yr.filter(x=>x.recover==='yes').length;document.getElementById('yun').textContent=yr.filter(x=>x.recover==='no').length;
+ const open=state.urgent.filter(x=>!x.done);document.getElementById('urgentCount').textContent=open.length+' 待处理';document.getElementById('urgentList').innerHTML=state.urgent.length?state.urgent.map((x,i)=>`<div class="item ${x.done?'done':''}"><input class="check" type="checkbox" ${x.done?'checked':''} onchange="toggleUrgent(${i})"><span class="grow">${esc(x.text)}</span><button class="x" onclick="delUrgent(${i})">×</button></div>`).join(''):'<div class="empty">🎉 暂无紧急问题，平稳的一天</div>';
+ const done=state.todos.filter(x=>x.done).length,total=state.todos.length;document.getElementById('todoText').textContent=`${done}/${total} 完成`;document.getElementById('todoProgress').style.width=(total?done/total*100:0)+'%';document.getElementById('todoList').innerHTML=total?state.todos.map((x,i)=>`<div class="item ${x.done?'done':''}"><input class="check" type="checkbox" ${x.done?'checked':''} onchange="toggleTodo(${i})"><span class="grow">${esc(x.text)}</span><button class="x" onclick="delTodo(${i})">×</button></div>`).join(''):'<div class="empty">今天还没有待办任务</div>';
+ const recent=[...state.records].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,12);document.getElementById('records').innerHTML=recent.length?recent.map(x=>`<tr><td>${x.date}</td><td>${esc(x.platform)}</td><td>${esc(x.order||'-')}</td><td>${esc(x.type)}</td><td><span class="${x.recover==='yes'?'yes':'no'}">${x.recover==='yes'?'已挽回':'未挽回'}</span></td><td>${esc(x.note||'-')}</td><td><button class="btn small danger" onclick="delRecord('${x.id}')">删除</button></td></tr>`).join(''):`<tr><td colspan="7"><div class="empty">还没有售后记录</div></td></tr>`;
+}
+function addUrgent(){let e=document.getElementById('urgentInput');if(e.value.trim()){state.urgent.unshift({text:e.value.trim(),done:false});e.value='';persist()}}
+function toggleUrgent(i){state.urgent[i].done=!state.urgent[i].done;persist()}function delUrgent(i){state.urgent.splice(i,1);persist()}function clearUrgent(){state.urgent=state.urgent.filter(x=>!x.done);persist()}
+function addTodo(){let x=prompt('请输入今日待办');if(x&&x.trim()){state.todos.push({text:x.trim(),done:false});persist()}}function toggleTodo(i){state.todos[i].done=!state.todos[i].done;persist()}function delTodo(i){state.todos.splice(i,1);persist()}
+function openRecord(){document.getElementById('rDate').value=today();document.getElementById('recordModal').classList.add('show')}function closeModal(id){document.getElementById(id).classList.remove('show')}
+function saveRecord(){state.records.push({id:String(Date.now()),date:document.getElementById('rDate').value||today(),platform:document.getElementById('rPlatform').value,order:document.getElementById('rOrder').value.trim(),type:document.getElementById('rType').value,recover:document.querySelector('input[name=rec]:checked').value,note:document.getElementById('rNote').value.trim()});closeModal('recordModal');persist()}
+function delRecord(id){if(confirm('确定删除这条售后记录吗？')){state.records=state.records.filter(x=>x.id!==id);persist()}}
+
+function openContent(section){editSection=section;document.getElementById('contentModalTitle').textContent='新增 '+(section==='service'?'客服':section==='product'?'产品':section==='platform'?'平台':section==='shopify'?'独立站':'账号')+' 内容';['cTitle','cBody'].forEach(id=>document.getElementById(id).value='');document.getElementById('cIcon').value='📝';document.getElementById('cFiles').value='';document.getElementById('filePreview').innerHTML='';document.getElementById('contentModal').classList.add('show')}
+document.getElementById('cFiles').addEventListener('change',async e=>{const files=[...e.target.files];document.getElementById('filePreview').innerHTML=files.map(f=>`<div class="subtle">📎 ${esc(f.name)}</div>`).join('');const textFile=files.find(f=>/\.(txt|md|csv|json)$/i.test(f.name));if(textFile){document.getElementById('cBody').value=await textFile.text()}})
+async function saveContent(){
+ const files=[...document.getElementById('cFiles').files],atts=[];
+ for(const f of files){const id='att_'+Date.now()+'_'+Math.random().toString(36).slice(2);const data=await fileToDataURL(f);atts.push({id,name:f.name,type:f.type,size:f.size,data})}
+ state.contents[editSection].unshift({id:String(Date.now()),title:document.getElementById('cTitle').value.trim()||'未命名内容',icon:document.getElementById('cIcon').value||'📝',body:document.getElementById('cBody').value,attachments:atts});
+ closeModal('contentModal');persist()
+}
+function fileToDataURL(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}
+function renderContents(section){
+ const box=document.getElementById(section+'Content');if(!box)return;const arr=state.contents[section]||[];
+ box.innerHTML=arr.length?arr.map(x=>`<div class="content-card"><div class="head"><h3>${esc(x.icon)} ${esc(x.title)}</h3><button class="btn small danger" onclick="delContent('${section}','${x.id}')">删除</button></div><div class="body">${esc(x.body||'暂无文字内容')}</div><div class="attachments">${(x.attachments||[]).map(a=>a.type.startsWith('image/')?`<div class="attachment"><img src="${a.data}" alt=""><span>📎 ${esc(a.name)}</span></div>`:`<div class="attachment">📎 ${esc(a.name)}</div>`).join('')}</div></div>`).join(''):'<div class="empty" style="grid-column:1/-1">还没有内容。点击“新增”开始建立自己的资料库。</div>'
+}
+function delContent(section,id){if(confirm('确定删除这条内容吗？')){state.contents[section]=state.contents[section].filter(x=>x.id!==id);persist()}}
+
+async function importScriptFile(){
+ const el=document.getElementById('scriptFile');el.click();el.onchange=async()=>{const f=el.files[0];if(!f)return;let text='';if(/\.(txt|md|csv|json)$/i.test(f.name))text=await f.text();document.getElementById('cTitle').value=f.name.replace(/\.[^.]+$/,'');document.getElementById('cBody').value=text;document.getElementById('cIcon').value='💬';editSection='service';document.getElementById('contentModalTitle').textContent='导入客服话术';document.getElementById('contentModal').classList.add('show');el.value=''}
+}
+
+function renderTools(){document.getElementById('toolsModules').innerHTML=[['💱','汇率换算','常用货币换算'],['💰','利润计算','售价、成本、平台费、物流费'],['📏','单位转换','长度、重量等常见单位']].map(x=>`<div class="module"><div class="module-icon">${x[0]}</div><h3>${x[1]}</h3><p>${x[2]}</p><button class="btn primary" onclick="alert('${x[1]}：下一版加入实际计算器')">打开工具</button></div>`).join('')}
+
+function renderSettings(){
+ document.getElementById('setName').value=state.appearance.name;document.getElementById('setSub').value=state.appearance.sub;document.getElementById('setColor').value=state.appearance.color;document.getElementById('setTip').value=state.appearance.tip;
+ document.getElementById('navSettings').innerHTML=state.nav.map((n,i)=>`<div class="custom-row"><div class="custom-icon">${esc(n.icon)}</div><input class="input" value="${esc(n.name)}" onchange="editNav(${i},'name',this.value)"><input class="input" type="color" value="${n.color||state.appearance.color}" onchange="editNav(${i},'color',this.value)"><div><button class="btn small" onclick="editNavIcon(${i})">改图标</button> ${n.fixed?'':'<button class="btn small danger" onclick="deleteNav('+i+')">删除</button>'}</div></div>`).join('')
+}
+function saveAppearance(){state.appearance.name=document.getElementById('setName').value.trim()||'VickyWork';state.appearance.sub=document.getElementById('setSub').value.trim()||'跨境运营工作台';state.appearance.color=document.getElementById('setColor').value;state.appearance.tip=document.getElementById('setTip').value.trim();persist();alert('外观已保存')}
+function editNav(i,k,v){state.nav[i][k]=v;persist()}function editNavIcon(i){const v=prompt('输入新的图标，例如 💬 / 📦 / 🌍',state.nav[i].icon);if(v){state.nav[i].icon=v;persist()}}function deleteNav(i){if(confirm('删除这个导航板块？其中的内容不会自动删除。')){const id=state.nav[i].id;state.nav.splice(i,1);const v=document.getElementById(id);if(v)v.remove();persist()}}
+function addNav(){document.getElementById('nName').value='';document.getElementById('nIcon').value='📌';document.getElementById('navModal').classList.add('show')}
+function saveNav(){let name=document.getElementById('nName').value.trim();if(!name)return;let id='custom_'+Date.now();state.nav.splice(state.nav.length-1,0,{id,name,icon:document.getElementById('nIcon').value||'📌',color:document.getElementById('nColor').value});const sec=document.createElement('section');sec.className='view';sec.id=id;sec.innerHTML=`<h2 class="page-title">${esc(state.nav.find(x=>x.id===id).icon)} ${esc(name)}</h2><p class="desc">自定义工作板块</p><button class="btn primary" onclick="openContent('${id}')">＋ 新增内容</button><div class="content-grid" id="${id}Content" style="margin-top:16px"></div>`;document.querySelector('main').insertBefore(sec,document.querySelector('main').lastElementChild);state.contents[id]=[];closeModal('navModal');persist()}
+function editNavIconOnly(){}
+
+function exportBackup(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='VickyWork-backup-'+today()+'.json';a.click();URL.revokeObjectURL(a.href)}
+document.getElementById('backupFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{state=JSON.parse(r.result);persist();alert('导入成功')}catch{alert('JSON备份格式不正确')}};r.readAsText(f)})
+function resetData(){if(confirm('确定清空所有售后、待办、紧急问题和自定义内容吗？')){state.records=[];state.urgent=[];state.todos=[];for(const k in state.contents)state.contents[k]=[];persist()}}
+document.getElementById('dark').onclick=()=>{state.dark=!state.dark;persist()};document.getElementById('hamb').onclick=()=>document.getElementById('nav').classList.toggle('open');
+function clock(){const d=new Date(),days=['日','一','二','三','四','五','六'],h=d.getHours();document.getElementById('date').textContent=`📅 ${today()} 周${days[d.getDay()]}`;document.getElementById('heroDate').textContent=`${today()} · 周${days[d.getDay()]} · 又是推进业务的一天`;document.getElementById('greet').textContent=h<12?'早上好 ☀️':h<18?'下午好 🌤️':'晚上好 🌙'}
+function applyAppearance(){document.documentElement.style.setProperty('--accent',state.appearance.color);document.documentElement.style.setProperty('--accent2',state.appearance.color);document.getElementById('brandName').textContent=state.appearance.name;document.getElementById('brandSub').textContent=state.appearance.sub;document.getElementById('tipText').textContent=state.appearance.tip;document.body.classList.toggle('dark',!!state.dark)}
+function renderAll(){applyAppearance();renderNav();renderHome();renderContents('service');renderContents('product');renderContents('platform');renderContents('shopify');renderContents('account');for(const n of state.nav.filter(n=>!['home','service','product','platform','shopify','tools','account','settings'].includes(n.id))){renderContents(n.id)}renderTools();renderSettings()}
+clock();renderAll();setInterval(clock,60000);
+</script>
+</body>
+</html>
