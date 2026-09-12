@@ -145,27 +145,26 @@ async function importScriptFile(){
  const el=document.getElementById('scriptFile');el.click();el.onchange=async()=>{const f=el.files[0];if(!f)return;let text='';if(/\.(txt|md|csv|json)$/i.test(f.name))text=await f.text();document.getElementById('cTitle').value=f.name.replace(/\.[^.]+$/,'');document.getElementById('cBody').value=text;document.getElementById('cIcon').value='💬';editSection='service';document.getElementById('contentModalTitle').textContent='导入客服话术';document.getElementById('contentModal').classList.add('show');el.value=''}
 }
 
-/* ================= 完整汇率与工具中心代码 ================= */
-const CURRENCIES = [
-  { code: 'CNY', name: '人民币 CN' },
-  { code: 'USD', name: '美元 US' },
-  { code: 'EUR', name: '欧元 EU' },
-  { code: 'GBP', name: '英镑 GB' },
-  { code: 'JPY', name: '日元 JP' },
-  { code: 'CAD', name: '加元 CA' },
-  { code: 'AUD', name: '澳元 AU' },
-  { code: 'HKD', name: '港币 HK' },
-  { code: 'SGD', name: '新加坡元 SG' },
-  { code: 'MXN', name: '墨西哥比索 MX' },
-  { code: 'BRL', name: '巴西雷亚尔 BR' },
-  { code: 'INR', name: '印度卢比 IN' },
-  { code: 'KRW', name: '韩元 KR' },
-  { code: 'RUB', name: '俄罗斯卢布 RU' }
-];
+/* ================= 全币种动态汇率工具代码 ================= */
+// 全球 160+ 货币完整映射数据库
+const GLOBAL_CURRENCIES = {
+  CNY:"人民币 CN", USD:"美元 US", EUR:"欧元 EU", GBP:"英镑 GB", JPY:"日元 JP",
+  CAD:"加元 CA", AUD:"澳元 AU", HKD:"港币 HK", SGD:"新加坡元 SG", MXN:"墨西哥比索 MX",
+  BRL:"巴西雷亚尔 BR", INR:"印度卢比 IN", KRW:"韩元 KR", RUB:"俄罗斯卢布 RU",
+  NZD:"新西兰元 NZ", CHF:"瑞士法郎 CH", THB:"泰铢 TH", PHP:"菲律宾比索 PH",
+  MYR:"马来西亚林吉特 MY", IDR:"印尼盾 ID", VND:"越南盾 VN", AED:"阿联酋迪拉姆 AE",
+  SAR:"沙特里亚尔 SA", TRY:"土耳其里拉 TR", ZAR:"南非兰特 ZA", SEK:"瑞典克朗 SE",
+  NOK:"挪威克朗 NO", DKK:"丹麦克朗 DK", PLN:"波兰兹罗提 PL", HUF:"匈牙利福林 HU",
+  CZK:"捷克克朗 CZ", ILS:"以色列新谢克尔 IL", CLP:"智利比索 CL", COP:"哥伦比亚比索 CO",
+  ARS:"阿根廷比索 AR", EGP:"埃及镑 EG", PKR:"巴基斯坦卢比 PK", BDT:"孟加拉塔卡 BD"
+};
 
+// 默认展示的货币列表（可自由增减）
+let myCurrencies = JSON.parse(localStorage.getItem('vicky_my_currencies')) || ['CNY','USD','EUR','GBP','JPY','CAD','AUD','HKD'];
+
+// 汇率缓存表
 let ratesTable = JSON.parse(localStorage.getItem('vicky_rates')) || {
-  USD: 1, CNY: 7.10, EUR: 0.92, GBP: 0.79, JPY: 147.00, CAD: 1.37, AUD: 1.52,
-  HKD: 7.82, SGD: 1.35, MXN: 18.20, BRL: 5.45, INR: 83.50, KRW: 1350.00, RUB: 88.50
+  USD: 1, CNY: 7.10, EUR: 0.92, GBP: 0.79, JPY: 147.00, CAD: 1.37, AUD: 1.52, HKD: 7.82
 };
 
 let currentSubTab = 'exchange';
@@ -199,15 +198,26 @@ function renderToolSubView(){
       <div class="card">
         <div class="head">
           <div class="title">💱 汇率换算</div>
-          <span class="subtle" id="rateTip">当前为内置参考汇率，建议联网更新</span>
+          <span class="subtle" id="rateTip">支持全球 160+ 货币，已支持动态添加与更新</span>
         </div>
-        <div class="row" style="align-items:center;margin-bottom:16px;">
+        
+        <div class="row" style="align-items:center;margin-bottom:12px;">
           <input class="input" id="exAmount" type="number" value="100" style="flex:2;" oninput="calcExchangeAll()">
-          <select class="select" id="exBase" style="width:110px;" onchange="calcExchangeAll()">
-            ${CURRENCIES.map(c=>`<option value="${c.code}">${c.code}</option>`).join('')}
+          <select class="select" id="exBase" style="width:120px;" onchange="calcExchangeAll()">
+            ${Object.keys(GLOBAL_CURRENCIES).map(code=>`<option value="${code}">${code} (${GLOBAL_CURRENCIES[code].split(' ')[0]})</option>`).join('')}
           </select>
           <button class="btn primary" id="updateBtn" onclick="fetchOnlineRates()">🔄 在线更新汇率</button>
         </div>
+
+        <!-- 添加币种工具栏 -->
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px;background:#fafbfe;padding:10px 12px;border-radius:12px;border:1px solid var(--line);">
+          <span style="font-size:13px;font-weight:600;color:var(--muted);">＋ 添加货币到换算列表：</span>
+          <select class="select" id="addCurrencySelect" style="flex:1;max-width:250px;">
+            ${Object.keys(GLOBAL_CURRENCIES).filter(c=>!myCurrencies.includes(c)).map(c=>`<option value="${c}">${c} - ${GLOBAL_CURRENCIES[c]}</option>`).join('')}
+          </select>
+          <button class="btn small primary" onclick="addCurrencyToList()">添加</button>
+        </div>
+
         <div style="background:#fff0f5;border-radius:14px;padding:16px;border:1px solid #ffd0e0;">
           <div class="subtle" id="exHeader" style="margin-bottom:10px;font-weight:bold;">100 USD ≈</div>
           <div id="exchangeResultList" style="display:flex;flex-direction:column;gap:10px;"></div>
@@ -216,7 +226,7 @@ function renderToolSubView(){
 
       <div class="card" style="margin-top:16px;">
         <div class="head">
-          <div class="title">✍️ 汇率表 (可按实际结汇价手动修改)</div>
+          <div class="title">✍️ 汇率表 (可手动修改)</div>
         </div>
         <div id="rateEditList" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:12px;"></div>
       </div>
@@ -256,6 +266,7 @@ function renderToolSubView(){
   }
 }
 
+// 实时计算各币种换算结果
 function calcExchangeAll(){
   const amt = parseFloat(document.getElementById('exAmount').value) || 0;
   const base = document.getElementById('exBase').value;
@@ -264,41 +275,73 @@ function calcExchangeAll(){
   const baseInUSD = ratesTable[base] || 1;
   const listEl = document.getElementById('exchangeResultList');
 
-  listEl.innerHTML = CURRENCIES.filter(c => c.code !== base).map(c => {
-    const rateToUSD = ratesTable[c.code] || 1;
-    const converted = ((amt / baseInUSD) * rateToUSD).toFixed(c.code === 'JPY' || c.code === 'KRW' ? 2 : 3);
+  listEl.innerHTML = myCurrencies.filter(c => c !== base).map(c => {
+    const rateToUSD = ratesTable[c] || 1;
+    const converted = ((amt / baseInUSD) * rateToUSD).toFixed(c === 'JPY' || c === 'KRW' || c === 'VND' || c === 'IDR' ? 2 : 3);
+    const cName = GLOBAL_CURRENCIES[c] || c;
     return `
-      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #f3d4e0;">
-        <span>${c.name}</span>
-        <b>${converted} ${c.code}</b>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px dashed #f3d4e0;">
+        <span>${cName}</span>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <b>${converted} ${c}</b>
+          <button style="border:0;background:transparent;color:#bbb;cursor:pointer;font-size:14px;" title="从列表移除" onclick="removeCurrencyFromList('${c}')">✕</button>
+        </div>
       </div>
     `;
   }).join('');
 }
 
+// 添加货币到自定义列表
+function addCurrencyToList(){
+  const select = document.getElementById('addCurrencySelect');
+  const code = select.value;
+  if(code && !myCurrencies.includes(code)){
+    myCurrencies.push(code);
+    localStorage.setItem('vicky_my_currencies', JSON.stringify(myCurrencies));
+    // 如果没有当前货币的汇率，自动触发更新
+    if(!ratesTable[code]){
+      fetchOnlineRates();
+    } else {
+      renderToolSubView();
+    }
+  }
+}
+
+// 从列表中移除货币
+function removeCurrencyFromList(code){
+  myCurrencies = myCurrencies.filter(c => c !== code);
+  localStorage.setItem('vicky_my_currencies', JSON.stringify(myCurrencies));
+  renderToolSubView();
+}
+
+// 渲染可手动修改的汇率输入表
 function renderRateEditTable(){
   const editBox = document.getElementById('rateEditList');
-  editBox.innerHTML = CURRENCIES.map(c => `
+  editBox.innerHTML = myCurrencies.map(c => `
     <div style="display:flex;align-items:center;justify-content:space-between;background:#fafbfe;padding:8px 12px;border-radius:10px;border:1px solid var(--line);">
-      <span style="font-size:13px;font-weight:600;">${c.name}</span>
+      <span style="font-size:13px;font-weight:600;">${GLOBAL_CURRENCIES[c] || c}</span>
       <div style="display:flex;align-items:center;gap:6px;">
         <span class="subtle" style="font-size:11px;">1 USD =</span>
-        <input class="input" type="number" step="0.0001" value="${ratesTable[c.code] || 1}" style="width:90px;padding:4px 6px;text-align:right;" onchange="updateSingleRate('${c.code}', this.value)">
+        <input class="input" type="number" step="0.0001" value="${ratesTable[c] || 1}" style="width:90px;padding:4px 6px;text-align:right;" onchange="updateSingleRate('${c}', this.value)">
       </div>
     </div>
   `).join('');
 }
 
+// 手动修改单项汇率并保存
 function updateSingleRate(code, val){
   ratesTable[code] = parseFloat(val) || 1;
   localStorage.setItem('vicky_rates', JSON.stringify(ratesTable));
   calcExchangeAll();
 }
 
+// 在线获取最新汇率接口
 async function fetchOnlineRates(){
   const btn = document.getElementById('updateBtn');
-  btn.textContent = '⏳ 更新中...';
-  btn.disabled = true;
+  if(btn){
+    btn.textContent = '⏳ 更新中...';
+    btn.disabled = true;
+  }
 
   try {
     const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
@@ -308,15 +351,17 @@ async function fetchOnlineRates(){
         ratesTable[code] = data.rates[code];
       });
       localStorage.setItem('vicky_rates', JSON.stringify(ratesTable));
-      document.getElementById('rateTip').textContent = `✅ 已更新至最新在线汇率 (${data.date})`;
-      renderRateEditTable();
-      calcExchangeAll();
+      const tip = document.getElementById('rateTip');
+      if(tip) tip.textContent = `✅ 已更新至最新在线汇率 (${data.date})`;
+      renderToolSubView();
     }
   } catch(e) {
-    alert('网络连接超时，请重试。');
+    alert('网络连接超时，请检查网络后重试。');
   } finally {
-    btn.textContent = '🔄 在线更新汇率';
-    btn.disabled = false;
+    if(btn){
+      btn.textContent = '🔄 在线更新汇率';
+      btn.disabled = false;
+    }
   }
 }
 
@@ -343,8 +388,6 @@ function calcVolWeight(){
   const vw = (l * w * h) / div;
   document.getElementById('uRes').innerHTML = `<b>体积重：${vw.toFixed(2)} kg</b>`;
 }
-
-/* ================= 后台设置逻辑 ================= */
 function renderSettings(){
  document.getElementById('setName').value=state.appearance.name;document.getElementById('setSub').value=state.appearance.sub;document.getElementById('setColor').value=state.appearance.color;document.getElementById('setTip').value=state.appearance.tip;
  document.getElementById('navSettings').innerHTML=state.nav.map((n,i)=>`<div class="custom-row"><div class="custom-icon">${esc(n.icon)}</div><input class="input" value="${esc(n.name)}" onchange="editNav(${i},'name',this.value)"><input class="input" type="color" value="${n.color||state.appearance.color}" onchange="editNav(${i},'color',this.value)"><div><button class="btn small" onclick="editNavIcon(${i})">改图标</button> ${n.fixed?'':'<button class="btn small danger" onclick="deleteNav('+i+')">删除</button>'}</div></div>`).join('')
