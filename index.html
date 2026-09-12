@@ -19,7 +19,10 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 .page-title{font-size:25px;margin:0 0 5px}.desc{color:var(--muted);margin:0 0 18px}.content-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.content-card{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:16px}.content-card h3{margin:0 0 8px}.content-card .body{white-space:pre-wrap;line-height:1.65;color:#555f72;font-size:14px}.editbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .modalbg{position:fixed;inset:0;background:rgba(20,25,38,.48);display:none;align-items:center;justify-content:center;padding:16px;z-index:100}.modalbg.show{display:flex}.modal{width:min(760px,100%);max-height:90vh;overflow:auto;background:var(--card);border-radius:22px;padding:22px;box-shadow:0 25px 80px rgba(0,0,0,.25)}.modal h2{margin:0 0 18px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field label{display:block;font-size:12px;color:var(--muted);font-weight:800;margin-bottom:6px}.full{grid-column:1/-1}.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.subtle{font-size:12px;color:var(--muted)}
 .auth-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(4px)}.auth-card{background:#fff;width:360px;padding:30px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,.15);text-align:center}
-.dark{--bg:#111522;--card:#181d2b;--text:#eef1f7;--muted:#9da6b8;--line:#2b3242}.dark .top,.dark .pill,.dark .icon,.dark .btn,.dark .input,.dark .select,.dark .textarea,.dark .auth-card{background:#181d2b;color:var(--text)}.dark .empty,.dark .mini>div{background:#141927}.dark .nav button{color:#aeb6c6}
+/* 社媒生成器样式 */
+.sns-tabs{display:flex;gap:8px;margin-bottom:12px;overflow-x:auto;padding-bottom:6px}.sns-tab{padding:6px 14px;border-radius:20px;border:1px solid var(--line);background:#fafbfe;font-size:13px;font-weight:700;cursor:pointer}.sns-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.sns-box{background:#fafbfe;border:1px solid var(--line);border-radius:12px;padding:14px;position:relative;margin-top:10px}.sns-box pre{white-space:pre-wrap;word-break:break-all;font-family:inherit;font-size:13px;color:#444;margin:0}
+.dark{--bg:#111522;--card:#181d2b;--text:#eef1f7;--muted:#9da6b8;--line:#2b3242}.dark .top,.dark .pill,.dark .icon,.dark .btn,.dark .input,.dark .select,.dark .textarea,.dark .auth-card{background:#181d2b;color:var(--text)}.dark .empty,.dark .mini>div,.dark .sns-box{background:#141927}.dark .nav button{color:#aeb6c6}
 @media(max-width:1050px){.nav button{padding:9px 7px}.brand{min-width:200px}.stats{grid-template-columns:1fr 1fr}}
 @media(max-width:760px){.top{padding:0 13px}.brand span{display:none}.brand{min-width:auto;flex:1}.nav{display:none;position:absolute;left:0;right:0;top:68px;background:#fff;padding:8px;flex-direction:column;border-bottom:1px solid var(--line)}.nav.open{display:flex}.pill{display:none}main{padding:0 13px;margin-top:18px}.stats{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}.content-grid{grid-template-columns:1fr}.mini{grid-template-columns:1fr 1fr}}
 </style>
@@ -69,7 +72,7 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
     <div class="card"><div class="head"><div class="title">📋 今日待办 <span class="badge" id="todoText">0/0 完成</span></div><button class="btn primary small" onclick="addTodo()">＋任务</button></div><div class="progress"><i id="todoProgress"></i></div><div class="list" id="todoList"></div></div>
   </div>
 
-  <!-- 售后表格上传与映射配置 -->
+  <!-- 售后表格上传 -->
   <div class="card">
     <div class="head">
       <div class="title">📈 售后表格 Excel / WPS 上传与分析</div>
@@ -85,7 +88,6 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
     <div class="mini"><div><span>本月已挽回</span><b id="mrec">0</b></div><div><span>本月未挽回</span><b id="mun">0</b></div><div><span>本年已挽回</span><b id="yrec">0</b></div><div><span>本年未挽回</span><b id="yun">0</b></div></div>
   </div>
 
-  <!-- 售后数据表格记录与在线编辑 -->
   <div class="card">
     <div class="head">
       <div class="title">🧾 最近售后记录</div>
@@ -104,13 +106,54 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 </section>
 
 <!-- 2. 客服中心 -->
-<section class="view" id="service"><h2 class="page-title">💬 客服中心</h2><p class="desc">话术、FAQ、模板均支持智能拆分解析上传。</p><div class="editbar"><button class="btn primary" onclick="openContent('service')">＋ 新增客服内容</button><label class="btn" style="cursor:pointer">📄 上传话术/Excel表格<input type="file" id="scriptFileInput" hidden accept=".xlsx,.xls,.txt,.md,.csv,.json" onchange="handleScriptUpload(event)"></label><span class="subtle">Excel / 文本上传后将按 1.2.3.4 或每行自动拆分成独立卡片</span></div><div class="content-grid" id="serviceContent" style="margin-top:16px"></div></section>
+<section class="view" id="service"><h2 class="page-title">💬 客服中心</h2><p class="desc">话术 FAQ 模板支持拆分上传。</p><div class="editbar"><button class="btn primary" onclick="openContent('service')">＋ 新增客服内容</button><label class="btn" style="cursor:pointer">📄 上传话术/Excel表格<input type="file" id="scriptFileInput" hidden accept=".xlsx,.xls,.txt,.md,.csv,.json" onchange="handleScriptUpload(event)"></label></div><div class="content-grid" id="serviceContent" style="margin-top:16px"></div></section>
 
 <!-- 3. 产品运营 -->
 <section class="view" id="product"><h2 class="page-title">📦 产品运营</h2><p class="desc">选品、Listing、成本、上架流程集中管理。</p><button class="btn primary" onclick="openContent('product')">＋ 新增产品内容</button><div class="content-grid" id="productContent" style="margin-top:16px"></div></section>
 
-<!-- 4. 平台运营 -->
-<section class="view" id="platform"><h2 class="page-title">🌍 平台运营</h2><p class="desc">Amazon / eBay / Walmart 操作 SOP 与规则资料。</p><button class="btn primary" onclick="openContent('platform')">＋ 新增平台内容</button><div class="content-grid" id="platformContent" style="margin-top:16px"></div></section>
+<!-- 4. 平台运营 (升级为：海外社媒 AI 矩阵工作台) -->
+<section class="view" id="platform">
+  <h2 class="page-title">🌐 海外社媒矩阵 AI 营销生成器</h2>
+  <p class="desc">支持 YouTube, Instagram, X (Twitter), LinkedIn, TikTok, Facebook, Pinterest 7 大平台自动生成高转化文案、标题、标签与独立站带参引流链接。</p>
+
+  <div class="card">
+    <div class="head"><div class="title">🎬 第一步：上传视频/图片素材并输入转化目标</div></div>
+    <div class="formgrid">
+      <div class="field">
+        <label>选择视频或图片素材文件</label>
+        <input class="input" type="file" id="snsMediaFile" accept="video/*,image/*" onchange="handleSnsMediaSelect(event)">
+        <div class="subtle" id="snsMediaTip" style="margin-top:4px">未选择文件（支持 mp4, mov, jpg, png 等）</div>
+      </div>
+      <div class="field">
+        <label>独立站目标落地页 URL (自动植入引流)</label>
+        <input class="input" id="snsTargetUrl" placeholder="例如：https://yourstore.com/products/item-a">
+      </div>
+      <div class="field">
+        <label>产品/视频主题关键字</label>
+        <input class="input" id="snsTopic" placeholder="例如：Wireless Noise Canceling Headphones">
+      </div>
+      <div class="field">
+        <label>核心卖点/优惠亮点 (用于转化为购买号召)</label>
+        <input class="input" id="snsSellingPoint" placeholder="例如：50% OFF Today + Free Worldwide Shipping">
+      </div>
+    </div>
+    <div style="margin-top:16px;text-align:right">
+      <button class="btn primary" style="padding:10px 24px;" onclick="generateSnsMatrix()">🚀 立即智能生成 7 大社媒矩阵方案</button>
+    </div>
+  </div>
+
+  <div class="card" id="snsResultCard" style="display:none;">
+    <div class="head">
+      <div class="title">✨ 生成的海外社媒发布文案矩阵</div>
+      <button class="btn small primary" onclick="saveSnsToContent()">💾 保存本套方案到内容库</button>
+    </div>
+    <div class="sns-tabs" id="snsTabs"></div>
+    <div id="snsTabContent"></div>
+  </div>
+
+  <div class="head" style="margin-top:24px"><div class="title">📚 历史保存的社媒矩阵记录</div></div>
+  <div class="content-grid" id="platformContent"></div>
+</section>
 
 <!-- 5. 独立站 -->
 <section class="view" id="shopify"><h2 class="page-title">🛍 独立站</h2><p class="desc">Shopify 页面、SEO、转化与广告资料。</p><button class="btn primary" onclick="openContent('shopify')">＋ 新增独立站内容</button><div class="content-grid" id="shopifyContent" style="margin-top:16px"></div></section>
@@ -127,7 +170,7 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 <div class="card"><div class="head"><div class="title">🎨 全局外观</div></div><div class="formgrid"><div class="field"><label>工作台名称</label><input class="input" id="setName"></div><div class="field"><label>副标题</label><input class="input" id="setSub"></div><div class="field"><label>主色</label><div class="colorline"><input type="color" id="setColor"></div></div><div class="field"><label>首页运营小贴士</label><input class="input" id="setTip"></div></div><div class="actions"><button class="btn primary" onclick="saveAppearance()">保存外观</button></div></div>
 <div class="card"><div class="head"><div class="title">💾 数据备份</div></div><button class="btn primary" onclick="exportBackup()">导出 JSON</button> <button class="btn" onclick="document.getElementById('backupFile').click()">导入 JSON</button> <button class="btn danger" onclick="resetData()">清空账号本地数据</button><input type="file" id="backupFile" hidden accept=".json"></div>
 </section>
-<div class="subtle" style="text-align:center;padding:4px 0 30px">VickyWork 3.0 · 自定义字段映射 + 本地 Excel 解析</div>
+<div class="subtle" style="text-align:center;padding:4px 0 30px">VickyWork 3.0 · 海外社媒 AI 矩阵工作台版</div>
 </main>
 
 <!-- 内容 Modal -->
@@ -140,14 +183,13 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 <div class="modalbg" id="mappingModal">
   <div class="modal">
     <h2>⚙️ 售后表格字段与列映射设置</h2>
-    <p class="subtle" style="margin-top:-10px;margin-bottom:16px">请设置 Excel 中的字母列（如 A, B, D, E, H）与页面字段的对应关系：</p>
     <div class="formgrid">
       <div class="field"><label>订单号对应列字母</label><input class="input" id="colOrder" value="A"></div>
       <div class="field"><label>平台对应列字母</label><input class="input" id="colPlatform" value="B"></div>
       <div class="field"><label>退货日期对应列字母</label><input class="input" id="colDate" value="D"></div>
       <div class="field"><label>原因对应列字母</label><input class="input" id="colReason" value="E"></div>
       <div class="field"><label>处理措施对应列字母</label><input class="input" id="colAction" value="H"></div>
-      <div class="field full"><label>自定义额外显示字段（逗号分隔，如：店铺:C,WhatsUP:G）</label><input class="input" id="colExtra" placeholder="例如: 店铺:C, 备注:F"></div>
+      <div class="field full"><label>自定义额外显示字段（例如: 店铺:C, 备注:F）</label><input class="input" id="colExtra"></div>
     </div>
     <div class="actions">
       <button class="btn" onclick="closeModal('mappingModal')">取消</button>
@@ -159,12 +201,14 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 <script>
 let currentUser = localStorage.getItem('vicky_current_user') || 'guest';
 let isAuthRegisterMode = false;
+let currentSnsData = {};
+let activeSnsTab = 'youtube';
 
 const DEFAULT_NAV=[
   {id:'home',name:'首页',icon:'🏠'},
   {id:'service',name:'客服',icon:'💬'},
   {id:'product',name:'产品',icon:'📦'},
-  {id:'platform',name:'平台',icon:'🌍'},
+  {id:'platform',name:'社媒矩阵',icon:'🌐'},
   {id:'shopify',name:'独立站',icon:'🛍'},
   {id:'tools',name:'工具',icon:'🛠'},
   {id:'account',name:'账号',icon:'🔐'},
@@ -193,31 +237,24 @@ function persist(){ localStorage.setItem(getUserKey(), JSON.stringify(state)); r
 function esc(v){ return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])) }
 function today(){ return new Date().toISOString().slice(0,10); }
 
-/* 列字母转数字序号 (A->0, B->1, D->3 ...) */
 function colToIdx(colStr){
   if(!colStr) return -1;
   colStr = colStr.trim().toUpperCase();
   let idx = 0;
-  for (let i = 0; i < colStr.length; i++) {
-    idx = idx * 26 + (colStr.charCodeAt(i) - 64);
-  }
+  for (let i = 0; i < colStr.length; i++) { idx = idx * 26 + (colStr.charCodeAt(i) - 64); }
   return idx - 1;
 }
 
-/* Excel 序列号日期转换 (修复 45652 变成 2026/9/12) */
 function formatExcelDate(numOrStr){
   if(!numOrStr) return '-';
   if(typeof numOrStr === 'number' || (!isNaN(numOrStr) && Number(numOrStr) > 30000)){
     const date = new Date((Number(numOrStr) - (25567 + 2)) * 86400 * 1000);
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    return `${y}/${m}/${d}`;
+    return `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
   }
   return String(numOrStr).trim();
 }
 
-/* 1. 账号与登录系统 */
+/* 1. 账号系统 */
 function showAuthModal(){ document.getElementById('authModal').style.display = 'flex'; }
 function toggleAuthMode(){
   isAuthRegisterMode = !isAuthRegisterMode;
@@ -259,7 +296,7 @@ function showView(id){
  if(id==='tools') renderTools();
 }
 
-/* 3. 字段映射配置与 Excel 上传 */
+/* 3. 售后 Excel 解析与编辑 */
 function openMappingModal(){
   const m = state.columnMapping;
   document.getElementById('colOrder').value = m.order || 'A';
@@ -306,7 +343,6 @@ function uploadAftersaleExcel(event){
      let imported = [];
      json.forEach((row, idx)=>{
        if(idx === 0 || !row || row.length === 0) return;
-       
        let order = String(row[idxOrder]||'').trim();
        let platform = String(row[idxPlatform]||'').trim();
        let dateStr = formatExcelDate(row[idxDate]);
@@ -315,68 +351,41 @@ function uploadAftersaleExcel(event){
 
        if(order && dateStr !== '-'){
          let isRec = action.includes('挽回') || action.includes('重发') || action.includes('补发') || action.includes('部分退款');
-         imported.push({
-           order: order, platform: platform, date: dateStr, reason: reason, action: action, recover: isRec ? 'yes' : 'no'
-         });
+         imported.push({ order, platform, date: dateStr, reason, action, recover: isRec ? 'yes' : 'no' });
        }
      });
 
      if(imported.length > 0){
        state.aftersaleRecords = imported;
        persist();
-       alert(`✅ 成功根据新的配置列提取 ${imported.length} 条售后订单数据！`);
+       alert(`✅ 成功提取 ${imported.length} 条售后订单数据！`);
      } else {
-       alert('未检测到有效数据，请在“字段映射设置”中检查列字母是否准确。');
+       alert('未检测到有效数据，请检查“字段映射设置”中的列字母。');
      }
    }catch(err){ alert('解析售后 Excel 失败，请确认文件完整。'); }
  };
  reader.readAsArrayBuffer(file);
 }
 
-function clearAftersaleData(){
-  if(confirm('确定要清空所有已保存的售后记录吗？')){
-    state.aftersaleRecords = [];
-    persist();
-  }
-}
-
+function clearAftersaleData(){ if(confirm('确定要清空已保存的记录吗？')){ state.aftersaleRecords = []; persist(); } }
 function editRecord(index){
-  const r = state.aftersaleRecords[index];
-  if(!r) return;
-  const newOrder = prompt("修改订单号：", r.order);
-  if(newOrder === null) return;
-  const newDate = prompt("修改日期 (格式如 2026/9/12)：", r.date);
-  if(newDate === null) return;
-  const newAction = prompt("修改处理措施：", r.action);
-  if(newAction === null) return;
-
-  r.order = newOrder.trim();
-  r.date = newDate.trim();
-  r.action = newAction.trim();
-  r.recover = (r.action.includes('挽回') || r.action.includes('重发') || r.action.includes('补发') || r.action.includes('部分退款')) ? 'yes' : 'no';
-
+  const r = state.aftersaleRecords[index]; if(!r) return;
+  const newOrder = prompt("修改订单号：", r.order); if(newOrder === null) return;
+  const newDate = prompt("修改日期：", r.date); if(newDate === null) return;
+  const newAction = prompt("修改处理措施：", r.action); if(newAction === null) return;
+  r.order = newOrder.trim(); r.date = newDate.trim(); r.action = newAction.trim();
+  r.recover = (r.action.includes('挽回') || r.action.includes('重发') || r.action.includes('补发')) ? 'yes' : 'no';
   persist();
 }
-
-function deleteRecord(index){
-  if(confirm('确定要删除本条售后记录吗？')){
-    state.aftersaleRecords.splice(index, 1);
-    persist();
-  }
-}
-
+function deleteRecord(index){ if(confirm('确定删除吗？')){ state.aftersaleRecords.splice(index, 1); persist(); } }
 function addSingleRecordPrompt(){
-  const order = prompt("请输入订单号：");
-  if(!order) return;
-  const platform = prompt("请输入平台（如 eBay / Amazon）：", "eBay");
-  const date = prompt("请输入日期（格式如 2026/9/12）：", new Date().toISOString().slice(0,10).replace(/-/g,'/'));
+  const order = prompt("请输入订单号："); if(!order) return;
+  const platform = prompt("请输入平台：", "eBay");
+  const date = prompt("请输入日期：", new Date().toISOString().slice(0,10).replace(/-/g,'/'));
   const reason = prompt("请输入原因：", "与描述不符");
   const action = prompt("请输入处理措施：", "已退款");
-
-  const isRec = action.includes('挽回') || action.includes('重发') || action.includes('补发') || action.includes('部分退款');
-  state.aftersaleRecords.unshift({
-    order, platform: platform||'-', date: date||'-', reason: reason||'-', action: action||'-', recover: isRec?'yes':'no'
-  });
+  const isRec = action.includes('挽回') || action.includes('重发') || action.includes('补发');
+  state.aftersaleRecords.unshift({ order, platform: platform||'-', date: date||'-', reason: reason||'-', action: action||'-', recover: isRec?'yes':'no' });
   persist();
 }
 
@@ -407,31 +416,9 @@ function renderHomeStats(){
  document.getElementById('yrec').textContent=yRec;
  document.getElementById('yun').textContent=yr.length - yRec;
 
- // 表头动态渲染
- document.getElementById('tableHeader').innerHTML = `
-   <tr>
-     <th>订单号 (${m.order}列)</th>
-     <th>平台 (${m.platform}列)</th>
-     <th>退货日期 (${m.date}列)</th>
-     <th>原因 (${m.reason}列)</th>
-     <th>处理措施 (${m.action}列)</th>
-     <th>操作</th>
-   </tr>
- `;
-
+ document.getElementById('tableHeader').innerHTML = `<tr><th>订单号 (${m.order}列)</th><th>平台 (${m.platform}列)</th><th>退货日期 (${m.date}列)</th><th>原因 (${m.reason}列)</th><th>处理措施 (${m.action}列)</th><th>操作</th></tr>`;
  const recent=[...records].slice(0,20);
- document.getElementById('records').innerHTML=recent.length?recent.map((x,idx)=>`
-   <tr>
-     <td><b>${esc(x.order)}</b></td>
-     <td>${esc(x.platform)}</td>
-     <td>${esc(x.date)}</td>
-     <td>${esc(x.reason)}</td>
-     <td><span class="${x.recover==='yes'?'yes':'no'}">${esc(x.action)}</span></td>
-     <td>
-       <button class="btn small" onclick="editRecord(${idx})">编辑</button>
-       <button class="btn small danger" onclick="deleteRecord(${idx})">删除</button>
-     </td>
-   </tr>`).join(''):`<tr><td colspan="6"><div class="empty">暂无数据。点击“⚙️ 字段映射设置”确认配置后上传表格</div></td></tr>`;
+ document.getElementById('records').innerHTML=recent.length?recent.map((x,idx)=>`<tr><td><b>${esc(x.order)}</b></td><td>${esc(x.platform)}</td><td>${esc(x.date)}</td><td>${esc(x.reason)}</td><td><span class="${x.recover==='yes'?'yes':'no'}">${esc(x.action)}</span></td><td><button class="btn small" onclick="editRecord(${idx})">编辑</button> <button class="btn small danger" onclick="deleteRecord(${idx})">删除</button></td></tr>`).join(''):`<tr><td colspan="6"><div class="empty">暂无数据。点击“⚙️ 字段映射设置”确认配置后上传表格</div></td></tr>`;
 }
 
 /* 4. 待办与紧急问题 */
@@ -446,7 +433,6 @@ function renderHome(){
  document.getElementById('todoProgress').style.width=(total?done/total*100:0)+'%';
  document.getElementById('todoList').innerHTML=total?state.todos.map((x,i)=>`<div class="item ${x.done?'done':''}"><input class="check" type="checkbox" ${x.done?'checked':''} onchange="toggleTodo(${i})"><span class="grow">${esc(x.text)}</span><button class="x" onclick="delTodo(${i})">×</button></div>`).join(''):'<div class="empty">今天还没有待办任务</div>';
 }
-
 function addUrgent(){let e=document.getElementById('urgentInput');if(e.value.trim()){state.urgent.unshift({text:e.value.trim(),done:false});e.value='';persist()}}
 function toggleUrgent(i){state.urgent[i].done=!state.urgent[i].done;persist()}
 function delUrgent(i){state.urgent.splice(i,1);persist()}
@@ -455,12 +441,108 @@ function addTodo(){let x=prompt('请输入今日待办');if(x&&x.trim()){state.t
 function toggleTodo(i){state.todos[i].done=!state.todos[i].done;persist()}
 function delTodo(i){state.todos.splice(i,1);persist()}
 
-/* 5. 客服板块拆分文件 */
-function handleScriptUpload(event){
- const file = event.target.files[0];
- if(!file) return;
- const fileName = file.name, ext = fileName.split('.').pop().toLowerCase();
+/* 5. 海外社媒 AI 矩阵工作台逻辑 */
+function handleSnsMediaSelect(e){
+  const file = e.target.files[0];
+  if(file){
+    document.getElementById('snsMediaTip').textContent = `已载入文件：${file.name} (${(file.size/1024/1024).toFixed(1)}MB)`;
+  }
+}
 
+function generateSnsMatrix(){
+  const topic = document.getElementById('snsTopic').value.trim() || 'Premium Quality Product';
+  const url = document.getElementById('snsTargetUrl').value.trim() || 'https://yourstore.com';
+  const points = document.getElementById('snsSellingPoint').value.trim() || 'Exclusive Deal + Fast Free Shipping';
+  
+  const trackUrl = url.includes('?') ? `${url}&utm_source=social_matrix` : `${url}?utm_source=social_matrix`;
+
+  currentSnsData = {
+    youtube: {
+      title: `🔥 Top Review: ${topic} - Is It Worth It? (${points})`,
+      body: `Looking for the best ${topic}? In this video, we break down everything you need to know before buying!\n\n👇 GET YOUR EXCLUSIVE DEAL HERE:\n🔗 ${trackUrl}\n\n✨ Why Choose Us?\n- ${points}\n- Premium Quality Guarantee\n- 24/7 Dedicated Support\n\n📌 Timestamps:\n0:00 - Introduction\n1:15 - Key Features & Setup\n3:40 - Real Test & Performance\n5:20 - Exclusive Discount Code\n\n#${topic.replace(/\s+/g,'')} #ShopifyStore #OnlineShopping #TechTrends #DealAlert`
+    },
+    instagram: {
+      title: `✨ Elevate Your Daily Life with ${topic}!`,
+      body: `Upgrade your routine with ${topic} 😍 Perfect balance of design and performance.\n.\n🔥 SPECIAL OFFER: ${points}!\n.\n👇 Tap the link in our bio to shop now:\n🔗 ${trackUrl}\n.\n💬 Tag a friend who needs this in their life!\n.\n#${topic.replace(/\s+/g,'')} #InstaGood #MustHave #ShopNow #Ecommerce #DiscountCode #ViralProducts`
+    },
+    tiktok: {
+      title: `Stop scrolling! You NEED to see this ${topic} 😱`,
+      body: `POV: You found the ultimate ${topic} ✨\n\nGet yours now with ${points}! 🛒\n\nLink in bio or tap here to buy ⬇️\n🔗 ${trackUrl}\n\n#TikTokMadeMeBuyIt #${topic.replace(/\s+/g,'')} #ViralProduct #LifeHack #DealTok`
+    },
+    twitter: {
+      title: `🚀 Looking for the ultimate ${topic}?`,
+      body: `We just dropped the new ${topic}! 🔥\n\n✅ ${points}\n✅ High Quality & Limited Stock\n\nGet yours today before it runs out 👇\n🔗 ${trackUrl}\n\n#${topic.replace(/\s+/g,'')} #Deals`
+    },
+    linkedin: {
+      title: `Driving Innovation: Introducing the New Standard for ${topic}`,
+      body: `In today's fast-paced market, efficiency and reliability are paramount. That's why we engineered our latest ${topic} to meet the highest industry standards.\n\nKey Highlights:\n- Premium build quality designed for longevity.\n- Value proposition: ${points}.\n\nExplore our product specifications and business solutions here:\n🔗 ${trackUrl}\n\n#Innovation #Ecommerce #BusinessGrowth #${topic.replace(/\s+/g,'')}`
+    },
+    facebook: {
+      title: `🎉 Exciting News! The ${topic} is Finally Here!`,
+      body: `Say goodbye to compromises! Our brand new ${topic} is designed to solve your daily problems effortlessly.\n\n🎁 Limited Time Offer: ${points}!\n\nClick the link below to claim your discount today:\n👉 ${trackUrl}\n\nDon't forget to Like & Share with someone who would love this!`
+    },
+    pinterest: {
+      title: `Aesthetic & Modern ${topic} Ideas`,
+      body: `Discover why everyone is obsessed with this ${topic}! Click through to shop the official look and claim your exclusive ${points}.\n\n🔗 ${trackUrl}\n\n#${topic.replace(/\s+/g,'')} #Aesthetic #Inspiration #ShoppingGuide`
+    }
+  };
+
+  document.getElementById('snsResultCard').style.display = 'block';
+  renderSnsTabs();
+}
+
+function renderSnsTabs(){
+  const snsList = [
+    {id:'youtube', name:'▶️ YouTube'},
+    {id:'instagram', name:'📸 Instagram'},
+    {id:'tiktok', name:'🎵 TikTok'},
+    {id:'twitter', name:'🐦 X (Twitter)'},
+    {id:'linkedin', name:'💼 LinkedIn'},
+    {id:'facebook', name:'📘 Facebook'},
+    {id:'pinterest', name:'📌 Pinterest'}
+  ];
+
+  document.getElementById('snsTabs').innerHTML = snsList.map(s=>`
+    <button class="sns-tab ${activeSnsTab===s.id?'active':''}" onclick="switchSnsTab('${s.id}')">${s.name}</button>
+  `).join('');
+
+  const data = currentSnsData[activeSnsTab];
+  if(!data) return;
+
+  document.getElementById('snsTabContent').innerHTML = `
+    <div class="sns-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <b style="font-size:14px;color:var(--accent);">${data.title}</b>
+        <button class="btn small primary" onclick="copyText(\`${data.title.replace(/`/g,'')}\\n\\n${data.body.replace(/`/g,'')}\`)">📋 一键复制标题+文案</button>
+      </div>
+      <pre>${esc(data.body)}</pre>
+    </div>
+  `;
+}
+
+function switchSnsTab(tab){ activeSnsTab = tab; renderSnsTabs(); }
+
+function copyText(str){
+  navigator.clipboard.writeText(str).then(()=>{ alert('✅ 方案已成功复制到剪贴板！'); });
+}
+
+function saveSnsToContent(){
+  const topic = document.getElementById('snsTopic').value.trim() || '社媒矩阵方案';
+  let fullBody = '';
+  Object.keys(currentSnsData).forEach(key=>{
+    fullBody += `=== [ ${key.toUpperCase()} ] ===\n${currentSnsData[key].title}\n\n${currentSnsData[key].body}\n\n\n`;
+  });
+  state.contents['platform'].unshift({
+    id: String(Date.now()), title: `🌐 ${topic} 社媒 7 平台矩阵文案`, icon: '🌐', body: fullBody
+  });
+  persist();
+  alert('✅ 已将本套 7 平台矩阵文案保存至平台内容库！');
+}
+
+/* 6. 客服中心与内容管理 */
+function handleScriptUpload(event){
+ const file = event.target.files[0]; if(!file) return;
+ const fileName = file.name, ext = fileName.split('.').pop().toLowerCase();
  if(ext==='xlsx'||ext==='xls'){
    const reader=new FileReader();
    reader.onload=function(e){
@@ -469,25 +551,16 @@ function handleScriptUpload(event){
        const wb=XLSX.read(data,{type:'array'});
        const ws=wb.Sheets[wb.SheetNames[0]];
        const json=XLSX.utils.sheet_to_json(ws,{header:1});
-       
        let count = 0;
        json.forEach((row, rIdx)=>{
          if(!row || row.length===0) return;
-         let rowStr = row.join(' | ').trim();
-         if(!rowStr) return;
-
-         let title = `话术项 #${rIdx+1}`;
-         let body = rowStr;
-         if(row.length>=2){
-           title = row[0];
-           body = row.slice(1).join('\n');
-         }
-         state.contents['service'].unshift({ id: String(Date.now()+Math.random()), title: title, icon: '💬', body: body });
+         let rowStr = row.join(' | ').trim(); if(!rowStr) return;
+         let title = `话术项 #${rIdx+1}`, body = rowStr;
+         if(row.length>=2){ title = row[0]; body = row.slice(1).join('\n'); }
+         state.contents['service'].unshift({ id: String(Date.now()+Math.random()), title, icon: '💬', body });
          count++;
        });
-
-       persist();
-       alert(`成功将 Excel 智能拆分为 ${count} 条独立话术卡片！`);
+       persist(); alert(`成功智能拆分导入 ${count} 条话术！`);
      }catch(err){ alert('Excel 解析失败'); }
    };
    reader.readAsArrayBuffer(file);
@@ -500,11 +573,8 @@ function handleScriptUpload(event){
        blocks.forEach((b)=>{
          if(!b.trim()) return;
          let lines = b.trim().split('\n');
-         let title = lines[0].slice(0, 30);
-         let body = lines.join('\n');
-         state.contents['service'].unshift({ id: String(Date.now()+Math.random()), title: title, icon: '💬', body: body });
+         state.contents['service'].unshift({ id: String(Date.now()+Math.random()), title: lines[0].slice(0, 30), icon: '💬', body: lines.join('\n') });
        });
-       alert(`成功按照序号自动拆分为 ${blocks.length} 条独立卡片！`);
      } else {
        state.contents['service'].unshift({ id: String(Date.now()), title: fileName, icon: '📄', body: text });
      }
@@ -526,22 +596,17 @@ function saveContent(){
 function renderContents(section){
  const box=document.getElementById(section+'Content'); if(!box)return;
  const arr=state.contents[section]||[];
- box.innerHTML=arr.length?arr.map(x=>`<div class="content-card"><div class="head"><h3>${esc(x.icon)} ${esc(x.title)}</h3><button class="btn small danger" onclick="delContent('${section}','${x.id}')">删除</button></div><div class="body">${esc(x.body||'暂无内容')}</div></div>`).join(''):'<div class="empty" style="grid-column:1/-1">内容库为空。点击“新增”或“上传文件”自动拆分导入。</div>';
+ box.innerHTML=arr.length?arr.map(x=>`<div class="content-card"><div class="head"><h3>${esc(x.icon)} ${esc(x.title)}</h3><button class="btn small danger" onclick="delContent('${section}','${x.id}')">删除</button></div><div class="body">${esc(x.body||'暂无内容')}</div></div>`).join(''):'<div class="empty" style="grid-column:1/-1">内容库为空。点击上方按钮开始添加。</div>';
 }
 function delContent(section,id){ if(confirm('确定删除吗？')){ state.contents[section]=state.contents[section].filter(x=>x.id!==id); persist(); } }
 
-/* 6. 工具中心与汇率 */
-const GLOBAL_CURRENCIES = {
-  CNY:"人民币 CN", USD:"美元 US", EUR:"欧元 EU", GBP:"英镑 GB", JPY:"日元 JP",
-  CAD:"加元 CA", AUD:"澳元 AU", HKD:"港币 HK", SGD:"新加坡元 SG", MXN:"墨西哥比索 MX",
-  BRL:"巴西雷亚尔 BR", INR:"印度卢比 IN", KRW:"韩元 KR", RUB:"俄罗斯卢布 RU"
-};
+/* 7. 工具中心与初始化 */
+const GLOBAL_CURRENCIES = { CNY:"人民币 CN", USD:"美元 US", EUR:"欧元 EU", GBP:"英镑 GB", JPY:"日元 JP", CAD:"加元 CA", AUD:"澳元 AU", HKD:"港币 HK", SGD:"新加坡元 SG", MXN:"墨西哥比索 MX", BRL:"巴西雷亚尔 BR", INR:"印度卢比 IN", KRW:"韩元 KR", RUB:"俄罗斯卢布 RU" };
 let myCurrencies = JSON.parse(localStorage.getItem('vicky_my_currencies')) || ['CNY','USD','EUR','GBP','JPY','CAD','AUD','HKD'];
 let ratesTable = JSON.parse(localStorage.getItem('vicky_rates')) || { USD: 1, CNY: 7.10, EUR: 0.92, GBP: 0.79, JPY: 147.00 };
 
 function renderTools(){
- const toolsBox = document.getElementById('toolsModules');
- if(!toolsBox) return;
+ const toolsBox = document.getElementById('toolsModules'); if(!toolsBox) return;
  toolsBox.innerHTML = `
    <div class="card">
      <div class="head"><div class="title">💱 汇率换算</div><button class="btn primary" id="updateBtn" onclick="fetchOnlineRates()">🔄 在线更新汇率</button></div>
@@ -568,8 +633,7 @@ function renderTools(){
 }
 
 function calcExchangeAll(){
- const amtEl = document.getElementById('exAmount');
- if(!amtEl) return;
+ const amtEl = document.getElementById('exAmount'); if(!amtEl) return;
  const amt = parseFloat(amtEl.value) || 0, base = document.getElementById('exBase').value;
  document.getElementById('exHeader').textContent = `${amt} ${base} ≈`;
  const baseInUSD = ratesTable[base] || 1;
@@ -597,7 +661,6 @@ async function fetchOnlineRates(){
  }catch(e){ alert('更新失败'); }
 }
 
-/* 7. 后台外观与初始化 */
 function saveAppearance(){
  state.appearance.name=document.getElementById('setName').value.trim()||'VickyWork';
  state.appearance.sub=document.getElementById('setSub').value.trim()||'跨境运营工作台';
