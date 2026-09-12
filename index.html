@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VickyWork - 跨境运营工作台</title>
+  <title>VickyWork 3.0 - 跨境运营工作台</title>
   <!-- 引入 Excel 文件解析依赖库 -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
@@ -19,15 +19,23 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); padding: 20px; }
+    
+    /* 登录弹窗遮罩 */
+    .auth-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 999; backdrop-filter: blur(4px); }
+    .auth-card { background: #fff; width: 360px; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); text-align: center; }
+    .auth-card h3 { font-size: 20px; margin-bottom: 6px; color: var(--text); }
+    .auth-card p { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+    
     .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
     
-    /* 顶部 Banner */
-    .banner { background: linear-gradient(135deg, #ff8fa3, #ffb3c1); color: #fff; padding: 24px; border-radius: 20px; box-shadow: 0 4px 15px rgba(255,143,163,0.3); }
+    /* 顶部 Banner 与用户状态 */
+    .banner { background: linear-gradient(135deg, #ff8fa3, #ffb3c1); color: #fff; padding: 24px; border-radius: 20px; box-shadow: 0 4px 15px rgba(255,143,163,0.3); position: relative; }
     .banner h2 { font-size: 24px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
     .banner p { font-size: 13px; opacity: 0.9; margin-bottom: 12px; }
     .banner-tip { background: rgba(255,255,255,0.25); padding: 8px 14px; border-radius: 10px; font-size: 13px; backdrop-filter: blur(5px); }
-
-    /* 通用 Button & Input */
+    .user-badge { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.3); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; backdrop-filter: blur(5px); display: flex; align-items: center; gap: 10px; }
+    
+    /* 表单控件 */
     .btn { background: #fff; border: 1px solid var(--line); padding: 8px 16px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 14px; color: var(--text); }
     .btn:hover { background: #f8f9fa; }
     .btn.primary { background: var(--primary); color: #fff; border: none; }
@@ -36,34 +44,83 @@
     .btn.danger { background: #fff0f0; color: #ff4d4f; border-color: #ffa39e; }
     .btn.danger:hover { background: #ff4d4f; color: #fff; }
 
-    .input, .select { border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; outline: none; font-size: 14px; width: 100%; }
+    .input, .select { border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; outline: none; font-size: 14px; width: 100%; margin-bottom: 12px; }
     .input:focus, .select:focus { border-color: var(--primary); }
 
-    /* 卡片网格 */
+    /* 通用卡片 */
     .card { background: var(--card-bg); border-radius: 16px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
     .card .head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .card .title { font-size: 18px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
     .subtle { color: var(--muted); font-size: 13px; }
 
     /* 选项卡按钮 */
-    .tab-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+    .tab-bar { display: flex; gap: 10px; margin-bottom: 10px; }
     .tab-btn { padding: 10px 20px; border-radius: 12px; font-weight: bold; border: none; cursor: pointer; background: #e8ecf4; color: #666; }
     .tab-btn.active { background: var(--primary); color: #fff; }
+
+    /* 数据统计卡片 */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 20px; }
+    .stat-card { background: #fff; border-radius: 16px; padding: 16px; border: 1px solid var(--line); box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+    .stat-card .val { font-size: 28px; font-weight: 800; margin: 8px 0 4px 0; color: var(--primary); }
   </style>
 </head>
 <body>
 
+<!-- 登录/注册 Modal 弹窗 -->
+<div id="authModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card">
+    <h3 id="authTitle">账号登录</h3>
+    <p id="authSub">请输入您的账号密码以同步保留数据</p>
+    <input class="input" type="text" id="authAccount" placeholder="用户名/邮箱">
+    <input class="input" type="password" id="authPassword" placeholder="密码">
+    <button class="btn primary" style="width:100%;padding:10px;" onclick="handleAuthSubmit()">登录并加载数据</button>
+    <div style="margin-top:14px;font-size:12px;color:var(--muted);">
+      <span id="authToggleText">还没有账号？</span>
+      <a style="color:var(--primary);cursor:pointer;font-weight:bold;" onclick="toggleAuthMode()" id="authToggleBtn">立即注册</a>
+    </div>
+  </div>
+</div>
+
 <div class="container">
-  <!-- 顶部 Welcome Banner -->
+  <!-- 顶部 Banner -->
   <div class="banner">
     <h2>下午好 🌤️</h2>
     <p>2026-09-12 · 周六 · 又是推进业务的一天</p>
-    <div class="banner-tip">💡 运营小贴士：每天结束前花 2 分钟记录售后数据，月底复盘会轻松很多。</div>
+    <div class="banner-tip">💡 提示：你的修改数据会自动同步保存在当前登录账号中。</div>
+    <div class="user-badge" id="userBadge">
+      <span id="usernameDisplay">👤 未登录</span>
+      <button class="btn small" style="border:none;" onclick="showAuthModal()">切换账号</button>
+    </div>
   </div>
 
-  <!-- 页面主选项卡导航 -->
+  <!-- 顶部 4 个数据卡片面板 -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="subtle">🎯 本月售后挽回率</div>
+      <div class="val" id="cardMonthRate">0%</div>
+      <div class="subtle" id="cardMonthDetail">本月售后 0 单 · 挽回 0 单</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title subtle">📦 本月售后订单</div>
+      <div class="val" id="cardMonthOrders">0 单</div>
+      <div class="subtle">已记录的本月售后订单</div>
+    </div>
+    <div class="stat-card">
+      <div class="subtle">📅 本年售后挽回率</div>
+      <div class="val" id="cardYearRate">0%</div>
+      <div class="subtle" id="cardYearDetail">本年售后 0 单 · 挽回 0 单</div>
+    </div>
+    <div class="stat-card">
+      <div class="subtle">📊 本年售后订单</div>
+      <div class="val" id="cardYearOrders">0 单</div>
+      <div class="subtle">当前年份累计售后订单</div>
+    </div>
+  </div>
+
+  <!-- 主选项卡导航 -->
   <div class="tab-bar">
     <button class="tab-btn active" onclick="switchMainTab('cs')">💬 客服中心</button>
+    <button class="tab-btn" onclick="switchMainTab('aftersale')">📋 售后数据表</button>
     <button class="tab-btn" onclick="switchMainTab('tools')">🛠️ 工具中心</button>
   </div>
 
@@ -72,83 +129,231 @@
     <div class="head">
       <div>
         <div class="title">💬 客服中心</div>
-        <div class="subtle" style="margin-top:4px;">所有话术、FAQ、售后模板都可以由你自己创建，并支持图片与 Excel 文件解析保存。</div>
+        <div class="subtle" style="margin-top:4px;">话术与模板支持新增编辑，并支持 Excel (.xlsx) / CSV / TXT 上传解析。</div>
       </div>
     </div>
 
     <div style="display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap;">
       <button class="btn primary" onclick="addNewScriptPrompt()">+ 新增客服内容</button>
       
-      <!-- Excel / 文件上传控件 -->
       <label class="btn" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;background:#f0f2f5;">
         📄 上传话术文件
         <input type="file" id="scriptFileInput" accept=".xlsx, .xls, .txt, .md, .csv, .json" style="display:none;" onchange="handleScriptUpload(event)">
       </label>
-      <span class="subtle" style="font-size:12px;">TXT / MD / CSV / JSON / Excel (.xlsx/.xls) 可直接读取文字</span>
+      <span class="subtle" style="font-size:12px;">支持 Excel / TXT / CSV 直接解析</span>
     </div>
 
-    <!-- 话术列表容器 -->
     <div id="scriptList" style="display:flex;flex-direction:column;gap:14px;"></div>
   </div>
 
-  <!-- 2. 工具中心模块 -->
+  <!-- 2. 售后数据录入模块 -->
+  <div id="aftersaleSection" class="card" style="display:none;">
+    <div class="head">
+      <div class="title">📋 售后记录录入与数据源</div>
+      <button class="btn primary small" onclick="addAfterSaleRecordPrompt()">+ 手动添加一条记录</button>
+    </div>
+    <div class="subtle" style="margin-bottom:14px;">在下方录入的数据将直接实时驱动顶部面板的挽回率与订单量。</div>
+    <div id="afterSaleTableContainer"></div>
+  </div>
+
+  <!-- 3. 工具中心模块 -->
   <div id="toolsSection" style="display:none;">
     <div class="card">
       <div class="head">
         <div class="title">🛠️ 工具中心</div>
-        <span class="subtle">实用跨境实用工具，支持在线一键更新最新汇率。</span>
+        <span class="subtle">实时在线汇率与全球币种自定义换算。</span>
       </div>
       
       <div style="display:flex;gap:10px;margin-bottom:16px;">
         <button class="btn primary" id="btnTabExchange" onclick="switchToolTab('exchange')">💱 汇率换算</button>
-        <button class="btn" id="btnTabProfit" onclick="switchToolTab('profit')">📊 利润计算</button>
-        <button class="btn" id="btnTabUnit" onclick="switchToolTab('unit')">📐 尺寸/抛重</button>
       </div>
 
       <div id="toolSubView"></div>
     </div>
   </div>
 
-  <!-- 页脚说明 -->
   <div style="text-align:center;color:#aaa;font-size:12px;margin-top:20px;">
-    VickyWork 2.0 · 数据优先 · 可自定义 · 浏览器本地版
+    VickyWork 3.0 · 账号数据持久化云端同步版
   </div>
 </div>
 
 <script>
-/* ================= 全局状态控制 ================= */
-let currentMainTab = 'cs';
-let currentToolSubTab = 'exchange';
+/* ================= 1. 账号与数据持久化系统 ================= */
+let currentUser = localStorage.getItem('vicky_current_user') || 'guest';
+let isAuthRegisterMode = false;
 
+// 根据账号读取专属持久化数据
+function getUserData(key, defaultValue) {
+  const fullKey = `vicky_${currentUser}_${key}`;
+  const data = localStorage.getItem(fullKey);
+  return data ? JSON.parse(data) : defaultValue;
+}
+
+// 保存持久化数据到账号名下
+function setUserData(key, value) {
+  const fullKey = `vicky_${currentUser}_${key}`;
+  localStorage.setItem(fullKey, JSON.stringify(value));
+}
+
+function updateAccountUI() {
+  document.getElementById('usernameDisplay').textContent = currentUser === 'guest' ? '👤 游客模式' : `👤 ${currentUser}`;
+  refreshDashboard();
+  renderCustomerService();
+  renderAfterSaleTable();
+}
+
+function showAuthModal() {
+  document.getElementById('authModal').style.display = 'flex';
+}
+
+function toggleAuthMode() {
+  isAuthRegisterMode = !isAuthRegisterMode;
+  document.getElementById('authTitle').textContent = isAuthRegisterMode ? '创建新账号' : '账号登录';
+  document.getElementById('authToggleText').textContent = isAuthRegisterMode ? '已有账号？' : '还没有账号？';
+  document.getElementById('authToggleBtn').textContent = isAuthRegisterMode ? '立即登录' : '立即注册';
+}
+
+function handleAuthSubmit() {
+  const acc = document.getElementById('authAccount').value.trim();
+  const pwd = document.getElementById('authPassword').value.trim();
+  if(!acc || !pwd) { alert('请输入完整的账号和密码'); return; }
+
+  let accounts = JSON.parse(localStorage.getItem('vicky_accounts') || '{}');
+
+  if(isAuthRegisterMode) {
+    if(accounts[acc]) { alert('该账号已存在，请直接登录'); return; }
+    accounts[acc] = pwd;
+    localStorage.setItem('vicky_accounts', JSON.stringify(accounts));
+    alert('注册成功，已自动登录！');
+  } else {
+    if(!accounts[acc] || accounts[acc] !== pwd) { alert('账号或密码错误！'); return; }
+  }
+
+  currentUser = acc;
+  localStorage.setItem('vicky_current_user', currentUser);
+  document.getElementById('authModal').style.display = 'none';
+  updateAccountUI();
+}
+
+/* ================= 2. 页面与卡片逻辑 ================= */
 function switchMainTab(tab) {
-  currentMainTab = tab;
   document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
-    btn.classList.toggle('active', (tab==='cs' && idx===0) || (tab==='tools' && idx===1));
+    btn.classList.toggle('active', (tab==='cs' && idx===0) || (tab==='aftersale' && idx===1) || (tab==='tools' && idx===2));
   });
   document.getElementById('csSection').style.display = tab === 'cs' ? 'block' : 'none';
+  document.getElementById('aftersaleSection').style.display = tab === 'aftersale' ? 'block' : 'none';
   document.getElementById('toolsSection').style.display = tab === 'tools' ? 'block' : 'none';
   if(tab === 'tools') renderTools();
 }
 
-/* ================= 1. 客服中心逻辑（含 Excel 解析） ================= */
-function getStoredScripts() {
-  return JSON.parse(localStorage.getItem('vicky_scripts')) || [
-    { id: 1, title: '客服消息回复模板', content: '感谢您的支持！请问有什么可以帮您的呢？' }
-  ];
+function refreshDashboard() {
+  const records = getUserData('aftersale_records', [
+    { date: '2026-09-12', orderId: 'ORD10001', isRecovered: true },
+    { date: '2026-09-10', orderId: 'ORD10002', isRecovered: false }
+  ]);
+
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
+
+  let monthOrders = 0, monthRecovered = 0;
+  let yearOrders = 0, yearRecovered = 0;
+
+  records.forEach(r => {
+    if(!r.date) return;
+    const d = new Date(r.date);
+    if(isNaN(d.getTime())) return;
+
+    if(d.getFullYear() === currentYear) {
+      yearOrders++;
+      if(r.isRecovered) yearRecovered++;
+      if(d.getMonth() + 1 === currentMonth) {
+        monthOrders++;
+        if(r.isRecovered) monthRecovered++;
+      }
+    }
+  });
+
+  const monthRate = monthOrders > 0 ? ((monthRecovered / monthOrders) * 100).toFixed(1) : 0;
+  const yearRate = yearOrders > 0 ? ((yearRecovered / yearOrders) * 100).toFixed(1) : 0;
+
+  document.getElementById('cardMonthRate').textContent = `${monthRate}%`;
+  document.getElementById('cardMonthDetail').textContent = `本月售后 ${monthOrders} 单 · 挽回 ${monthRecovered} 单`;
+  document.getElementById('cardMonthOrders').textContent = `${monthOrders} 单`;
+
+  document.getElementById('cardYearRate').textContent = `${yearRate}%`;
+  document.getElementById('cardYearDetail').textContent = `本年售后 ${yearOrders} 单 · 挽回 ${yearRecovered} 单`;
+  document.getElementById('cardYearOrders').textContent = `${yearOrders} 单`;
 }
 
+/* ================= 3. 售后数据管理 ================= */
+function renderAfterSaleTable() {
+  const records = getUserData('aftersale_records', [
+    { date: '2026-09-12', orderId: 'ORD10001', isRecovered: true },
+    { date: '2026-09-10', orderId: 'ORD10002', isRecovered: false }
+  ]);
+
+  let html = `
+    <table style="width:100%;border-collapse:collapse;text-align:left;font-size:14px;">
+      <thead>
+        <tr style="background:#fafbfe;border-bottom:1px solid var(--line);">
+          <th style="padding:10px;">日期</th>
+          <th style="padding:10px;">售后订单号</th>
+          <th style="padding:10px;">是否挽回</th>
+          <th style="padding:10px;">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  records.forEach((item, idx) => {
+    html += `
+      <tr style="border-bottom:1px solid var(--line);">
+        <td style="padding:10px;">${item.date}</td>
+        <td style="padding:10px;">${item.orderId}</td>
+        <td style="padding:10px;">${item.isRecovered ? '<span style="color:#52c41a;font-weight:bold;">是 (已挽回)</span>' : '<span style="color:#ff4d4f;">否 (未挽回)</span>'}</td>
+        <td style="padding:10px;"><button class="btn small danger" onclick="deleteAfterSaleRecord(${idx})">删除</button></td>
+      </tr>
+    `;
+  });
+
+  html += `</tbody></table>`;
+  document.getElementById('afterSaleTableContainer').innerHTML = html;
+}
+
+function addAfterSaleRecordPrompt() {
+  const date = prompt("请输入日期 (如 2026-09-12)：", new Date().toISOString().split('T')[0]);
+  if(!date) return;
+  const orderId = prompt("请输入订单号：", "ORD" + Math.floor(Math.random()*100000));
+  if(!orderId) return;
+  const isRecovered = confirm("该订单是否挽回成功？\n【确定】为成功，【取消】为未挽回");
+
+  let records = getUserData('aftersale_records', []);
+  records.unshift({ date, orderId, isRecovered });
+  setUserData('aftersale_records', records);
+  
+  refreshDashboard();
+  renderAfterSaleTable();
+}
+
+function deleteAfterSaleRecord(idx) {
+  let records = getUserData('aftersale_records', []);
+  records.splice(idx, 1);
+  setUserData('aftersale_records', records);
+  refreshDashboard();
+  renderAfterSaleTable();
+}
+
+/* ================= 4. 客服中心 (含 Excel 上传与话术保存) ================= */
 function renderCustomerService() {
-  const scripts = getStoredScripts();
+  const scripts = getUserData('scripts', [
+    { id: 1, title: '客服消息回复模板', content: '感谢您的支持！请问有什么可以帮您的呢？' }
+  ]);
   const container = document.getElementById('scriptList');
   if (!container) return;
 
   if (scripts.length === 0) {
-    container.innerHTML = `
-      <div style="background:#fafbfe;padding:20px;border-radius:12px;border:1px solid var(--line);color:#888;">
-        💬 <b>客服消息回复模板</b>
-        <p style="margin-top:8px;color:#aaa;">暂无文字内容，点击上方按钮新增或导入文件。</p>
-      </div>
-    `;
+    container.innerHTML = `<div class="subtle" style="padding:20px;">暂无数据，请新增或上传文件。</div>`;
     return;
   }
 
@@ -163,7 +368,6 @@ function renderCustomerService() {
   `).join('');
 }
 
-// 处理上传的文件（支持 Excel / CSV / TXT 等）
 function handleScriptUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -171,7 +375,6 @@ function handleScriptUpload(event) {
   const fileName = file.name;
   const ext = fileName.split('.').pop().toLowerCase();
 
-  // Excel 文件 (.xlsx / .xls)
   if (ext === 'xlsx' || ext === 'xls') {
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -181,133 +384,107 @@ function handleScriptUpload(event) {
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
         
-        // 转换 Excel 为表格文本
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
         let textContent = jsonData
           .filter(row => row.length > 0)
           .map(row => row.join(' | '))
           .join('\n');
 
-        if (!textContent.trim()) textContent = "（该 Excel 文件内容为空）";
+        if (!textContent.trim()) textContent = "（文件内容为空）";
         saveScriptContent(fileName, textContent);
-      } catch (err) {
-        alert('Excel 文件解析失败，请检查文件格式。');
-      }
+      } catch (err) { alert('Excel 解析失败'); }
     };
     reader.readAsArrayBuffer(file);
   } else {
-    // 文本类文件
     const reader = new FileReader();
-    reader.onload = function(e) {
-      saveScriptContent(fileName, e.target.result);
-    };
+    reader.onload = function(e) { saveScriptContent(fileName, e.target.result); };
     reader.readAsText(file);
   }
 }
 
 function saveScriptContent(title, content) {
-  let list = getStoredScripts();
+  let list = getUserData('scripts', []);
   list.unshift({ id: Date.now(), title, content });
-  localStorage.setItem('vicky_scripts', JSON.stringify(list));
-  alert(`成功导入：${title}`);
+  setUserData('scripts', list);
+  alert(`成功保存：${title}`);
   renderCustomerService();
 }
 
 function addNewScriptPrompt() {
-  const title = prompt("请输入话术标题：", "自定义回复模板");
+  const title = prompt("请输入话术标题：", "自定义回复");
   if (!title) return;
-  const content = prompt("请输入话术详细内容：", "");
+  const content = prompt("请输入内容：", "");
   if (!content) return;
   saveScriptContent(title, content);
 }
 
 function deleteScript(index) {
-  if (confirm("确定要删除这条话术吗？")) {
-    let list = getStoredScripts();
-    list.splice(index, 1);
-    localStorage.setItem('vicky_scripts', JSON.stringify(list));
-    renderCustomerService();
-  }
+  let list = getUserData('scripts', []);
+  list.splice(index, 1);
+  setUserData('scripts', list);
+  renderCustomerService();
 }
 
-/* ================= 2. 工具中心逻辑（全币种汇率换算） ================= */
+/* ================= 5. 工具中心 (全币种汇率) ================= */
 const GLOBAL_CURRENCIES = {
   CNY:"人民币 CN", USD:"美元 US", EUR:"欧元 EU", GBP:"英镑 GB", JPY:"日元 JP",
   CAD:"加元 CA", AUD:"澳元 AU", HKD:"港币 HK", SGD:"新加坡元 SG", MXN:"墨西哥比索 MX",
-  BRL:"巴西雷亚尔 BR", INR:"印度卢比 IN", KRW:"韩元 KR", RUB:"俄罗斯卢布 RU",
-  NZD:"新西兰元 NZ", CHF:"瑞士法郎 CH", THB:"泰铢 TH", PHP:"菲律宾比索 PH",
-  MYR:"马来西亚林吉特 MY", IDR:"印尼盾 ID", VND:"越南盾 VN", AED:"阿联酋迪拉姆 AE"
+  BRL:"巴西雷亚尔 BR", INR:"印度卢比 IN", KRW:"韩元 KR", RUB:"俄罗斯卢布 RU"
 };
-
-let myCurrencies = JSON.parse(localStorage.getItem('vicky_my_currencies')) || ['CNY','USD','EUR','GBP','JPY','CAD','AUD','HKD'];
-let ratesTable = JSON.parse(localStorage.getItem('vicky_rates')) || {
-  USD: 1, CNY: 7.10, EUR: 0.92, GBP: 0.79, JPY: 147.00, CAD: 1.37, AUD: 1.52, HKD: 7.82
-};
-
-function switchToolTab(tab) {
-  currentToolSubTab = tab;
-  renderTools();
-}
 
 function renderTools() {
-  document.getElementById('btnTabExchange').className = `btn ${currentToolSubTab==='exchange'?'primary':''}`;
-  document.getElementById('btnTabProfit').className = `btn ${currentToolSubTab==='profit'?'primary':''}`;
-  document.getElementById('btnTabUnit').className = `btn ${currentToolSubTab==='unit'?'primary':''}`;
+  const myCurrencies = getUserData('my_currencies', ['CNY','USD','EUR','GBP','JPY','CAD','AUD','HKD']);
+  const ratesTable = getUserData('rates', { USD: 1, CNY: 7.10, EUR: 0.92, GBP: 0.79, JPY: 147.00 });
 
   const container = document.getElementById('toolSubView');
-  if (currentToolSubTab === 'exchange') {
-    container.innerHTML = `
-      <div style="margin-top:10px;">
-        <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;">
-          <input class="input" id="exAmount" type="number" value="100" style="flex:2;" oninput="calcExchangeAll()">
-          <select class="select" id="exBase" style="width:130px;" onchange="calcExchangeAll()">
-            ${Object.keys(GLOBAL_CURRENCIES).map(code=>`<option value="${code}">${code} (${GLOBAL_CURRENCIES[code].split(' ')[0]})</option>`).join('')}
-          </select>
-          <button class="btn primary" id="updateBtn" onclick="fetchOnlineRates()">🔄 在线更新汇率</button>
-        </div>
-
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px;background:#fafbfe;padding:10px 12px;border-radius:12px;border:1px solid var(--line);">
-          <span style="font-size:13px;font-weight:600;color:var(--muted);">＋ 添加货币到换算列表：</span>
-          <select class="select" id="addCurrencySelect" style="flex:1;max-width:250px;">
-            ${Object.keys(GLOBAL_CURRENCIES).filter(c=>!myCurrencies.includes(c)).map(c=>`<option value="${c}">${c} - ${GLOBAL_CURRENCIES[c]}</option>`).join('')}
-          </select>
-          <button class="btn small primary" onclick="addCurrencyToList()">添加</button>
-        </div>
-
-        <div style="background:#fff0f5;border-radius:14px;padding:16px;border:1px solid #ffd0e0;">
-          <div class="subtle" id="exHeader" style="margin-bottom:10px;font-weight:bold;">100 USD ≈</div>
-          <div id="exchangeResultList" style="display:flex;flex-direction:column;gap:10px;"></div>
-        </div>
+  container.innerHTML = `
+    <div style="margin-top:10px;">
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;">
+        <input class="input" id="exAmount" type="number" value="100" style="flex:2;" oninput="calcExchangeAll()">
+        <select class="select" id="exBase" style="width:130px;" onchange="calcExchangeAll()">
+          ${Object.keys(GLOBAL_CURRENCIES).map(code=>`<option value="${code}">${code} (${GLOBAL_CURRENCIES[code].split(' ')[0]})</option>`).join('')}
+        </select>
+        <button class="btn primary" id="updateBtn" onclick="fetchOnlineRates()">🔄 在线更新汇率</button>
       </div>
-    `;
-    calcExchangeAll();
-  } else if (currentToolSubTab === 'profit') {
-    container.innerHTML = `<div style="padding:20px;color:#888;">📊 利润计算器模块就绪</div>`;
-  } else {
-    container.innerHTML = `<div style="padding:20px;color:#888;">📐 尺寸/抛重换算模块就绪</div>`;
-  }
+
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px;background:#fafbfe;padding:10px 12px;border-radius:12px;border:1px solid var(--line);">
+        <span style="font-size:13px;font-weight:600;color:var(--muted);">＋ 添加货币：</span>
+        <select class="select" id="addCurrencySelect" style="flex:1;max-width:250px;">
+          ${Object.keys(GLOBAL_CURRENCIES).filter(c=>!myCurrencies.includes(c)).map(c=>`<option value="${c}">${c} - ${GLOBAL_CURRENCIES[c]}</option>`).join('')}
+        </select>
+        <button class="btn small primary" onclick="addCurrencyToList()">添加</button>
+      </div>
+
+      <div style="background:#fff0f5;border-radius:14px;padding:16px;border:1px solid #ffd0e0;">
+        <div class="subtle" id="exHeader" style="margin-bottom:10px;font-weight:bold;">100 USD ≈</div>
+        <div id="exchangeResultList" style="display:flex;flex-direction:column;gap:10px;"></div>
+      </div>
+    </div>
+  `;
+  calcExchangeAll();
 }
 
 function calcExchangeAll() {
   const amtInput = document.getElementById('exAmount');
-  if (!amtInput) return;
+  if(!amtInput) return;
   const amt = parseFloat(amtInput.value) || 0;
   const base = document.getElementById('exBase').value;
-  document.getElementById('exHeader').textContent = `${amt} ${base} ≈`;
+  const myCurrencies = getUserData('my_currencies', ['CNY','USD','EUR','GBP','JPY','CAD','AUD','HKD']);
+  const ratesTable = getUserData('rates', { USD: 1, CNY: 7.10, EUR: 0.92, GBP: 0.79, JPY: 147.00 });
 
+  document.getElementById('exHeader').textContent = `${amt} ${base} ≈`;
   const baseInUSD = ratesTable[base] || 1;
   const listEl = document.getElementById('exchangeResultList');
 
   listEl.innerHTML = myCurrencies.filter(c => c !== base).map(c => {
     const rateToUSD = ratesTable[c] || 1;
-    const converted = ((amt / baseInUSD) * rateToUSD).toFixed(c === 'JPY' || c === 'KRW' || c === 'VND' ? 2 : 3);
-    const cName = GLOBAL_CURRENCIES[c] || c;
+    const converted = ((amt / baseInUSD) * rateToUSD).toFixed(c === 'JPY' ? 2 : 3);
     return `
       <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px dashed #f3d4e0;">
-        <span>${cName}</span>
+        <span>${GLOBAL_CURRENCIES[c] || c}</span>
         <div style="display:flex;align-items:center;gap:12px;">
           <b>${converted} ${c}</b>
-          <button style="border:0;background:transparent;color:#bbb;cursor:pointer;font-size:14px;" title="从列表移除" onclick="removeCurrencyFromList('${c}')">✕</button>
+          <button style="border:0;background:transparent;color:#bbb;cursor:pointer;" onclick="removeCurrencyFromList('${c}')">✕</button>
         </div>
       </div>
     `;
@@ -315,46 +492,40 @@ function calcExchangeAll() {
 }
 
 function addCurrencyToList() {
-  const select = document.getElementById('addCurrencySelect');
-  const code = select.value;
+  const code = document.getElementById('addCurrencySelect').value;
+  let myCurrencies = getUserData('my_currencies', ['CNY','USD','EUR','GBP','JPY']);
   if(code && !myCurrencies.includes(code)){
     myCurrencies.push(code);
-    localStorage.setItem('vicky_my_currencies', JSON.stringify(myCurrencies));
+    setUserData('my_currencies', myCurrencies);
     renderTools();
   }
 }
 
 function removeCurrencyFromList(code) {
+  let myCurrencies = getUserData('my_currencies', []);
   myCurrencies = myCurrencies.filter(c => c !== code);
-  localStorage.setItem('vicky_my_currencies', JSON.stringify(myCurrencies));
+  setUserData('my_currencies', myCurrencies);
   renderTools();
 }
 
 async function fetchOnlineRates() {
   const btn = document.getElementById('updateBtn');
-  if(btn){ btn.textContent = '⏳ 更新中...'; btn.disabled = true; }
-
+  if(btn) btn.textContent = '⏳ 更新中...';
   try {
     const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
     const data = await res.json();
     if(data && data.rates){
-      Object.keys(data.rates).forEach(code => { ratesTable[code] = data.rates[code]; });
-      localStorage.setItem('vicky_rates', JSON.stringify(ratesTable));
-      alert(`✅ 已成功同步最新在线汇率！(${data.date})`);
+      setUserData('rates', data.rates);
+      alert(`✅ 汇率已自动更新保存！(${data.date})`);
       renderTools();
     }
-  } catch(e) {
-    alert('网络更新失败，请稍后重试。');
-  } finally {
-    if(btn){ btn.textContent = '🔄 在线更新汇率'; btn.disabled = false; }
-  }
+  } catch(e) { alert('更新失败'); }
 }
 
-// 页面首次运行初始化
+// 页面加载自动初始化运行
 window.addEventListener('DOMContentLoaded', () => {
-  renderCustomerService();
+  updateAccountUI();
 });
 </script>
-
 </body>
 </html>
