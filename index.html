@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f487b8">
 <title>VickyWork 3.0 · 跨境运营工作台</title>
+<!-- 引入 SheetJS 库用于解析 Excel / CSV 文件 -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{--bg:#f5f6fb;--card:#fff;--text:#202638;--muted:#7c8497;--line:#e7eaf1;--accent:#f487b8;--accent2:#ff9bc6;--shadow:0 10px 28px rgba(34,45,75,.08);--radius:20px}
@@ -56,12 +57,12 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 <section class="view active" id="home">
   <div class="hero"><h1 id="greet">下午好 🌤️</h1><p id="heroDate"></p><div class="tip">💡 <span id="tipText">运营小贴士：每天结束前花 2 分钟记录售后数据，月底复盘会轻松很多。</span></div></div>
   
-  <!-- WPS 在线表自动驱动卡片 -->
+  <!-- 4 个售后核心指标卡片 -->
   <div class="stats">
-    <div class="stat s1"><div class="t">🎯 本月售后挽回率</div><div class="v" id="monthRate">0<small>%</small></div><div class="n" id="monthNote">同步 WPS 在线表中...</div></div>
-    <div class="stat s2"><div class="t">📦 本月售后订单</div><div class="v" id="monthOrders">0<small> 单</small></div><div class="n">WPS表已登记的本月售后订单</div></div>
-    <div class="stat s3"><div class="t">📅 本年售后挽回率</div><div class="v" id="yearRate">0<small>%</small></div><div class="n" id="yearNote">同步 WPS 在线表中...</div></div>
-    <div class="stat s4"><div class="t">📊 本年售后订单</div><div class="v" id="yearOrders">0<small> 单</small></div><div class="n">WPS表当前年份累计售后订单</div></div>
+    <div class="stat s1"><div class="t">🎯 本月售后挽回率</div><div class="v" id="monthRate">0<small>%</small></div><div class="n" id="monthNote">请先上传售后表格</div></div>
+    <div class="stat s2"><div class="t">📦 本月售后订单</div><div class="v" id="monthOrders">0<small> 单</small></div><div class="n">售后表格累计本月订单</div></div>
+    <div class="stat s3"><div class="t">📅 本年售后挽回率</div><div class="v" id="yearRate">0<small>%</small></div><div class="n" id="yearNote">请先上传售后表格</div></div>
+    <div class="stat s4"><div class="t">📊 本年售后订单</div><div class="v" id="yearOrders">0<small> 单</small></div><div class="n">售后表格累计本年订单</div></div>
   </div>
 
   <div class="grid2">
@@ -69,8 +70,20 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
     <div class="card"><div class="head"><div class="title">📋 今日待办 <span class="badge" id="todoText">0/0 完成</span></div><button class="btn primary small" onclick="addTodo()">＋任务</button></div><div class="progress"><i id="todoProgress"></i></div><div class="list" id="todoList"></div></div>
   </div>
 
-  <div class="card"><div class="head"><div class="title">📈 售后数据概览 (WPS链接: https://www.kdocs.cn/l/clXtgrfZIeo9)</div><button class="btn primary" onclick="syncWPSAfterSaleData()">🔄 手动刷新 WPS 在线表</button></div><div class="mini"><div><span>本月已挽回</span><b id="mrec">0</b></div><div><span>本月未挽回</span><b id="mun">0</b></div><div><span>本年已挽回</span><b id="yrec">0</b></div><div><span>本年未挽回</span><b id="yun">0</b></div></div></div>
-  <div class="card"><div class="head"><div class="title">🧾 最近售后记录 (自 WPS 在线表抓取)</div><button class="btn small" onclick="exportBackup()">导出本地备份</button></div><div class="tablewrap"><table><thead><tr><th>订单号 (A列)</th><th>平台 (B列)</th><th>退货日期 (D列)</th><th>原因 (E列)</th><th>处理措施 (H列)</th></tr></thead><tbody id="records"></tbody></table></div></div>
+  <!-- 售后表格上传控制面板 -->
+  <div class="card">
+    <div class="head">
+      <div class="title">📈 售后表格 Excel / WPS 上传与分析</div>
+      <label class="btn primary" style="cursor:pointer">
+        📤 选择并上传售后 Excel/WPS 表格
+        <input type="file" id="aftersaleExcelInput" hidden accept=".xlsx,.xls,.csv" onchange="uploadAftersaleExcel(event)">
+      </label>
+    </div>
+    <p class="subtle" style="margin-top:-8px;margin-bottom:12px">支持匹配表格中：A列(订单号)、B列(平台)、D列(日期)、E列(原因)、H列(处理措施)。选择文件后自动解析计算。</p>
+    <div class="mini"><div><span>本月已挽回</span><b id="mrec">0</b></div><div><span>本月未挽回</span><b id="mun">0</b></div><div><span>本年已挽回</span><b id="yrec">0</b></div><div><span>本年未挽回</span><b id="yun">0</b></div></div>
+  </div>
+
+  <div class="card"><div class="head"><div class="title">🧾 最近售后记录</div><button class="btn small danger" onclick="clearAftersaleData()">清空已存记录</button></div><div class="tablewrap"><table><thead><tr><th>订单号 (A列)</th><th>平台 (B列)</th><th>退货日期 (D列)</th><th>原因 (E列)</th><th>处理措施 (H列)</th></tr></thead><tbody id="records"></tbody></table></div></div>
 </section>
 
 <!-- 2. 客服中心 (支持智能拆分上传) -->
@@ -97,7 +110,7 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 <div class="card"><div class="head"><div class="title">🎨 全局外观</div></div><div class="formgrid"><div class="field"><label>工作台名称</label><input class="input" id="setName"></div><div class="field"><label>副标题</label><input class="input" id="setSub"></div><div class="field"><label>主色</label><div class="colorline"><input type="color" id="setColor"></div></div><div class="field"><label>首页运营小贴士</label><input class="input" id="setTip"></div></div><div class="actions"><button class="btn primary" onclick="saveAppearance()">保存外观</button></div></div>
 <div class="card"><div class="head"><div class="title">💾 数据备份</div></div><button class="btn primary" onclick="exportBackup()">导出 JSON</button> <button class="btn" onclick="document.getElementById('backupFile').click()">导入 JSON</button> <button class="btn danger" onclick="resetData()">清空账号本地数据</button><input type="file" id="backupFile" hidden accept=".json"></div>
 </section>
-<div class="subtle" style="text-align:center;padding:4px 0 30px">VickyWork 3.0 · WPS 实时数据流 + 账号隔离存储</div>
+<div class="subtle" style="text-align:center;padding:4px 0 30px">VickyWork 3.0 · 本地 Excel 解析 + 账号持久化存储</div>
 </main>
 
 <!-- 内容 Modal 弹窗 -->
@@ -109,11 +122,6 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 <script>
 let currentUser = localStorage.getItem('vicky_current_user') || 'guest';
 let isAuthRegisterMode = false;
-
-// 指定你的 WPS 在线表文件地址
-const WPS_SHARE_URL = "https://www.kdocs.cn/l/clXtgrfZIeo9";
-// 使用跨域中转代理 API 拉取
-const PROXY_API = `https://api.allorigins.win/raw?url=` + encodeURIComponent(`https://www.kdocs.cn/api/v3/ide/file/clXtgrfZIeo9/download`);
 
 const DEFAULT_NAV=[
   {id:'home',name:'首页',icon:'🏠'},
@@ -128,16 +136,19 @@ const DEFAULT_NAV=[
 
 const defaultState={
   appearance:{name:'VickyWork',sub:'跨境运营工作台',color:'#f487b8',tip:'运营小贴士：每天结束前花 2 分钟记录售后数据，月底复盘会轻松很多。'},
-  nav:DEFAULT_NAV,urgent:[],todos:[],
+  nav:DEFAULT_NAV,urgent:[],todos:[],aftersaleRecords:[],
   contents:{service:[],product:[],platform:[],shopify:[],account:[]},
   dark:false
 };
 
 function getUserKey(){ return 'vickywork_v3_' + currentUser; }
-function loadState(){ return JSON.parse(localStorage.getItem(getUserKey())||'null')||defaultState; }
+function loadState(){ 
+  let s = JSON.parse(localStorage.getItem(getUserKey())||'null')||defaultState; 
+  s.aftersaleRecords = s.aftersaleRecords || [];
+  return s;
+}
 let state = loadState();
 let editSection = 'service';
-let wpsRecords = [];
 
 function persist(){ localStorage.setItem(getUserKey(), JSON.stringify(state)); renderAll(); }
 function esc(v){ return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])) }
@@ -185,61 +196,59 @@ function showView(id){
  if(id==='tools') renderTools();
 }
 
-/* 3. 精确匹配 WPS 在线表结构 (A列:订单号, B列:平台, D列:日期, E列:原因, H列:处理措施) */
-async function syncWPSAfterSaleData(){
- try{
-   const res = await fetch(PROXY_API);
-   if(!res.ok) throw new Error("代理通信失败");
-   const text = await res.text();
-   parseAndRenderWPS(text);
- }catch(e){
-   // 如果中转代理失败，直接请求
+/* 3. 售后 Excel 文件在线读取 */
+function uploadAftersaleExcel(event){
+ const file = event.target.files[0];
+ if(!file) return;
+ const reader = new FileReader();
+ reader.onload = function(e){
    try{
-     const res2 = await fetch(`https://www.kdocs.cn/api/v3/ide/file/clXtgrfZIeo9/download`);
-     const text2 = await res2.text();
-     parseAndRenderWPS(text2);
-   }catch(err){
-     console.warn("WPS 同步提示:", err);
-   }
- }
-}
+     const data = new Uint8Array(e.target.result);
+     const wb = XLSX.read(data, {type: 'array'});
+     const ws = wb.Sheets[wb.SheetNames[0]];
+     const json = XLSX.utils.sheet_to_json(ws, {header: 1});
 
-function parseAndRenderWPS(text){
-  const lines = text.split('\n');
-  wpsRecords = [];
-  lines.forEach((line, idx)=>{
-     if(idx===0 || !line.trim()) return;
-     const cols = line.split(',').map(c=>c.replace(/"/g,'').trim());
-     if(cols.length>=4){
-       let order = cols[0]; // A列: 订单号
-       let platform = cols[1]; // B列: 平台
-       let dateStr = cols[3]; // D列: 退货日期 (如 2026/9/8)
-       let reason = cols[4] || '-'; // E列: 原因
-       let action = cols[7] || cols[cols.length-1] || '-'; // H列: 措施
+     let imported = [];
+     json.forEach((row, idx)=>{
+       if(idx === 0 || !row || row.length < 2) return;
+       let order = String(row[0]||'').trim(); // A列
+       let platform = String(row[1]||'').trim(); // B列
+       let dateStr = String(row[3]||'').trim(); // D列
+       let reason = String(row[4]||'-').trim(); // E列
+       let action = String(row[7]||row[row.length-1]||'-').trim(); // H列
 
-       // 只要表格有该行数据就自动计入售后
        if(order && dateStr){
-         // 判断是否挽回：重发/补发/挽回成功/部分退款，且非全额退款
          let isRec = action.includes('挽回') || action.includes('重发') || action.includes('补发') || action.includes('部分退款');
-         wpsRecords.push({
-           order: order,
-           platform: platform,
-           date: dateStr,
-           reason: reason,
-           action: action,
-           recover: isRec ? 'yes' : 'no'
+         imported.push({
+           order: order, platform: platform, date: dateStr, reason: reason, action: action, recover: isRec ? 'yes' : 'no'
          });
        }
+     });
+
+     if(imported.length > 0){
+       state.aftersaleRecords = imported;
+       persist();
+       alert(`✅ 成功上传并分析了 ${imported.length} 条售后订单数据！`);
+     } else {
+       alert('未检测到有效售后订单数据，请确认表格 A列为订单号、D列为日期。');
      }
-  });
-  renderHomeStats();
+   }catch(err){ alert('解析售后 Excel 失败，请确认文件是否格式规范。'); }
+ };
+ reader.readAsArrayBuffer(file);
+}
+
+function clearAftersaleData(){
+  if(confirm('确定要清空已上传保存的售后数据吗？')){
+    state.aftersaleRecords = [];
+    persist();
+  }
 }
 
 function renderHomeStats(){
+ const records = state.aftersaleRecords || [];
  const d=new Date(), y=String(d.getFullYear()), m=String(d.getMonth()+1).padStart(2,'0');
- // 格式标准化匹配 2026/9 或 2026-09
- const mr=wpsRecords.filter(x=>x.date.includes(`${y}/${d.getMonth()+1}`) || x.date.includes(`${y}-${m}`));
- const yr=wpsRecords.filter(x=>x.date.includes(y));
+ const mr=records.filter(x=>x.date.includes(`${y}/${d.getMonth()+1}`) || x.date.includes(`${y}-${m}`));
+ const yr=records.filter(x=>x.date.includes(y));
 
  const mRec = mr.filter(x=>x.recover==='yes').length;
  const yRec = yr.filter(x=>x.recover==='yes').length;
@@ -251,16 +260,16 @@ function renderHomeStats(){
  document.getElementById('yearRate').innerHTML=yRate+'<small>%</small>';
  document.getElementById('yearOrders').innerHTML=yr.length+'<small> 单</small>';
  
- document.getElementById('monthNote').textContent=`WPS已登记本月 ${mr.length} 单 · 挽回 ${mRec} 单`;
- document.getElementById('yearNote').textContent=`WPS已登记本年 ${yr.length} 单 · 挽回 ${yRec} 单`;
+ document.getElementById('monthNote').textContent=records.length?`已分析本月 ${mr.length} 单 · 挽回 ${mRec} 单`:'请上传售后表格';
+ document.getElementById('yearNote').textContent=records.length?`已分析本年 ${yr.length} 单 · 挽回 ${yRec} 单`:'请上传售后表格';
  
  document.getElementById('mrec').textContent=mRec;
  document.getElementById('mun').textContent=mr.length - mRec;
  document.getElementById('yrec').textContent=yRec;
  document.getElementById('yun').textContent=yr.length - yRec;
 
- const recent=[...wpsRecords].slice(0,10);
- document.getElementById('records').innerHTML=recent.length?recent.map(x=>`<tr><td><b>${esc(x.order)}</b></td><td>${esc(x.platform)}</td><td>${esc(x.date)}</td><td>${esc(x.reason)}</td><td><span class="${x.recover==='yes'?'yes':'no'}">${esc(x.action)}</span></td></tr>`).join(''):`<tr><td colspan="5"><div class="empty">暂无 WPS 在线表抓取到的数据</div></td></tr>`;
+ const recent=[...records].slice(0,15);
+ document.getElementById('records').innerHTML=recent.length?recent.map(x=>`<tr><td><b>${esc(x.order)}</b></td><td>${esc(x.platform)}</td><td>${esc(x.date)}</td><td>${esc(x.reason)}</td><td><span class="${x.recover==='yes'?'yes':'no'}">${esc(x.action)}</span></td></tr>`).join(''):`<tr><td colspan="5"><div class="empty">暂无数据。点击上方“选择并上传售后 Excel/WPS 表格”一键导入</div></td></tr>`;
 }
 
 /* 4. 待办与紧急问题 */
@@ -284,7 +293,7 @@ function addTodo(){let x=prompt('请输入今日待办');if(x&&x.trim()){state.t
 function toggleTodo(i){state.todos[i].done=!state.todos[i].done;persist()}
 function delTodo(i){state.todos.splice(i,1);persist()}
 
-/* 5. 智能按 1.2.3.4 或每行拆分上传文件 */
+/* 5. 客服板块按 1.2.3.4 或每行拆分上传文件 */
 function handleScriptUpload(event){
  const file = event.target.files[0];
  if(!file) return;
@@ -324,7 +333,6 @@ function handleScriptUpload(event){
    const reader=new FileReader();
    reader.onload=function(e){
      const text = e.target.result;
-     // 正则自动识别 1. 2. 3. 4. 进行分块拆分
      const blocks = text.split(/\n(?=\d+[\.、\s])/);
      if(blocks.length > 1){
        blocks.forEach((b)=>{
@@ -439,7 +447,7 @@ function exportBackup(){
  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a');
  a.href=URL.createObjectURL(blob); a.download='VickyWork-backup-'+today()+'.json'; a.click();
 }
-function resetData(){ if(confirm('清空当前账号的所有本地存储？')){ state.urgent=[];state.todos=[];state.contents={service:[],product:[],platform:[],shopify:[],account:[]}; persist(); } }
+function resetData(){ if(confirm('清空当前账号的所有本地存储？')){ state.urgent=[];state.todos=[];state.aftersaleRecords=[];state.contents={service:[],product:[],platform:[],shopify:[],account:[]}; persist(); } }
 document.getElementById('dark').onclick=()=>{ state.dark=!state.dark; persist(); };
 document.getElementById('hamb').onclick=()=>document.getElementById('nav').classList.toggle('open');
 
@@ -472,7 +480,6 @@ function clock(){
 
 clock();
 renderAll();
-syncWPSAfterSaleData(); // 自动通过中转代理拉取 WPS 数据
 setInterval(clock,60000);
 </script>
 </body>
