@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f487b8">
 <title>VickyWork 3.0 · 跨境运营工作台</title>
-<!-- 引入 SheetJS 库用于解析 Excel / CSV 文件 -->
+<!-- 引入 SheetJS 解析库 -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{--bg:#f5f6fb;--card:#fff;--text:#202638;--muted:#7c8497;--line:#e7eaf1;--accent:#f487b8;--accent2:#ff9bc6;--shadow:0 10px 28px rgba(34,45,75,.08);--radius:20px}
@@ -57,7 +57,6 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 <section class="view active" id="home">
   <div class="hero"><h1 id="greet">下午好 🌤️</h1><p id="heroDate"></p><div class="tip">💡 <span id="tipText">运营小贴士：每天结束前花 2 分钟记录售后数据，月底复盘会轻松很多。</span></div></div>
   
-  <!-- 4 个售后核心指标卡片 -->
   <div class="stats">
     <div class="stat s1"><div class="t">🎯 本月售后挽回率</div><div class="v" id="monthRate">0<small>%</small></div><div class="n" id="monthNote">请先上传售后表格</div></div>
     <div class="stat s2"><div class="t">📦 本月售后订单</div><div class="v" id="monthOrders">0<small> 单</small></div><div class="n">售后表格累计本月订单</div></div>
@@ -70,23 +69,41 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
     <div class="card"><div class="head"><div class="title">📋 今日待办 <span class="badge" id="todoText">0/0 完成</span></div><button class="btn primary small" onclick="addTodo()">＋任务</button></div><div class="progress"><i id="todoProgress"></i></div><div class="list" id="todoList"></div></div>
   </div>
 
-  <!-- 售后表格上传控制面板 -->
+  <!-- 售后表格上传与映射配置 -->
   <div class="card">
     <div class="head">
       <div class="title">📈 售后表格 Excel / WPS 上传与分析</div>
-      <label class="btn primary" style="cursor:pointer">
-        📤 选择并上传售后 Excel/WPS 表格
-        <input type="file" id="aftersaleExcelInput" hidden accept=".xlsx,.xls,.csv" onchange="uploadAftersaleExcel(event)">
-      </label>
+      <div style="display:flex;gap:8px;">
+        <button class="btn small" onclick="openMappingModal()">⚙️ 字段映射设置</button>
+        <label class="btn primary" style="cursor:pointer">
+          📤 上传售后表格
+          <input type="file" id="aftersaleExcelInput" hidden accept=".xlsx,.xls,.csv" onchange="uploadAftersaleExcel(event)">
+        </label>
+      </div>
     </div>
-    <p class="subtle" style="margin-top:-8px;margin-bottom:12px">支持匹配表格中：A列(订单号)、B列(平台)、D列(日期)、E列(原因)、H列(处理措施)。选择文件后自动解析计算。</p>
+    <p class="subtle" style="margin-top:-8px;margin-bottom:12px" id="mappingTip">当前映射列配置：A列(订单号)、B列(平台)、D列(退货日期)、E列(原因)、H列(处理措施)</p>
     <div class="mini"><div><span>本月已挽回</span><b id="mrec">0</b></div><div><span>本月未挽回</span><b id="mun">0</b></div><div><span>本年已挽回</span><b id="yrec">0</b></div><div><span>本年未挽回</span><b id="yun">0</b></div></div>
   </div>
 
-  <div class="card"><div class="head"><div class="title">🧾 最近售后记录</div><button class="btn small danger" onclick="clearAftersaleData()">清空已存记录</button></div><div class="tablewrap"><table><thead><tr><th>订单号 (A列)</th><th>平台 (B列)</th><th>退货日期 (D列)</th><th>原因 (E列)</th><th>处理措施 (H列)</th></tr></thead><tbody id="records"></tbody></table></div></div>
+  <!-- 售后数据表格记录与在线编辑 -->
+  <div class="card">
+    <div class="head">
+      <div class="title">🧾 最近售后记录</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn small primary" onclick="addSingleRecordPrompt()">＋ 手动新增一条</button>
+        <button class="btn small danger" onclick="clearAftersaleData()">清空数据</button>
+      </div>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead id="tableHeader"></thead>
+        <tbody id="records"></tbody>
+      </table>
+    </div>
+  </div>
 </section>
 
-<!-- 2. 客服中心 (支持智能拆分上传) -->
+<!-- 2. 客服中心 -->
 <section class="view" id="service"><h2 class="page-title">💬 客服中心</h2><p class="desc">话术、FAQ、模板均支持智能拆分解析上传。</p><div class="editbar"><button class="btn primary" onclick="openContent('service')">＋ 新增客服内容</button><label class="btn" style="cursor:pointer">📄 上传话术/Excel表格<input type="file" id="scriptFileInput" hidden accept=".xlsx,.xls,.txt,.md,.csv,.json" onchange="handleScriptUpload(event)"></label><span class="subtle">Excel / 文本上传后将按 1.2.3.4 或每行自动拆分成独立卡片</span></div><div class="content-grid" id="serviceContent" style="margin-top:16px"></div></section>
 
 <!-- 3. 产品运营 -->
@@ -110,14 +127,34 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 <div class="card"><div class="head"><div class="title">🎨 全局外观</div></div><div class="formgrid"><div class="field"><label>工作台名称</label><input class="input" id="setName"></div><div class="field"><label>副标题</label><input class="input" id="setSub"></div><div class="field"><label>主色</label><div class="colorline"><input type="color" id="setColor"></div></div><div class="field"><label>首页运营小贴士</label><input class="input" id="setTip"></div></div><div class="actions"><button class="btn primary" onclick="saveAppearance()">保存外观</button></div></div>
 <div class="card"><div class="head"><div class="title">💾 数据备份</div></div><button class="btn primary" onclick="exportBackup()">导出 JSON</button> <button class="btn" onclick="document.getElementById('backupFile').click()">导入 JSON</button> <button class="btn danger" onclick="resetData()">清空账号本地数据</button><input type="file" id="backupFile" hidden accept=".json"></div>
 </section>
-<div class="subtle" style="text-align:center;padding:4px 0 30px">VickyWork 3.0 · 本地 Excel 解析 + 账号持久化存储</div>
+<div class="subtle" style="text-align:center;padding:4px 0 30px">VickyWork 3.0 · 自定义字段映射 + 本地 Excel 解析</div>
 </main>
 
-<!-- 内容 Modal 弹窗 -->
+<!-- 内容 Modal -->
 <div class="modalbg" id="contentModal"><div class="modal"><h2 id="contentModalTitle">新增内容</h2><div class="formgrid">
 <div class="field"><label>标题</label><input class="input" id="cTitle" placeholder="标题描述"></div><div class="field"><label>图标</label><input class="input" id="cIcon" value="📝"></div>
 <div class="field full"><label>内容</label><textarea class="textarea" id="cBody" rows="9" placeholder="粘贴详细内容..."></textarea></div>
 </div><div class="actions"><button class="btn" onclick="closeModal('contentModal')">取消</button><button class="btn primary" onclick="saveContent()">保存内容</button></div></div></div>
+
+<!-- 字段映射设置 Modal -->
+<div class="modalbg" id="mappingModal">
+  <div class="modal">
+    <h2>⚙️ 售后表格字段与列映射设置</h2>
+    <p class="subtle" style="margin-top:-10px;margin-bottom:16px">请设置 Excel 中的字母列（如 A, B, D, E, H）与页面字段的对应关系：</p>
+    <div class="formgrid">
+      <div class="field"><label>订单号对应列字母</label><input class="input" id="colOrder" value="A"></div>
+      <div class="field"><label>平台对应列字母</label><input class="input" id="colPlatform" value="B"></div>
+      <div class="field"><label>退货日期对应列字母</label><input class="input" id="colDate" value="D"></div>
+      <div class="field"><label>原因对应列字母</label><input class="input" id="colReason" value="E"></div>
+      <div class="field"><label>处理措施对应列字母</label><input class="input" id="colAction" value="H"></div>
+      <div class="field full"><label>自定义额外显示字段（逗号分隔，如：店铺:C,WhatsUP:G）</label><input class="input" id="colExtra" placeholder="例如: 店铺:C, 备注:F"></div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="closeModal('mappingModal')">取消</button>
+      <button class="btn primary" onclick="saveMappingSettings()">保存配置</button>
+    </div>
+  </div>
+</div>
 
 <script>
 let currentUser = localStorage.getItem('vicky_current_user') || 'guest';
@@ -137,6 +174,7 @@ const DEFAULT_NAV=[
 const defaultState={
   appearance:{name:'VickyWork',sub:'跨境运营工作台',color:'#f487b8',tip:'运营小贴士：每天结束前花 2 分钟记录售后数据，月底复盘会轻松很多。'},
   nav:DEFAULT_NAV,urgent:[],todos:[],aftersaleRecords:[],
+  columnMapping:{order:'A',platform:'B',date:'D',reason:'E',action:'H',extra:''},
   contents:{service:[],product:[],platform:[],shopify:[],account:[]},
   dark:false
 };
@@ -145,6 +183,7 @@ function getUserKey(){ return 'vickywork_v3_' + currentUser; }
 function loadState(){ 
   let s = JSON.parse(localStorage.getItem(getUserKey())||'null')||defaultState; 
   s.aftersaleRecords = s.aftersaleRecords || [];
+  s.columnMapping = s.columnMapping || defaultState.columnMapping;
   return s;
 }
 let state = loadState();
@@ -153,6 +192,30 @@ let editSection = 'service';
 function persist(){ localStorage.setItem(getUserKey(), JSON.stringify(state)); renderAll(); }
 function esc(v){ return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])) }
 function today(){ return new Date().toISOString().slice(0,10); }
+
+/* 列字母转数字序号 (A->0, B->1, D->3 ...) */
+function colToIdx(colStr){
+  if(!colStr) return -1;
+  colStr = colStr.trim().toUpperCase();
+  let idx = 0;
+  for (let i = 0; i < colStr.length; i++) {
+    idx = idx * 26 + (colStr.charCodeAt(i) - 64);
+  }
+  return idx - 1;
+}
+
+/* Excel 序列号日期转换 (修复 45652 变成 2026/9/12) */
+function formatExcelDate(numOrStr){
+  if(!numOrStr) return '-';
+  if(typeof numOrStr === 'number' || (!isNaN(numOrStr) && Number(numOrStr) > 30000)){
+    const date = new Date((Number(numOrStr) - (25567 + 2)) * 86400 * 1000);
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}/${m}/${d}`;
+  }
+  return String(numOrStr).trim();
+}
 
 /* 1. 账号与登录系统 */
 function showAuthModal(){ document.getElementById('authModal').style.display = 'flex'; }
@@ -196,7 +259,32 @@ function showView(id){
  if(id==='tools') renderTools();
 }
 
-/* 3. 售后 Excel 文件在线读取 */
+/* 3. 字段映射配置与 Excel 上传 */
+function openMappingModal(){
+  const m = state.columnMapping;
+  document.getElementById('colOrder').value = m.order || 'A';
+  document.getElementById('colPlatform').value = m.platform || 'B';
+  document.getElementById('colDate').value = m.date || 'D';
+  document.getElementById('colReason').value = m.reason || 'E';
+  document.getElementById('colAction').value = m.action || 'H';
+  document.getElementById('colExtra').value = m.extra || '';
+  document.getElementById('mappingModal').classList.add('show');
+}
+
+function saveMappingSettings(){
+  state.columnMapping = {
+    order: document.getElementById('colOrder').value.trim().toUpperCase(),
+    platform: document.getElementById('colPlatform').value.trim().toUpperCase(),
+    date: document.getElementById('colDate').value.trim().toUpperCase(),
+    reason: document.getElementById('colReason').value.trim().toUpperCase(),
+    action: document.getElementById('colAction').value.trim().toUpperCase(),
+    extra: document.getElementById('colExtra').value.trim()
+  };
+  closeModal('mappingModal');
+  persist();
+  alert('列映射配置保存成功！');
+}
+
 function uploadAftersaleExcel(event){
  const file = event.target.files[0];
  if(!file) return;
@@ -208,16 +296,24 @@ function uploadAftersaleExcel(event){
      const ws = wb.Sheets[wb.SheetNames[0]];
      const json = XLSX.utils.sheet_to_json(ws, {header: 1});
 
+     const m = state.columnMapping;
+     const idxOrder = colToIdx(m.order);
+     const idxPlatform = colToIdx(m.platform);
+     const idxDate = colToIdx(m.date);
+     const idxReason = colToIdx(m.reason);
+     const idxAction = colToIdx(m.action);
+
      let imported = [];
      json.forEach((row, idx)=>{
-       if(idx === 0 || !row || row.length < 2) return;
-       let order = String(row[0]||'').trim(); // A列
-       let platform = String(row[1]||'').trim(); // B列
-       let dateStr = String(row[3]||'').trim(); // D列
-       let reason = String(row[4]||'-').trim(); // E列
-       let action = String(row[7]||row[row.length-1]||'-').trim(); // H列
+       if(idx === 0 || !row || row.length === 0) return;
+       
+       let order = String(row[idxOrder]||'').trim();
+       let platform = String(row[idxPlatform]||'').trim();
+       let dateStr = formatExcelDate(row[idxDate]);
+       let reason = String(row[idxReason]||'-').trim();
+       let action = String(row[idxAction]||'-').trim();
 
-       if(order && dateStr){
+       if(order && dateStr !== '-'){
          let isRec = action.includes('挽回') || action.includes('重发') || action.includes('补发') || action.includes('部分退款');
          imported.push({
            order: order, platform: platform, date: dateStr, reason: reason, action: action, recover: isRec ? 'yes' : 'no'
@@ -228,26 +324,69 @@ function uploadAftersaleExcel(event){
      if(imported.length > 0){
        state.aftersaleRecords = imported;
        persist();
-       alert(`✅ 成功上传并分析了 ${imported.length} 条售后订单数据！`);
+       alert(`✅ 成功根据新的配置列提取 ${imported.length} 条售后订单数据！`);
      } else {
-       alert('未检测到有效售后订单数据，请确认表格 A列为订单号、D列为日期。');
+       alert('未检测到有效数据，请在“字段映射设置”中检查列字母是否准确。');
      }
-   }catch(err){ alert('解析售后 Excel 失败，请确认文件是否格式规范。'); }
+   }catch(err){ alert('解析售后 Excel 失败，请确认文件完整。'); }
  };
  reader.readAsArrayBuffer(file);
 }
 
 function clearAftersaleData(){
-  if(confirm('确定要清空已上传保存的售后数据吗？')){
+  if(confirm('确定要清空所有已保存的售后记录吗？')){
     state.aftersaleRecords = [];
     persist();
   }
 }
 
+function editRecord(index){
+  const r = state.aftersaleRecords[index];
+  if(!r) return;
+  const newOrder = prompt("修改订单号：", r.order);
+  if(newOrder === null) return;
+  const newDate = prompt("修改日期 (格式如 2026/9/12)：", r.date);
+  if(newDate === null) return;
+  const newAction = prompt("修改处理措施：", r.action);
+  if(newAction === null) return;
+
+  r.order = newOrder.trim();
+  r.date = newDate.trim();
+  r.action = newAction.trim();
+  r.recover = (r.action.includes('挽回') || r.action.includes('重发') || r.action.includes('补发') || r.action.includes('部分退款')) ? 'yes' : 'no';
+
+  persist();
+}
+
+function deleteRecord(index){
+  if(confirm('确定要删除本条售后记录吗？')){
+    state.aftersaleRecords.splice(index, 1);
+    persist();
+  }
+}
+
+function addSingleRecordPrompt(){
+  const order = prompt("请输入订单号：");
+  if(!order) return;
+  const platform = prompt("请输入平台（如 eBay / Amazon）：", "eBay");
+  const date = prompt("请输入日期（格式如 2026/9/12）：", new Date().toISOString().slice(0,10).replace(/-/g,'/'));
+  const reason = prompt("请输入原因：", "与描述不符");
+  const action = prompt("请输入处理措施：", "已退款");
+
+  const isRec = action.includes('挽回') || action.includes('重发') || action.includes('补发') || action.includes('部分退款');
+  state.aftersaleRecords.unshift({
+    order, platform: platform||'-', date: date||'-', reason: reason||'-', action: action||'-', recover: isRec?'yes':'no'
+  });
+  persist();
+}
+
 function renderHomeStats(){
  const records = state.aftersaleRecords || [];
- const d=new Date(), y=String(d.getFullYear()), m=String(d.getMonth()+1).padStart(2,'0');
- const mr=records.filter(x=>x.date.includes(`${y}/${d.getMonth()+1}`) || x.date.includes(`${y}-${m}`));
+ const m = state.columnMapping;
+ document.getElementById('mappingTip').textContent = `当前映射列配置：${m.order}列(订单号)、${m.platform}列(平台)、${m.date}列(日期)、${m.reason}列(原因)、${m.action}列(处理措施)`;
+
+ const d=new Date(), y=String(d.getFullYear()), currMonthStr = `${y}/${d.getMonth()+1}`;
+ const mr=records.filter(x=>x.date.includes(currMonthStr) || x.date.includes(`${y}-${String(d.getMonth()+1).padStart(2,'0')}`));
  const yr=records.filter(x=>x.date.includes(y));
 
  const mRec = mr.filter(x=>x.recover==='yes').length;
@@ -268,8 +407,31 @@ function renderHomeStats(){
  document.getElementById('yrec').textContent=yRec;
  document.getElementById('yun').textContent=yr.length - yRec;
 
- const recent=[...records].slice(0,15);
- document.getElementById('records').innerHTML=recent.length?recent.map(x=>`<tr><td><b>${esc(x.order)}</b></td><td>${esc(x.platform)}</td><td>${esc(x.date)}</td><td>${esc(x.reason)}</td><td><span class="${x.recover==='yes'?'yes':'no'}">${esc(x.action)}</span></td></tr>`).join(''):`<tr><td colspan="5"><div class="empty">暂无数据。点击上方“选择并上传售后 Excel/WPS 表格”一键导入</div></td></tr>`;
+ // 表头动态渲染
+ document.getElementById('tableHeader').innerHTML = `
+   <tr>
+     <th>订单号 (${m.order}列)</th>
+     <th>平台 (${m.platform}列)</th>
+     <th>退货日期 (${m.date}列)</th>
+     <th>原因 (${m.reason}列)</th>
+     <th>处理措施 (${m.action}列)</th>
+     <th>操作</th>
+   </tr>
+ `;
+
+ const recent=[...records].slice(0,20);
+ document.getElementById('records').innerHTML=recent.length?recent.map((x,idx)=>`
+   <tr>
+     <td><b>${esc(x.order)}</b></td>
+     <td>${esc(x.platform)}</td>
+     <td>${esc(x.date)}</td>
+     <td>${esc(x.reason)}</td>
+     <td><span class="${x.recover==='yes'?'yes':'no'}">${esc(x.action)}</span></td>
+     <td>
+       <button class="btn small" onclick="editRecord(${idx})">编辑</button>
+       <button class="btn small danger" onclick="deleteRecord(${idx})">删除</button>
+     </td>
+   </tr>`).join(''):`<tr><td colspan="6"><div class="empty">暂无数据。点击“⚙️ 字段映射设置”确认配置后上传表格</div></td></tr>`;
 }
 
 /* 4. 待办与紧急问题 */
@@ -293,7 +455,7 @@ function addTodo(){let x=prompt('请输入今日待办');if(x&&x.trim()){state.t
 function toggleTodo(i){state.todos[i].done=!state.todos[i].done;persist()}
 function delTodo(i){state.todos.splice(i,1);persist()}
 
-/* 5. 客服板块按 1.2.3.4 或每行拆分上传文件 */
+/* 5. 客服板块拆分文件 */
 function handleScriptUpload(event){
  const file = event.target.files[0];
  if(!file) return;
