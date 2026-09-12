@@ -8,7 +8,7 @@
 <style>
 :root{--bg:#f5f6fb;--card:#fff;--text:#202638;--muted:#7c8497;--line:#e7eaf1;--accent:#f487b8;--accent2:#ff9bc6;--shadow:0 10px 28px rgba(34,45,75,.08);--radius:20px}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,"Segoe UI","Microsoft YaHei",Arial,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}
-.top{height:68px;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;position:sticky;top:0;z-index:30}.brand{display:flex;align-items:center;gap:9px;min-width:245px}.logo{font-size:26px}.brand b{font-size:21px;color:var(--accent)}.brand span{font-size:12px;color:var(--muted)}.nav{display:flex;gap:4px;flex:1}.nav button{border:0;background:transparent;padding:10px 12px;border-radius:12px;color:#596174;font-weight:700}.nav button:hover{background:#fff0f7}.nav button.active{background:var(--accent);color:#fff}.topright{display:flex;gap:8px;align-items:center}.pill,.icon{border:1px solid var(--line);background:#fff;border-radius:12px;padding:9px 11px;color:#626b7e}.icon{width:40px;height:40px;padding:0}
+.top{height:68px;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;position:sticky;top:0;z-index:30}.brand{display:flex;align-items:center;gap:9px;min-width:245px}.logo{font-size:26px}.brand b{font-size:21px;color:var(--accent)}.brand span{font-size:12px;color:var(--muted)}.nav{display:flex;gap:4px;flex:1}.nav button{border:0;background:transparent;padding:10px 12px;border-radius:12px;color:#596174;font-weight:700}.nav button:hover{background:#fff0f7}.nav button.active{background:var(--accent);color:#fff}.topright{display:flex;gap:8px;align-items:center}.pill,.icon{border:1px solid var(--line);background:#fff;border-radius:12px;padding:9px 11px;color:#626b7e}.icon{width:40px;height:40px;padding:0;display:inline-flex;align-items:center;justify-content:center}
 main{max-width:1400px;margin:28px auto;padding:0 24px}.view{display:none}.view.active{display:block}.hero{padding:28px;border-radius:24px;background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff;position:relative;overflow:hidden;box-shadow:0 15px 36px rgba(244,135,184,.2);margin-bottom:18px}.hero h1{margin:0 0 6px;font-size:28px}.hero p{margin:0 0 18px;opacity:.93}.tip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.4);border-radius:13px;padding:11px 14px;position:relative;z-index:1}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.stat{padding:20px;border-radius:20px;color:#fff;min-height:145px;box-shadow:var(--shadow);position:relative;overflow:hidden}.stat:after{content:"";width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.12);position:absolute;right:-25px;bottom:-45px}.s1{background:linear-gradient(135deg,#ff9b0d,#ff8617)}.s2{background:linear-gradient(135deg,#318fe3,#1bb8ce)}.s3{background:linear-gradient(135deg,#f23d54,#f54165)}.s4{background:linear-gradient(135deg,#21ae79,#2dc88f)}.stat .t{font-weight:800}.stat .v{font-size:34px;font-weight:900;margin:13px 0 3px}.stat small{font-size:17px}.stat .n{font-size:12px;opacity:.94}
 .grid2{display:grid;grid-template-columns:1.05fr .95fr;gap:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}.head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}.title{font-size:18px;font-weight:850;display:flex;gap:8px;align-items:center}.btn{border:1px solid var(--line);background:#fff;color:#3d4658;border-radius:11px;padding:9px 13px;font-weight:750}.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}.btn.danger{color:#d84058}.btn.small{padding:7px 10px;font-size:13px}.input,.select,.textarea{width:100%;border:1px solid var(--line);background:#fbfcff;border-radius:11px;padding:10px 12px;outline:0}.input:focus,.select:focus,.textarea:focus{border-color:#e9a4c3;box-shadow:0 0 0 3px rgba(244,135,184,.1)}.row{display:flex;gap:9px}.row>*:first-child{flex:1}.list{display:flex;flex-direction:column;gap:8px;margin-top:12px}.item{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:11px;padding:10px 12px}.item.done{text-decoration:line-through;color:#999}.grow{flex:1}.x{border:0;background:transparent;color:#a3a9b5;font-size:18px}.check{accent-color:var(--accent)}.empty{background:#fafbfe;border-radius:12px;padding:25px;text-align:center;color:var(--muted)}.progress{height:8px;background:#edf0f5;border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px}.badge{font-size:12px;padding:5px 9px;border-radius:999px;background:#fff0f3;color:#df4560}
@@ -50,7 +50,7 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 <section class="view" id="product"><h2 class="page-title">📦 产品运营</h2><p class="desc">选品、Listing、成本、上架流程等内容均可自行新增和修改。</p><button class="btn primary" onclick="openContent('product')">＋ 新增产品内容</button><div class="content-grid" id="productContent" style="margin-top:16px"></div></section>
 <section class="view" id="platform"><h2 class="page-title">🌍 平台运营</h2><p class="desc">Amazon / eBay / Walmart 的操作资料、规则和 SOP 集中管理。</p><button class="btn primary" onclick="openContent('platform')">＋ 新增平台内容</button><div class="content-grid" id="platformContent" style="margin-top:16px"></div></section>
 <section class="view" id="shopify"><h2 class="page-title">🛍 独立站</h2><p class="desc">Shopify 页面、SEO、转化、广告和内容资料集中保存。</p><button class="btn primary" onclick="openContent('shopify')">＋ 新增独立站内容</button><div class="content-grid" id="shopifyContent" style="margin-top:16px"></div></section>
-<section class="view" id="tools"><h2 class="page-title">🛠 工具中心</h2><p class="desc">先保留常用工具入口，后续可继续加入实际计算器。</p><div class="modules" id="toolsModules"></div></section>
+<section class="view" id="tools"><h2 class="page-title">🛠 工具中心</h2><p class="desc">实用跨境实用工具，支持在线一键更新最新汇率。</p><div id="toolsModules"></div></section>
 <section class="view" id="account"><h2 class="page-title">🔐 账号环境</h2><p class="desc">账号、IP、设备和风控资料可以继续按你的工作方式扩展。</p><button class="btn primary" onclick="openContent('account')">＋ 新增账号资料</button><div class="content-grid" id="accountContent" style="margin-top:16px"></div></section>
 
 <section class="view" id="settings">
@@ -62,21 +62,21 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 <div class="subtle" style="text-align:center;padding:4px 0 30px">VickyWork 2.0 · 数据优先 · 可自定义 · 浏览器本地版</div>
 </main>
 
-<!-- 售后 -->
+<!-- 售后弹窗 -->
 <div class="modalbg" id="recordModal"><div class="modal"><h2>新增售后记录</h2><div class="formgrid">
 <div class="field"><label>日期</label><input class="input" id="rDate" type="date"></div><div class="field"><label>平台</label><select class="select" id="rPlatform"><option>Amazon</option><option>eBay</option><option>Walmart</option><option>独立站</option><option>其他</option></select></div>
 <div class="field"><label>订单号</label><input class="input" id="rOrder"></div><div class="field"><label>售后类型</label><select class="select" id="rType"><option>退款</option><option>退货</option><option>补发</option><option>物流异常</option><option>其他</option></select></div>
 <div class="field full"><label>是否挽回</label><div class="row"><label class="btn"><input type="radio" name="rec" value="yes" checked> 已挽回</label><label class="btn"><input type="radio" name="rec" value="no"> 未挽回</label></div></div>
 <div class="field full"><label>备注</label><textarea class="textarea" id="rNote" rows="3"></textarea></div></div><div class="actions"><button class="btn" onclick="closeModal('recordModal')">取消</button><button class="btn primary" onclick="saveRecord()">保存</button></div></div></div>
 
-<!-- 内容 -->
+<!-- 内容弹窗 -->
 <div class="modalbg" id="contentModal"><div class="modal"><h2 id="contentModalTitle">新增内容</h2><div class="formgrid">
 <div class="field"><label>标题</label><input class="input" id="cTitle" placeholder="例如：退款挽回话术"></div><div class="field"><label>图标</label><input class="input" id="cIcon" value="📝" placeholder="例如 💬"></div>
 <div class="field full"><label>内容</label><textarea class="textarea" id="cBody" rows="9" placeholder="可以直接粘贴话术、SOP、FAQ、操作步骤……"></textarea></div>
 <div class="field full"><label>添加图片或文件</label><div class="filebox"><input type="file" id="cFiles" multiple accept="image/*,.txt,.md,.csv,.json,.pdf,.doc,.docx,.xlsx,.xls,.zip"><div class="subtle" style="margin-top:7px">图片会直接显示在内容卡片中；TXT / MD / CSV / JSON 可以读取并填入内容。</div><div id="filePreview"></div></div></div>
 </div><div class="actions"><button class="btn" onclick="closeModal('contentModal')">取消</button><button class="btn primary" onclick="saveContent()">保存内容</button></div></div></div>
 
-<!-- 导航 -->
+<!-- 导航弹窗 -->
 <div class="modalbg" id="navModal"><div class="modal"><h2>新增自定义板块</h2><div class="formgrid"><div class="field"><label>名称</label><input class="input" id="nName" placeholder="例如：社媒运营"></div><div class="field"><label>图标</label><input class="input" id="nIcon" value="📌"></div><div class="field"><label>颜色</label><input type="color" id="nColor" value="#f487b8"></div></div><div class="actions"><button class="btn" onclick="closeModal('navModal')">取消</button><button class="btn primary" onclick="saveNav()">添加</button></div></div></div>
 
 <script>
@@ -145,8 +145,7 @@ async function importScriptFile(){
  const el=document.getElementById('scriptFile');el.click();el.onchange=async()=>{const f=el.files[0];if(!f)return;let text='';if(/\.(txt|md|csv|json)$/i.test(f.name))text=await f.text();document.getElementById('cTitle').value=f.name.replace(/\.[^.]+$/,'');document.getElementById('cBody').value=text;document.getElementById('cIcon').value='💬';editSection='service';document.getElementById('contentModalTitle').textContent='导入客服话术';document.getElementById('contentModal').classList.add('show');el.value=''}
 }
 
-function renderTools(){
-  // 全球主要货币配置列表
+/* ================= 完整汇率与工具中心代码 ================= */
 const CURRENCIES = [
   { code: 'CNY', name: '人民币 CN' },
   { code: 'USD', name: '美元 US' },
@@ -164,7 +163,6 @@ const CURRENCIES = [
   { code: 'RUB', name: '俄罗斯卢布 RU' }
 ];
 
-// 默认基础汇率表 (以 USD 为基准)
 let ratesTable = JSON.parse(localStorage.getItem('vicky_rates')) || {
   USD: 1, CNY: 7.10, EUR: 0.92, GBP: 0.79, JPY: 147.00, CAD: 1.37, AUD: 1.52,
   HKD: 7.82, SGD: 1.35, MXN: 18.20, BRL: 5.45, INR: 83.50, KRW: 1350.00, RUB: 88.50
@@ -226,13 +224,38 @@ function renderToolSubView(){
     renderRateEditTable();
     calcExchangeAll();
   } else if(currentSubTab === 'profit') {
-    container.innerHTML = `<div class="card"><h3>📊 利润计算器</h3><p class="subtle">可在此处接入利润计算逻辑</p></div>`;
+    container.innerHTML = `
+      <div class="card">
+        <div class="head"><div class="title">📊 利润计算器</div></div>
+        <div class="formgrid">
+          <div class="field"><label>售价 ($)</label><input class="input" id="pPrice" type="number" placeholder="例如 29.99" oninput="calcProfitEx()"></div>
+          <div class="field"><label>产品采购成本 (¥)</label><input class="input" id="pCost" type="number" placeholder="例如 35" oninput="calcProfitEx()"></div>
+          <div class="field"><label>头程+尾程运费 (¥)</label><input class="input" id="pShip" type="number" placeholder="例如 25" oninput="calcProfitEx()"></div>
+          <div class="field"><label>平台佣金率 (%)</label><input class="input" id="pFeeRate" type="number" value="15" oninput="calcProfitEx()"></div>
+        </div>
+        <div style="margin-top:16px;padding:14px;background:#fafbfe;border-radius:12px;border:1px solid var(--line);" id="pResEx">
+          <b>预估毛利：¥0.00 | 预估利润率：0%</b>
+        </div>
+      </div>
+    `;
   } else {
-    container.innerHTML = `<div class="card"><h3>📐 尺寸与抛重换算</h3><p class="subtle">可在此处接入体积重换算逻辑</p></div>`;
+    container.innerHTML = `
+      <div class="card">
+        <div class="head"><div class="title">📐 尺寸与抛重换算</div></div>
+        <div class="formgrid">
+          <div class="field"><label>长 (cm)</label><input class="input" id="uL" type="number" oninput="calcVolWeight()"></div>
+          <div class="field"><label>宽 (cm)</label><input class="input" id="uW" type="number" oninput="calcVolWeight()"></div>
+          <div class="field"><label>高 (cm)</label><input class="input" id="uH" type="number" oninput="calcVolWeight()"></div>
+          <div class="field"><label>体积重系数</label><select class="select" id="uDiv" onchange="calcVolWeight()"><option value="6000">6000 (快递/空派)</option><option value="5000">5000 (传统空运)</option></select></div>
+        </div>
+        <div style="margin-top:16px;padding:14px;background:#fafbfe;border-radius:12px;border:1px solid var(--line);" id="uRes">
+          <b>体积重：0.00 kg</b>
+        </div>
+      </div>
+    `;
   }
 }
 
-// 实时计算各币种换算结果
 function calcExchangeAll(){
   const amt = parseFloat(document.getElementById('exAmount').value) || 0;
   const base = document.getElementById('exBase').value;
@@ -253,7 +276,6 @@ function calcExchangeAll(){
   }).join('');
 }
 
-// 渲染可手动修改的汇率输入表
 function renderRateEditTable(){
   const editBox = document.getElementById('rateEditList');
   editBox.innerHTML = CURRENCIES.map(c => `
@@ -267,14 +289,12 @@ function renderRateEditTable(){
   `).join('');
 }
 
-// 手动修改单项汇率并保存
 function updateSingleRate(code, val){
   ratesTable[code] = parseFloat(val) || 1;
   localStorage.setItem('vicky_rates', JSON.stringify(ratesTable));
   calcExchangeAll();
 }
 
-// 在线获取最新汇率接口
 async function fetchOnlineRates(){
   const btn = document.getElementById('updateBtn');
   btn.textContent = '⏳ 更新中...';
@@ -293,85 +313,46 @@ async function fetchOnlineRates(){
       calcExchangeAll();
     }
   } catch(e) {
-    alert('网络连接超时，请检查网络后重试。');
+    alert('网络连接超时，请重试。');
   } finally {
     btn.textContent = '🔄 在线更新汇率';
     btn.disabled = false;
   }
 }
 
-    <div class="module">
-      <div class="module-icon">💰</div>
-      <h3>利润计算</h3>
-      <p>售价、成本、佣金与物流费</p>
-      <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">
-        <input class="input" id="pPrice" type="number" placeholder="售价 ($)" oninput="calcProfit()">
-        <input class="input" id="pCost" type="number" placeholder="产品成本 (¥)" oninput="calcProfit()">
-        <input class="input" id="pShip" type="number" placeholder="头程+尾程运费 (¥)" oninput="calcProfit()">
-        <input class="input" id="pFeeRate" type="number" value="15" placeholder="平台佣金率 (%)" oninput="calcProfit()">
-        <div style="font-weight:bold;color:var(--accent);font-size:13px;margin-top:4px;" id="pRes">毛利: ¥0.00 | 利润率: 0%</div>
-      </div>
-    </div>
-
-    <div class="module">
-      <div class="module-icon">📏</div>
-      <h3>单位转换</h3>
-      <p>跨境常见尺寸与重量换算</p>
-      <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">
-        <div style="display:flex;gap:5px;">
-          <input class="input" id="uLb" type="number" placeholder="磅 (lb)" oninput="calcUnit('lb')">
-          <input class="input" id="uKg" type="number" placeholder="千克 (kg)" oninput="calcUnit('kg')">
-        </div>
-        <div style="display:flex;gap:5px;">
-          <input class="input" id="uIn" type="number" placeholder="英寸 (in)" oninput="calcUnit('in')">
-          <input class="input" id="uCm" type="number" placeholder="厘米 (cm)" oninput="calcUnit('cm')">
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function calcExchange(){
-  const rate = parseFloat(document.getElementById('exRate').value) || 0;
-  const amt = parseFloat(document.getElementById('exAmt').value) || 0;
-  document.getElementById('exRes').textContent = `折合人民币: ¥${(amt * rate).toFixed(2)}`;
-}
-
-function calcProfit(){
+function calcProfitEx(){
   const price = parseFloat(document.getElementById('pPrice').value) || 0;
   const cost = parseFloat(document.getElementById('pCost').value) || 0;
   const ship = parseFloat(document.getElementById('pShip').value) || 0;
   const feeRate = (parseFloat(document.getElementById('pFeeRate').value) || 0) / 100;
-  const rate = parseFloat(document.getElementById('exRate')?.value || 7.25);
-  
-  const revenueRmb = price * rate;
-  const platformFeeRmb = revenueRmb * feeRate;
-  const profit = revenueRmb - cost - ship - platformFeeRmb;
-  const margin = revenueRmb > 0 ? ((profit / revenueRmb) * 100).toFixed(1) : 0;
-  
-  document.getElementById('pRes').textContent = `毛利: ¥${profit.toFixed(2)} | 利润率: ${margin}%`;
+  const rate = ratesTable['CNY'] || 7.10;
+
+  const revRmb = price * rate;
+  const feeRmb = revRmb * feeRate;
+  const profit = revRmb - cost - ship - feeRmb;
+  const margin = revRmb > 0 ? ((profit / revRmb) * 100).toFixed(1) : 0;
+
+  document.getElementById('pResEx').innerHTML = `<b>预估毛利：¥${profit.toFixed(2)} | 预估利润率：${margin}%</b>`;
 }
 
-function calcUnit(type){
-  if(type === 'lb'){
-    const v = parseFloat(document.getElementById('uLb').value) || 0;
-    document.getElementById('uKg').value = v ? (v * 0.453592).toFixed(2) : '';
-  }else if(type === 'kg'){
-    const v = parseFloat(document.getElementById('uKg').value) || 0;
-    document.getElementById('uLb').value = v ? (v / 0.453592).toFixed(2) : '';
-  }else if(type === 'in'){
-    const v = parseFloat(document.getElementById('uIn').value) || 0;
-    document.getElementById('uCm').value = v ? (v * 2.54).toFixed(2) : '';
-  }else if(type === 'cm'){
-    const v = parseFloat(document.getElementById('uCm').value) || 0;
-    document.getElementById('uIn').value = v ? (v / 2.54).toFixed(2) : '';
-  }
+function calcVolWeight(){
+  const l = parseFloat(document.getElementById('uL').value) || 0;
+  const w = parseFloat(document.getElementById('uW').value) || 0;
+  const h = parseFloat(document.getElementById('uH').value) || 0;
+  const div = parseFloat(document.getElementById('uDiv').value) || 6000;
+  const vw = (l * w * h) / div;
+  document.getElementById('uRes').innerHTML = `<b>体积重：${vw.toFixed(2)} kg</b>`;
+}
+
+/* ================= 后台设置逻辑 ================= */
+function renderSettings(){
+ document.getElementById('setName').value=state.appearance.name;document.getElementById('setSub').value=state.appearance.sub;document.getElementById('setColor').value=state.appearance.color;document.getElementById('setTip').value=state.appearance.tip;
+ document.getElementById('navSettings').innerHTML=state.nav.map((n,i)=>`<div class="custom-row"><div class="custom-icon">${esc(n.icon)}</div><input class="input" value="${esc(n.name)}" onchange="editNav(${i},'name',this.value)"><input class="input" type="color" value="${n.color||state.appearance.color}" onchange="editNav(${i},'color',this.value)"><div><button class="btn small" onclick="editNavIcon(${i})">改图标</button> ${n.fixed?'':'<button class="btn small danger" onclick="deleteNav('+i+')">删除</button>'}</div></div>`).join('')
 }
 function saveAppearance(){state.appearance.name=document.getElementById('setName').value.trim()||'VickyWork';state.appearance.sub=document.getElementById('setSub').value.trim()||'跨境运营工作台';state.appearance.color=document.getElementById('setColor').value;state.appearance.tip=document.getElementById('setTip').value.trim();persist();alert('外观已保存')}
 function editNav(i,k,v){state.nav[i][k]=v;persist()}function editNavIcon(i){const v=prompt('输入新的图标，例如 💬 / 📦 / 🌍',state.nav[i].icon);if(v){state.nav[i].icon=v;persist()}}function deleteNav(i){if(confirm('删除这个导航板块？其中的内容不会自动删除。')){const id=state.nav[i].id;state.nav.splice(i,1);const v=document.getElementById(id);if(v)v.remove();persist()}}
 function addNav(){document.getElementById('nName').value='';document.getElementById('nIcon').value='📌';document.getElementById('navModal').classList.add('show')}
 function saveNav(){let name=document.getElementById('nName').value.trim();if(!name)return;let id='custom_'+Date.now();state.nav.splice(state.nav.length-1,0,{id,name,icon:document.getElementById('nIcon').value||'📌',color:document.getElementById('nColor').value});const sec=document.createElement('section');sec.className='view';sec.id=id;sec.innerHTML=`<h2 class="page-title">${esc(state.nav.find(x=>x.id===id).icon)} ${esc(name)}</h2><p class="desc">自定义工作板块</p><button class="btn primary" onclick="openContent('${id}')">＋ 新增内容</button><div class="content-grid" id="${id}Content" style="margin-top:16px"></div>`;document.querySelector('main').insertBefore(sec,document.querySelector('main').lastElementChild);state.contents[id]=[];closeModal('navModal');persist()}
-function editNavIconOnly(){}
 
 function exportBackup(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='VickyWork-backup-'+today()+'.json';a.click();URL.revokeObjectURL(a.href)}
 document.getElementById('backupFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{state=JSON.parse(r.result);persist();alert('导入成功')}catch{alert('JSON备份格式不正确')}};r.readAsText(f)})
@@ -380,6 +361,7 @@ document.getElementById('dark').onclick=()=>{state.dark=!state.dark;persist()};d
 function clock(){const d=new Date(),days=['日','一','二','三','四','五','六'],h=d.getHours();document.getElementById('date').textContent=`📅 ${today()} 周${days[d.getDay()]}`;document.getElementById('heroDate').textContent=`${today()} · 周${days[d.getDay()]} · 又是推进业务的一天`;document.getElementById('greet').textContent=h<12?'早上好 ☀️':h<18?'下午好 🌤️':'晚上好 🌙'}
 function applyAppearance(){document.documentElement.style.setProperty('--accent',state.appearance.color);document.documentElement.style.setProperty('--accent2',state.appearance.color);document.getElementById('brandName').textContent=state.appearance.name;document.getElementById('brandSub').textContent=state.appearance.sub;document.getElementById('tipText').textContent=state.appearance.tip;document.body.classList.toggle('dark',!!state.dark)}
 function renderAll(){applyAppearance();renderNav();renderHome();renderContents('service');renderContents('product');renderContents('platform');renderContents('shopify');renderContents('account');for(const n of state.nav.filter(n=>!['home','service','product','platform','shopify','tools','account','settings'].includes(n.id))){renderContents(n.id)}renderTools();renderSettings()}
+
 clock();renderAll();setInterval(clock,60000);
 </script>
 </body>
