@@ -32,11 +32,111 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 <section class="view active" id="home">
   <div class="hero"><h1 id="greet">早上好 ☀️</h1><p id="heroDate"></p><div class="tip">💡 <span id="tipText">运营小贴士：每天结束前花 2 分钟记录售后数据，月底复盘会轻松很多。</span></div></div>
   <div class="stats">
-    <div class="stat s1"><div class="t" id="st1">🎯 本月售后挽回率</div><div class="v" id="monthRate">0<small>%</small></div><div class="n" id="monthNote"></div></div>
-    <div class="stat s2"><div class="t" id="st2">📦 本月售后订单</div><div class="v" id="monthOrders">0<small> 单</small></div><div class="n">已记录的本月售后订单</div></div>
-    <div class="stat s3"><div class="t" id="st3">📅 本年售后挽回率</div><div class="v" id="yearRate">0<small>%</small></div><div class="n" id="yearNote"></div></div>
-    <div class="stat s4"><div class="t" id="st4">📊 本年售后订单</div><div class="v" id="yearOrders">0<small> 单</small></div><div class="n">当前年份累计售后订单</div></div>
-  </div>
+    // WPS 在线文档转换为直连 CSV 下载链接
+const WPS_SHARE_URL = "https://www.kdocs.cn/l/clXtgrfZIeo9";
+// 转换链接以直接获取数据
+const WPS_DATA_API = `https://www.kdocs.cn/api/v3/ide/file/clXtgrfZIeo9/download`;
+
+async function syncWPSAfterSaleData() {
+  try {
+    // 尝试拉取 WPS 数据
+    const res = await fetch(WPS_DATA_API);
+    if (!res.ok) throw new Error("无法读取 WPS 数据，请确认表格已开启导出权限");
+
+    const text = await res.text();
+    const rows = parseWPSData(text);
+
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+
+    let monthOrders = 0, monthRecovered = 0;
+    let yearOrders = 0, yearRecovered = 0;
+
+    // 遍历表格每一行，按日期和挽回状态汇总
+    rows.forEach(row => {
+      if (!row.date) return;
+      const d = new Date(row.date);
+      if (isNaN(d.getTime())) return;
+
+      const y = d.getFullYear();
+      const m = d.getMonth() + 1;
+
+      // 统计本年数据
+      if (y === currentYear) {
+        yearOrders++;
+        if (row.isRecovered) yearRecovered++;
+
+        // 统计本月数据
+        if (m === currentMonth) {
+          monthOrders++;
+          if (row.isRecovered) monthRecovered++;
+        }
+      }
+    });
+
+    // 计算挽回率 %
+    const monthRate = monthOrders > 0 ? ((monthRecovered / monthOrders) * 100).toFixed(1) : 0;
+    const yearRate = yearOrders > 0 ? ((yearRecovered / yearOrders) * 100).toFixed(1) : 0;
+
+    // 更新面板 UI
+    renderAfterSaleCards({
+      monthOrders, monthRecovered, monthRate,
+      yearOrders, yearRecovered, yearRate
+    });
+
+  } catch (err) {
+    console.warn("WPS 自动同步受阻，切回本地数据源/缓存:", err.message);
+  }
+}
+
+// 解析表格内容（自动适配日期列与挽回状态列）
+function parseWPSData(content) {
+  const lines = content.split('\n').filter(l => l.trim().length > 0);
+  if (lines.length <= 1) return [];
+
+  const data = [];
+  // 忽略表头，从第2行开始解析
+  for (let i = 1; i < lines.length; i++) {
+    const cols = lines[i].split(',').map(c => c.replace(/"/g, '').trim());
+    
+    // 假设：第1列为日期（如 2026-09-12），某列包含“挽回/退款”或“是/否”
+    const dateStr = cols[0];
+    const statusStr = cols.join(' '); // 检查整行是否含有“挽回”或“成功”关键字
+
+    const isRecovered = statusStr.includes('挽回成功') || statusStr.includes('已挽回') || statusStr.includes('是');
+
+    if (dateStr) {
+      data.push({
+        date: dateStr,
+        isRecovered: isRecovered
+      });
+    }
+  }
+  return data;
+}
+
+// 将计算出来的数值刷新到 4 个展示卡片上
+function renderAfterSaleCards(data) {
+  // 1. 本月挽回率
+  const elMonthRate = document.querySelector('.card:nth-child(1) .title-num');
+  if(elMonthRate) elMonthRate.textContent = `${data.monthRate}%`;
+  
+  // 2. 本月售后订单
+  const elMonthOrders = document.querySelector('.card:nth-child(2) .title-num');
+  if(elMonthOrders) elMonthOrders.textContent = `${data.monthOrders} 单`;
+
+  // 3. 本年挽回率
+  const elYearRate = document.querySelector('.card:nth-child(3) .title-num');
+  if(elYearRate) elYearRate.textContent = `${data.yearRate}%`;
+
+  // 4. 本年售后订单
+  const elYearOrders = document.querySelector('.card:nth-child(4) .title-num');
+  if(elYearOrders) elYearOrders.textContent = `${data.yearOrders} 单`;
+}
+
+// 页面载入时自动同步 WPS 表格数据
+window.addEventListener('DOMContentLoaded', syncWPSAfterSaleData);
   <div class="grid2">
     <div class="card"><div class="head"><div class="title">🚨 紧急问题 <span class="badge" id="urgentCount">0 待处理</span></div><button class="btn small" onclick="clearUrgent()">清空已处理</button></div><div class="row"><input class="input" id="urgentInput" placeholder="记录突发问题，例如：差评未响应 / FBA断货预警…"><button class="btn primary" onclick="addUrgent()">添加</button></div><div class="list" id="urgentList"></div></div>
     <div class="card"><div class="head"><div class="title">📋 今日待办 <span class="badge" id="todoText">0/0 完成</span></div><button class="btn primary small" onclick="addTodo()">＋任务</button></div><div class="progress"><i id="todoProgress"></i></div><div class="list" id="todoList"></div></div>
