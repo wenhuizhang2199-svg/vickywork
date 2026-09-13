@@ -1,293 +1,449 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vicky 万能智能工作台 (Powered by Gemini)</title>
-  <style>
-    :root {
-      --primary: #4f46e5;
-      --primary-hover: #4338ca;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text: #0f172a;
-      --text-light: #64748b;
-      --border: #e2e8f0;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 80px; }
-
-    /* 顶部导航 */
-    header { background: var(--card-bg); border-bottom: 1px solid var(--border); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; sticky: top; }
-    .logo { font-size: 1.25rem; font-weight: bold; color: var(--primary); }
-    .api-key-input { display: flex; gap: 8px; align-items: center; }
-    input[type="password"], input[type="text"], textarea, select {
-      padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; outline: none; font-size: 14px;
-    }
-    input:focus, textarea:focus { border-color: var(--primary); }
-    button {
-      background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; transition: 0.2s;
-    }
-    button:hover { background: var(--primary-hover); }
-
-    /* 选项卡导航 */
-    nav { display: flex; background: var(--card-bg); border-bottom: 1px solid var(--border); padding: 0 2rem; gap: 20px; }
-    .nav-item { padding: 12px 16px; cursor: pointer; border-bottom: 2px solid transparent; color: var(--text-light); }
-    .nav-item.active { border-color: var(--primary); color: var(--primary); font-weight: bold; }
-
-    /* 内容容器 */
-    main { max-width: 1100px; margin: 20px auto; padding: 0 20px; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-
-    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-    .card h3 { margin-bottom: 12px; font-size: 1.1rem; }
-
-    /* 全局 AI 对话面板 */
-    #global-ai-panel { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); border-top: 1px solid var(--border); padding: 12px 2rem; display: flex; gap: 10px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
-    #global-ai-input { flex: 1; }
-
-    /* 生成结果展示区 */
-    .output-box { background: #f1f5f9; padding: 12px; border-radius: 6px; margin-top: 10px; min-height: 60px; white-space: pre-wrap; word-break: break-word; }
-    
-    /* 动态工具网格 */
-    .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; margin-top: 15px; }
-    .dynamic-tool-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 15px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VickyWork · 汽配跨境运营与可视化 AI 工作台 v9.0</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+:root{--bg:#f5f6fb;--card:#fff;--text:#202638;--muted:#7c8497;--line:#e7eaf1;--accent:#f487b8;--accent2:#ff9bc6;--shadow:0 10px 28px rgba(34,45,75,.08);--radius:20px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,"Segoe UI","Microsoft YaHei",Arial,sans-serif;padding-bottom:60px;}button,input,textarea,select{font:inherit}button{cursor:pointer}
+.top{height:68px;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;position:sticky;top:0;z-index:30}.brand{display:flex;align-items:center;gap:9px;min-width:245px}.logo{font-size:26px}.brand b{font-size:21px;color:var(--accent)}.brand span{font-size:12px;color:var(--muted)}.nav{display:flex;gap:4px;flex:1;overflow-x:auto;align-items:center;}.nav button{border:0;background:transparent;padding:8px 12px;border-radius:12px;color:#596174;font-weight:700;display:flex;align-items:center;gap:5px;white-space:nowrap;cursor:pointer;}.nav button:hover{background:#fff0f7}.nav button.active{background:var(--accent);color:#fff !important;}
+.topright{display:flex;gap:8px;align-items:center}.pill,.icon{border:1px solid var(--line);background:#fff;border-radius:12px;padding:9px 11px;color:#626b7e}.icon{width:40px;height:40px;padding:0;display:inline-flex;align-items:center;justify-content:center}
+main{max-width:1400px;margin:28px auto;padding:0 24px}.view{display:none}.view.active{display:block}.hero{padding:28px;border-radius:24px;background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff;position:relative;overflow:hidden;box-shadow:0 15px 36px rgba(244,135,184,.2);margin-bottom:18px}.hero h1{margin:0 0 6px;font-size:28px}.hero p{margin:0 0 18px;opacity:.93}.tip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.4);border-radius:13px;padding:11px 14px;position:relative;z-index:1}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.stat{padding:20px;border-radius:20px;color:#fff;min-height:145px;box-shadow:var(--shadow);position:relative;overflow:hidden}.stat:after{content:"";width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.12);position:absolute;right:-25px;bottom:-45px}.s1{background:linear-gradient(135deg,#ff9b0d,#ff8617)}.s2{background:linear-gradient(135deg,#318fe3,#1bb8ce)}.s3{background:linear-gradient(135deg,#f23d54,#f54165)}.s4{background:linear-gradient(135deg,#21ae79,#2dc88f)}.stat .t{font-weight:800}.stat .v{font-size:34px;font-weight:900;margin:13px 0 3px}.stat small{font-size:17px}.stat .n{font-size:12px;opacity:.94}
+.grid2{display:grid;grid-template-columns:1.05fr .95fr;gap:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}.head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}.title{font-size:18px;font-weight:850;display:flex;gap:8px;align-items:center}.btn{border:1px solid var(--line);background:#fff;color:#3d4658;border-radius:11px;padding:9px 13px;font-weight:750;cursor:pointer;}.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}.btn.danger{color:#d84058}.btn.small{padding:7px 10px;font-size:13px}.input,.select,.textarea{width:100%;border:1px solid var(--line);background:#fbfcff;border-radius:11px;padding:10px 12px;outline:0}.input:focus,.select:focus,.textarea:focus{border-color:#e9a4c3;box-shadow:0 0 0 3px rgba(244,135,184,.1)}.row{display:flex;gap:9px}.row>*:first-child{flex:1}.list{display:flex;flex-direction:column;gap:8px;margin-top:12px}.item{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:11px;padding:10px 12px}.item.done{text-decoration:line-through;color:#999}.grow{flex:1}.badge{font-size:12px;padding:5px 9px;border-radius:999px;background:#fff0f3;color:#df4560}
+.mini{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.mini>div{background:#fafbfe;border:1px solid var(--line);padding:14px;border-radius:13px}.mini span{font-size:12px;color:var(--muted)}.mini b{display:block;font-size:23px;margin-top:6px}
+table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;padding:11px;border-bottom:1px solid var(--line);font-size:13px}th{color:var(--muted)}.tablewrap{overflow:auto}
+.modalbg{position:fixed;inset:0;background:rgba(20,25,38,.48);display:none;align-items:center;justify-content:center;padding:16px;z-index:100;backdrop-filter:blur(4px);}.modalbg.show{display:flex !important;}.modal{width:min(760px,100%);max-height:90vh;overflow:auto;background:var(--card);border-radius:22px;padding:22px;box-shadow:0 25px 80px rgba(0,0,0,.25)}
+.auth-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(4px)}.auth-overlay.show{display:flex !important;}.auth-card{background:#fff;width:380px;padding:30px;border-radius:20px;text-align:center}
+.sns-layout,.module-layout{display:grid;grid-template-columns:240px 1fr;gap:20px;align-items:start;}
+.sns-sidebar,.module-sidebar{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:6px;position:sticky;top:84px;}
+.sns-menu-btn,.module-sidebar-item{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:12px;border:0;background:transparent;color:var(--text);font-weight:700;text-align:left;cursor:pointer;}
+.sns-menu-btn.active,.module-sidebar-item.active{background:var(--accent);color:#fff;}
+.sns-subview{display:none;}.sns-subview.active{display:block;}
+.account-card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.acc-card{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:16px;}
+.calendar-box{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:12px;}
+.cal-day{border:1px solid var(--line);border-radius:12px;min-height:75px;padding:6px;background:#fafbfe;cursor:pointer;}
+.cal-day.selected{background:#ffe3f0;}
+.ai-block-box{border:2px dashed var(--accent);background:#fff0f5;border-radius:18px;padding:16px;margin-top:20px;}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field label{display:block;font-size:12px;color:var(--muted);font-weight:800;margin-bottom:6px}.full{grid-column:1/-1}
+.dark{--bg:#111522;--card:#181d2b;--text:#eef1f7;--muted:#9da6b8;--line:#2b3242}.dark .top,.dark .btn,.dark .input,.dark .select,.dark .textarea,.dark .auth-card{background:#181d2b;color:var(--text)}.dark .empty,.dark .mini>div,.dark .acc-metrics,.dark .cal-day{background:#141927}.dark .nav button{color:#aeb6c6}.dark .sns-sidebar,.dark .module-sidebar{background:#181d2b}
+</style>
 </head>
 <body>
 
-  <!-- 顶部 API 配置 -->
-  <header>
-    <div class="logo">✨ Vicky AI 工作台 (全板块真实 API 驱动)</div>
-    <div class="api-key-input">
-      <label for="apiKey">Gemini Key:</label>
-      <input type="password" id="apiKey" placeholder="输入 AI API Key" style="width:220px;" />
-      <button onclick="saveApiKey()">保存 Key</button>
-    </div>
-  </header>
+<!-- 登录 Modal -->
+<div id="authModal" class="auth-overlay">
+  <div class="auth-card">
+    <h3>VickyWork 云端账号登录</h3>
+    <input class="input" type="text" id="authAccount" placeholder="用户名/邮箱" style="margin:10px 0;">
+    <input class="input" type="password" id="authPassword" placeholder="密码" style="margin-bottom:16px;">
+    <button class="btn primary" style="width:100%" onclick="handleAuthSubmit()">登录并加载云端数据</button>
+    <button class="btn small" style="margin-top:10px;width:100%;" onclick="closeModal('authModal')">关闭</button>
+  </div>
+</div>
 
-  <!-- 板块切换 -->
-  <nav>
-    <div class="nav-item active" onclick="switchTab('social')">📢 社媒 AI 助手</div>
-    <div class="nav-item" onclick="switchTab('tools')">🛠️ 动态 UI 工具生成器</div>
-    <div class="nav-item" onclick="switchTab('tasks')">📝 智能任务与笔记</div>
-  </nav>
+<header class="top">
+  <div class="brand"><div class="logo">🔧</div><b id="brandName">VickyWork</b><span id="brandSub">汽配跨境运营工作台</span></div>
+  <nav class="nav" id="nav"></nav>
+  <div class="topright">
+    <button class="btn small primary" onclick="openNavManagerModal()">⚙️ 自定义导航栏</button>
+    <button class="btn small" onclick="showAuthModal()"><span id="userBadge">👤 登录/账号</span></button>
+    <button class="icon" onclick="toggleDarkMode()">🌙</button>
+  </div>
+</header>
 
-  <main>
-    <!-- 板块 1: 社媒 AI 助手 -->
-    <div id="tab-social" class="tab-content active">
-      <div class="card">
-        <h3>📢 全平台社媒文案 & 方案生成</h3>
-        <div style="display:flex; gap:10px; margin-bottom:10px;">
-          <select id="socialPlatform">
-            <option value="小红书">小红书 (种草风/多Emoji)</option>
-            <option value="微信公众号">微信公众号 (深度文案)</option>
-            <option value="抖音/快手">短视频脚本 (带分镜描述)</option>
-            <option value="LinkedIn">LinkedIn (专业职场)</option>
-          </select>
-          <input type="text" id="socialTopic" placeholder="输入你的主题，例如：推荐一款智能保温杯" style="flex:1;">
-          <button onclick="runSocialAi()">AI 创作文案</button>
-        </div>
-        <div id="socialOutput" class="output-box">AI 生成的文案将显示在这里...</div>
-      </div>
-    </div>
+<main>
 
-    <!-- 板块 2: 动态 UI 工具生成器 -->
-    <div id="tab-tools" class="tab-content">
-      <div class="card">
-        <h3>🛠️ 提示词生成/修改轻应用工具</h3>
-        <p style="color:var(--text-light); font-size:13px; margin-bottom:10px;">
-          向 Gemini 说明要求（或对已有工具提修改意见），AI 将为你实时编写纯前端组件代码并直接渲染。
-        </p>
-        <div style="display:flex; gap:10px;">
-          <textarea id="toolPrompt" rows="2" placeholder="如：'生成一个房贷月供计算器' 或 '给刚生成的体积工具加上一键清空按钮'" style="flex:1;"></textarea>
-          <button onclick="runDynamicToolAi()">Gemini 实时代码构建</button>
-        </div>
-      </div>
-      <div id="toolsContainer" class="tools-grid"></div>
-    </div>
-
-    <!-- 板块 3: 智能任务与笔记 -->
-    <div id="tab-tasks" class="tab-content">
-      <div class="card">
-        <h3>📝 任务整理与智能拆解</h3>
-        <div style="display:flex; gap:10px;">
-          <input type="text" id="taskInput" placeholder="输入大目标或零碎文字，如：下周筹备线上产品发布会" style="flex:1;">
-          <button onclick="runTaskSplitAi()">AI 拆解步骤</button>
-        </div>
-        <div id="taskOutput" class="output-box">AI 拆解的 Action Items 任务清单将显示在这里...</div>
-      </div>
-    </div>
-  </main>
-
-  <!-- 全局 Bottom AI 对话助手 -->
-  <div id="global-ai-panel">
-    <input type="text" id="global-ai-input" placeholder="💬 问 Gemini 任何问题（跨所有板块通用，不局限于工具）..." onkeydown="if(event.key==='Enter') runGlobalAi()">
-    <button onclick="runGlobalAi()">发送问答</button>
+<!-- 1. 首页 (包括日历、待办、紧急问题、售后表格分析) -->
+<section class="view active" id="home">
+  <div class="hero">
+    <h1>下午好 🌤️</h1><p id="heroDate"></p>
+    <div class="tip">💡 运营小贴士：每天结束前花 2 分钟记录售后数据，月底复盘会轻松很多。</div>
+  </div>
+  
+  <div class="stats">
+    <div class="stat s1"><div class="t">🎯 本月售后挽回率</div><div class="v" id="monthRate">0<small>%</small></div></div>
+    <div class="stat s2"><div class="t">📦 本月售后订单</div><div class="v" id="monthOrders">0<small> 单</small></div></div>
+    <div class="stat s3"><div class="t">📅 本年售后挽回率</div><div class="v" id="yearRate">0<small>%</small></div></div>
+    <div class="stat s4"><div class="t">📊 本年售后订单</div><div class="v" id="yearOrders">0<small> 单</small></div></div>
   </div>
 
-  <script>
-    // ------------------------------------------------------------------
-    // 核心 1: 真实统一 Gemini API 调度器 (支持全局所有板块调用)
-    // ------------------------------------------------------------------
-    async function callGeminiApi(promptText, systemInstruction = "") {
-      const apiKey = localStorage.getItem('vicky_gemini_key') || document.getElementById('apiKey').value.trim();
-      if (!apiKey) {
-        alert("⚠️ 请先在页面顶部输入并保存你的 Gemini API Key！");
-        throw new Error("Missing API Key");
-      }
+  <div class="card">
+    <div class="head">
+      <div class="title">🗓️ 每日工作计划与日历 (全历史可回看)</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn small" onclick="changeCalMonth(-1)">◀ 上个月</button>
+        <b id="calMonthTitle" style="align-self:center;">2026年 9月</b>
+        <button class="btn small" onclick="changeCalMonth(1)">下个月 ▶</button>
+      </div>
+    </div>
+    <div class="calendar-box" id="calendarGrid"></div>
+    <div style="margin-top:16px;background:#fafbfe;padding:16px;border-radius:14px;border:1px solid var(--line);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <b>📝 记录选定日期 [<span id="selectedCalDateText"></span>] 的工作计划：</b>
+        <button class="btn primary small" onclick="processAiTaskClassification()">🧠 Gemini AI 真实思考：自动分类整理</button>
+      </div>
+      <textarea class="textarea" id="rawTaskInput" rows="3" placeholder="批量粘贴任务，点击 AI 自动分类整理..."></textarea>
+      <div id="classifiedResultArea" style="margin-top:14px;display:none;">
+        <b style="color:var(--accent);">✨ AI 自动分类整理后的每日计划看板：</b>
+        <div id="classifiedTaskBoxes" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:10px;"></div>
+      </div>
+    </div>
+  </div>
 
-      // 构造符合 Gemini 官方 API 标准的请求体
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-      const contents = [];
-      
-      if (systemInstruction) {
-        contents.push({ role: "user", parts: [{ text: `[系统指令]: ${systemInstruction}` }] });
-      }
-      contents.push({ role: "user", parts: [{ text: promptText }] });
+  <div class="grid2">
+    <div class="card"><div class="head"><div class="title">🚨 紧急问题</div></div><div class="row"><input class="input" id="urgentInput" placeholder="记录突发问题…"><button class="btn primary" onclick="addUrgent()">添加</button></div><div class="list" id="urgentList"></div></div>
+    <div class="card"><div class="head"><div class="title">📋 今日待办</div><button class="btn primary small" onclick="addTodo()">＋任务</button></div><div class="list" id="todoList"></div></div>
+  </div>
 
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents: contents })
-      });
+  <!-- 售后表格分析板块 -->
+  <div class="card">
+    <div class="head">
+      <div class="title">📈 汽配售后表格 Excel 上传与分析</div>
+      <label class="btn primary" style="cursor:pointer">
+        📤 上传售后表格
+        <input type="file" id="aftersaleExcelInput" hidden accept=".xlsx,.xls,.csv" onchange="uploadAftersaleExcel(event)">
+      </label>
+    </div>
+    <div class="mini"><div><span>本月已挽回</span><b id="mrec">0</b></div><div><span>本月未挽回</span><b id="mun">0</b></div><div><span>本年已挽回</span><b id="yrec">0</b></div><div><span>本年未挽回</span><b id="yun">0</b></div></div>
+  </div>
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error?.message || `HTTP 错误 ${response.status}`);
-      }
+  <div class="card">
+    <div class="head"><div class="title">🧾 最近售后记录</div></div>
+    <div class="tablewrap">
+      <table>
+        <thead id="tableHeader"></thead>
+        <tbody id="records"></tbody>
+      </table>
+    </div>
+  </div>
 
-      const data = await response.json();
-      return data.candidates[0].content.parts[0].text;
-    }
+  <div class="ai-block-box">
+    <b>🧠 首页 Gemini AI 真实修改与写作助手</b>
+    <div class="row" style="margin-top:8px;">
+      <input class="input" id="homeAiInput" placeholder="输入需求（例：帮我总结本月售后数据并写一份汽配复盘建议）">
+      <button class="btn primary" onclick="runBlockAi('home')">✨ Gemini AI 执行</button>
+    </div>
+    <div id="homeAiResult" style="margin-top:10px;white-space:pre-wrap;font-size:13px;"></div>
+  </div>
+</section>
 
-    // ------------------------------------------------------------------
-    // API Key 本地存储
-    // ------------------------------------------------------------------
-    function saveApiKey() {
-      const key = document.getElementById('apiKey').value.trim();
-      if (key) {
-        localStorage.setItem('vicky_gemini_key', key);
-        alert('✅ API Key 已保存本地！全板块 AI 服务已激活。');
-      }
-    }
-    // 初始化时加载 Key
-    window.onload = () => {
-      const savedKey = localStorage.getItem('vicky_gemini_key');
-      if (savedKey) document.getElementById('apiKey').value = savedKey;
-    };
+<!-- 动态自定义板块容器 (客服、产品、独立站、账号等) -->
+<div id="dynamicCustomViewContainer" style="display:none;"></div>
 
-    // 板块 Tab 切换
-    function switchTab(tabId) {
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      event.target.classList.add('active');
-      document.getElementById(`tab-${tabId}`).classList.add('active');
-    }
+<!-- 4. 海外社媒 AI 矩阵 (PartsPhoenix 引流) -->
+<section class="view" id="platform">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+    <h2>🌐 海外社媒矩阵与 PartsPhoenix 引流中台</h2>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span style="font-size:12px;">🔑 Gemini Key:</span>
+      <input class="input" type="password" id="geminiApiKey" placeholder="输入 Gemini API Key..." style="width:200px;font-size:12px;" onchange="saveGeminiKey()">
+    </div>
+  </div>
 
-    // ------------------------------------------------------------------
-    // 板块 1 功能: 社媒 AI 助手
-    // ------------------------------------------------------------------
-    async function runSocialAi() {
-      const platform = document.getElementById('socialPlatform').value;
-      const topic = document.getElementById('socialTopic').value.trim();
-      const outputEl = document.getElementById('socialOutput');
+  <div class="sns-layout">
+    <div class="sns-sidebar">
+      <button class="sns-menu-btn active" onclick="switchSnsSubView('assets', this)">📊 账号资产</button>
+      <button class="sns-menu-btn" onclick="switchSnsSubView('planner', this)">🛠️ 爆款 AI 脚本</button>
+    </div>
 
-      if (!topic) { alert('请输入文案主题'); return; }
+    <div class="sns-main-content">
+      <div class="sns-subview active" id="sns-sub-assets">
+        <div class="card">
+          <div class="head"><div class="title">📈 汽配社媒账号看板</div></div>
+          <div class="account-card-grid" id="snsAccountCards"></div>
+        </div>
+      </div>
 
-      outputEl.innerText = "⏳ Gemini 正在为你撰写高转化率文案...";
-      try {
-        const systemPrompt = `你是一位精通全网运营的文案大师。请为 ${platform} 平台撰写关于"${topic}"的高吸引力文案。包含标题、正文和建议标签。`;
-        const res = await callGeminiApi(topic, systemPrompt);
-        outputEl.innerText = res;
-      } catch (err) {
-        outputEl.innerText = `❌ 生成失败: ${err.message}`;
-      }
-    }
+      <div class="sns-subview" id="sns-sub-planner">
+        <div class="card">
+          <div class="head"><div class="title">🛠️ 汽配短视频 AI 脚本生成器</div></div>
+          <div class="formgrid">
+            <div class="field"><label>配件品类</label><input class="input" id="chessGameType" value="Brake Pads & Rotors (刹车片与盘)"></div>
+            <div class="field"><label>切入角度</label><input class="input" id="scriptAngle" value="🚨 汽车异响诊断与 DIY 替换过程"></div>
+          </div>
+          <button class="btn primary" style="margin-top:14px;" onclick="generateSnsScriptReal()">✨ Gemini 真实生成分镜脚本</button>
+        </div>
+        <div class="card" id="scriptResultCard" style="display:none;"><div id="scriptResultBody" style="white-space:pre-wrap;line-height:1.7;"></div></div>
+      </div>
+    </div>
+  </div>
 
-    // ------------------------------------------------------------------
-    // 板块 2 功能: 动态 UI 工具生成器 (根据提示词实时生成/修改 HTML+JS)
-    // ------------------------------------------------------------------
-    let generatedToolsList = []; // 存储历史工具卡片上下文，便于持续修改
+  <div class="ai-block-box">
+    <b>🧠 社媒矩阵 Gemini AI 辅助助手</b>
+    <div class="row" style="margin-top:8px;">
+      <input class="input" id="snsAiInput" placeholder="输入需求（例：写 5 个 TikTok 刹车片爆款前 3 秒钩子文案）">
+      <button class="btn primary" onclick="runBlockAi('sns')">✨ Gemini AI 生成</button>
+    </div>
+    <div id="snsAiResult" style="margin-top:10px;white-space:pre-wrap;font-size:13px;"></div>
+  </div>
+</section>
 
-    async function runDynamicToolAi() {
-      const promptText = document.getElementById('toolPrompt').value.trim();
-      const container = document.getElementById('toolsContainer');
-      if (!promptText) { alert('请输入工具生成或修改的要求'); return; }
+<!-- 6. 全球工具中心 (换算/体积/利润/AI 动态生成 UI 工具) -->
+<section class="view" id="tools">
+  <h2>🛠 全球跨境工具中心</h2>
+  <div class="card">
+    <div class="head"><div class="title">💱 全球 160+ 货币实时换算</div></div>
+    <div class="row">
+      <input class="input" id="exAmount" type="number" value="100" style="flex:2;" oninput="calcExchangeAll()">
+      <select class="select" id="exBase" style="width:240px;" onchange="calcExchangeAll()"></select>
+    </div>
+    <div id="exchangeResultList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:12px;"></div>
+  </div>
 
-      const systemPrompt = `你是一个强大的前端代码生成器。根据用户需求生成一个轻量级的纯 HTML + JavaScript 嵌入卡片。
-历史已生成工具上下文: ${JSON.stringify(generatedToolsList)}。
-要求：
-1. 只输出能够嵌入 div 的纯 HTML 结构和行内 <script> 逻辑。不要包含 \`\`\`html Markdown 标记。
-2. 包含样式与计算逻辑，用户输入时实时反馈结果。
-3. 如果用户提出修改要求（如"增加换算单位"、"修改颜色"），请根据历史上下文重新生成升级版代码。`;
+  <div class="card">
+    <div class="head"><div class="title">📦 跨境汽配运费与体积重核算</div></div>
+    <div class="formgrid">
+      <div class="field"><label>长 (cm)</label><input class="input" id="volLength" type="number" value="40" oninput="calcFreightVolume()"></div>
+      <div class="field"><label>宽 (cm)</label><input class="input" id="volWidth" type="number" value="30" oninput="calcFreightVolume()"></div>
+      <div class="field"><label>高 (cm)</label><input class="input" id="volHeight" type="number" value="20" oninput="calcFreightVolume()"></div>
+      <div class="field"><label>毛重 (kg)</label><input class="input" id="realWeight" type="number" value="5" oninput="calcFreightVolume()"></div>
+    </div>
+    <div style="margin-top:14px;background:#eef7ff;padding:14px;border-radius:12px;display:flex;gap:20px;">
+      <div>体积重: <b id="resVolWeight">4.00 kg</b></div>
+      <div>最终计费重: <b id="resBillWeight" style="color:var(--accent);">5.00 kg</b></div>
+    </div>
+  </div>
 
-      const btn = event.target;
-      btn.innerText = "⏳ 动态代码构建中...";
-      btn.disabled = true;
+  <!-- 动态渲染真正的 AI 生成交互工具容器 -->
+  <div id="aiGeneratedToolsList"></div>
 
-      try {
-        let code = await callGeminiApi(promptText, systemPrompt);
-        // 清理 markdown 标签
-        code = code.replace(/```html/g, '').replace(/```/g, '').trim();
+  <div class="ai-block-box">
+    <b>🧠 工具中心 Gemini AI 真实 UI 工具生成器</b>
+    <p class="subtle" style="margin:4px 0 8px;">向 Gemini 对话提需求（如：生成房贷计算器、或对上方生成的工具提修改意见），AI 会实时编写纯前端代码并插入页面！</p>
+    <div class="row">
+      <input class="input" id="toolsAiInput" placeholder="输入需求（例：生成体积换算工具，或者：给刚才生成的工具加上一键清空按钮）">
+      <button class="btn primary" onclick="generateDynamicUiToolReal()">✨ Gemini 实时代码生成</button>
+    </div>
+  </div>
+</section>
 
-        const toolId = 'tool_' + Date.now();
-        generatedToolsList.push({ id: toolId, request: promptText, code: code });
+<!-- 8. 设置后台 -->
+<section class="view" id="settings">
+  <h2>⚙ 后台自定义</h2>
+  <div class="card">
+    <div class="formgrid">
+      <div class="field"><label>工作台名称</label><input class="input" id="setName" value="VickyWork"></div>
+    </div>
+  </div>
+</section>
 
-        // 创建新卡片并嵌入生成的代码
-        const card = document.createElement('div');
-        card.className = 'dynamic-tool-card';
-        card.id = toolId;
-        card.innerHTML = `<h4 style="margin-bottom:8px; color:var(--primary);">💡 ${promptText.slice(0,18)}</h4><div>${code}</div>`;
-        
-        container.prepend(card);
-        document.getElementById('toolPrompt').value = '';
-      } catch (err) {
-        alert(`❌ 无法生成工具: ${err.message}`);
-      } finally {
-        btn.innerText = "Gemini 实时代码构建";
-        btn.disabled = false;
-      }
-    }
+</main>
 
-    // ------------------------------------------------------------------
-    // 板块 3 功能: 智能任务拆解
-    // ------------------------------------------------------------------
-    async function runTaskSplitAi() {
-      const input = document.getElementById('taskInput').value.trim();
-      const outputEl = document.getElementById('taskOutput');
-      if (!input) { alert('请输入需要拆解的目标或任务'); return; }
+<script>
+let currentUser = localStorage.getItem('vicky_current_user') || 'guest';
+let selectedCalDate = new Date().toISOString().slice(0,10);
 
-      outputEl.innerText = "⏳ Gemini 正在进行 WBS 任务拆解...";
-      try {
-        const systemPrompt = "你是一位高级项目经理。请把用户输入的大目标拆解为可执行的 Action Items（包含步骤、估计耗时和优先级）。";
-        const res = await callGeminiApi(input, systemPrompt);
-        outputEl.innerText = res;
-      } catch (err) {
-        outputEl.innerText = `❌ 拆解失败: ${err.message}`;
-      }
-    }
+const DEFAULT_NAV=[
+  {id:'home',name:'首页',icon:'🏠'},
+  {id:'service',name:'客服',icon:'💬'},
+  {id:'product',name:'产品',icon:'📦'},
+  {id:'platform',name:'社媒 AI',icon:'🌐'},
+  {id:'shopify',name:'独立站',icon:'🛍'},
+  {id:'tools',name:'工具',icon:'🛠'},
+  {id:'account',name:'账号',icon:'🔐'},
+  {id:'settings',name:'设置',icon:'⚙️'}
+];
 
-    // ------------------------------------------------------------------
-    // 全局通用 AI 问答 (跨板块通用)
-    // ------------------------------------------------------------------
-    async function runGlobalAi() {
-      const inputEl = document.getElementById('global-ai-input');
-      const text = inputEl.value.trim();
-      if (!text) return;
+const GLOBAL_CURRENCIES = { USD:"美元 (USD)", CNY:"人民币 (CNY)", EUR:"欧元 (EUR)", GBP:"英镑 (GBP)", JPY:"日元 (JPY)", CAD:"加元 (CAD)" };
 
-      inputEl.value = "⏳ Gemini 思考中...";
-      try {
-        const answer = await callGeminiApi(text, "你是一个极度智能且全能的通用 AI 助手，负责解答用户的各类知识、编程、思维排查等全方位问题。");
-        alert(`🤖 Gemini 回复:\n\n${answer}`);
-      } catch (err) {
-        alert(`❌ 请求 Gemini 失败: ${err.message}`);
-      } finally {
-        inputEl.value = "";
-      }
-    }
-  </script>
+const defaultState={
+  nav:DEFAULT_NAV,urgent:[],todos:[],aftersaleRecords:[],
+  snsAccounts:[{ id:'1', platform:'TikTok', handle:'@PartsPhoenix', followers:18303, likes:124412 }],
+  customModules:{},aiGeneratedTools:[],
+  myCurrencies: ['CNY', 'USD', 'EUR', 'GBP'],
+  ratesTable: { USD:1, CNY:7.12, EUR:0.92, GBP:0.79, JPY:147.5 }
+};
+
+function getUserKey(){ return 'vickywork_v9_' + currentUser; }
+function loadState(){ 
+  try { return JSON.parse(localStorage.getItem(getUserKey())||'null')||defaultState; } catch(e){ return defaultState; } 
+}
+let state = loadState();
+let activeViewId = 'home';
+
+function persist(){ localStorage.setItem(getUserKey(), JSON.stringify(state)); renderAll(); }
+function esc(v){ return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])) }
+
+/* --------------------------------------------------------
+   核心：真实通用的 Gemini API 调用器 (接入全局所有板块)
+-------------------------------------------------------- */
+async function callGeminiApiReal(promptText, systemInstruction = "") {
+  const apiKey = localStorage.getItem('vicky_gemini_key') || document.getElementById('geminiApiKey')?.value.trim();
+  if(!apiKey){
+    alert('⚠️ 请先在【社媒 AI】板块填入并保存你的 Gemini API Key！');
+    throw new Error('未配置 Gemini API Key');
+  }
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const contents = [];
+  if(systemInstruction) contents.push({ role: "user", parts: [{ text: `[系统指令]: ${systemInstruction}` }] });
+  contents.push({ role: "user", parts: [{ text: promptText }] });
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contents: contents })
+  });
+
+  if(!res.ok){
+    const errData = await res.json();
+    throw new Error(errData.error?.message || '请求 Gemini API 失败');
+  }
+
+  const data = await res.json();
+  return data.candidates[0].content.parts[0].text;
+}
+
+function saveGeminiKey(){ 
+  const val = document.getElementById('geminiApiKey').value.trim();
+  localStorage.setItem('vicky_gemini_key', val); 
+  alert('🎉 Gemini Key 保存成功！已激活全站所有真实 AI 功能。'); 
+}
+
+/* 全局通用 AI 提问 */
+async function runBlockAi(type){
+  const inputEl = document.getElementById(`${type}AiInput`);
+  const resultEl = document.getElementById(`${type}AiResult`);
+  if(!inputEl || !resultEl) return;
+  const text = inputEl.value.trim(); if(!text) return;
+
+  resultEl.textContent = "⏳ Gemini 真实 AI 正在思考中...";
+  try {
+    const reply = await callGeminiApiReal(text, `你是一个专为汽配跨境电商解答难题的 AI 专家。当前所在板块：[${type}]`);
+    resultEl.textContent = reply;
+  } catch(err) {
+    resultEl.textContent = `❌ 请求失败: ${err.message}`;
+  }
+}
+
+/* 动态 UI 工具真实 Gemini 生成器 */
+async function generateDynamicUiToolReal(){
+  const inputEl = document.getElementById('toolsAiInput');
+  const promptText = inputEl.value.trim();
+  if(!promptText) return;
+
+  const systemPrompt = `你是一个优秀的前端 UI 工具代码生成器。
+用户需求："${promptText}"。
+已有工具历史卡片: ${JSON.stringify(state.aiGeneratedTools)}。
+请直接生成一段纯 HTML+JS 的交互卡片代码（不要加 \`\`\`html 代码块标记）。
+如果用户是在提修改要求，请根据历史上下文进行升级重构。`;
+
+  inputEl.value = '⏳ Gemini AI 正在编写并构建 UI 代码...';
+
+  try {
+    let code = await callGeminiApiReal(promptText, systemPrompt);
+    code = code.replace(/```html/g, '').replace(/```/g, '').trim();
+
+    state.aiGeneratedTools.unshift({
+      id: 'tool_' + Date.now(),
+      title: `🧠 AI 生成工具: ${promptText.slice(0, 15)}`,
+      html: code
+    });
+
+    inputEl.value = '';
+    persist();
+    alert('✨ Gemini AI 已成功在上方渲染了全新的真实交互工具！');
+  } catch(err) {
+    alert(`生成失败: ${err.message}`);
+    inputEl.value = promptText;
+  }
+}
+
+function renderAiGeneratedToolsList(){
+  const container = document.getElementById('aiGeneratedToolsList'); if(!container) return;
+  container.innerHTML = (state.aiGeneratedTools||[]).map((t, idx) => `
+    <div class="card" style="border:2px solid var(--accent);">
+      <div class="head">
+        <div class="title" style="color:var(--accent);">${esc(t.title)}</div>
+        <button class="btn small danger" onclick="deleteAiToolCard(${idx})">删除卡片</button>
+      </div>
+      <div>${t.html}</div>
+    </div>
+  `).join('');
+}
+
+function deleteAiToolCard(idx){ state.aiGeneratedTools.splice(idx, 1); persist(); }
+
+/* 业务渲染与导航 */
+function showView(id){
+ activeViewId = id;
+ document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+ document.getElementById('dynamicCustomViewContainer').style.display = 'none';
+
+ if (['home', 'platform', 'tools', 'settings'].includes(id)) {
+   document.getElementById(id)?.classList.add('active');
+   if (id === 'tools') { updateCurrencyDropdowns(); calcExchangeAll(); renderAiGeneratedToolsList(); }
+ } else {
+   renderDynamicCustomView(id);
+ }
+}
+
+function renderDynamicCustomView(viewId) {
+  const container = document.getElementById('dynamicCustomViewContainer');
+  container.style.display = 'block';
+  container.innerHTML = `
+    <section class="view active">
+      <div class="card">
+        <h2>📌 板块: ${viewId}</h2>
+        <p>自定义板块内容展示，支持自定义添加 SOP 与知识卡片。</p>
+      </div>
+    </section>
+  `;
+}
+
+function renderNav(){
+ const nav=document.getElementById('nav'); if(!nav) return;
+ nav.innerHTML=state.nav.map(n=>`<button onclick="showView('${n.id}')" class="${activeViewId===n.id?'active':''}">${esc(n.icon)} ${esc(n.name)}</button>`).join('');
+}
+
+function switchSnsSubView(subId, btnEl){
+  document.querySelectorAll('.sns-menu-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.sns-subview').forEach(v => v.classList.remove('active'));
+  btnEl.classList.add('active');
+  document.getElementById(`sns-sub-${subId}`)?.classList.add('active');
+}
+
+function calcExchangeAll(){
+  const amt = parseFloat(document.getElementById('exAmount').value) || 0;
+  const listEl = document.getElementById('exchangeResultList'); if(!listEl) return;
+  listEl.innerHTML = state.myCurrencies.map(c => `
+    <div style="padding:8px;background:#fafbfe;border:1px solid var(--line);border-radius:8px;">
+      <span>${c}</span>: <b>${(amt * (state.ratesTable[c]||1)).toFixed(2)}</b>
+    </div>
+  `).join('');
+}
+
+function updateCurrencyDropdowns(){
+  const exBase = document.getElementById('exBase'); if(!exBase) return;
+  exBase.innerHTML = Object.keys(GLOBAL_CURRENCIES).map(c => `<option value="${c}">${GLOBAL_CURRENCIES[c]}</option>`).join('');
+}
+
+function calcFreightVolume(){
+  const l = parseFloat(document.getElementById('volLength').value)||0;
+  const w = parseFloat(document.getElementById('volWidth').value)||0;
+  const h = parseFloat(document.getElementById('volHeight').value)||0;
+  const realW = parseFloat(document.getElementById('realWeight').value)||0;
+  const volW = (l * w * h) / 6000;
+  document.getElementById('resVolWeight').textContent = `${volW.toFixed(2)} kg`;
+  document.getElementById('resBillWeight').textContent = `${Math.max(realW, volW).toFixed(2)} kg`;
+}
+
+function toggleDarkMode(){ document.body.classList.toggle('dark'); }
+function showAuthModal(){ document.getElementById('authModal').classList.add('show'); }
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+
+function renderAll(){
+  renderNav();
+  showView(activeViewId);
+  const key = localStorage.getItem('vicky_gemini_key');
+  if(key && document.getElementById('geminiApiKey')) document.getElementById('geminiApiKey').value = key;
+}
+
+renderAll();
+</script>
 </body>
 </html>
