@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f487b8">
-<title>VickyWork 3.1 · 跨设备稳定云同步跨境工作台</title>
+<title>PartsPhoenix · 汽配社媒引流与跨境运营工作台</title>
 <!-- 引入 SheetJS 库 -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
@@ -23,9 +23,26 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 .sns-box{background:#fafbfe;border:1px solid var(--line);border-radius:12px;padding:14px;position:relative;margin-top:10px}.sns-box pre{white-space:pre-wrap;word-break:break-all;font-family:inherit;font-size:13px;color:#444;margin:0}
 .queue-status{background:#eef6ff;border:1px solid #cce5ff;color:#004085;padding:10px 14px;border-radius:12px;margin-bottom:14px;display:none;align-items:center;justify-content:space-between}
 .sync-badge{display:inline-flex;align-items:center;gap:4px;font-size:12px;padding:4px 8px;border-radius:8px;background:#e8f8f0;color:#15803d;margin-left:8px;}
-.dark{--bg:#111522;--card:#181d2b;--text:#eef1f7;--muted:#9da6b8;--line:#2b3242}.dark .top,.dark .pill,.dark .icon,.dark .btn,.dark .input,.dark .select,.dark .textarea,.dark .auth-card{background:#181d2b;color:var(--text)}.dark .empty,.dark .mini>div,.dark .sns-box{background:#141927}.dark .nav button{color:#aeb6c6}
+
+/* 侧边栏布局样式 */
+.sns-layout{display:grid;grid-template-columns:220px 1fr;gap:20px;align-items:start;}
+.sns-sidebar{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:6px;position:sticky;top:84px;}
+.sns-menu-btn{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;border:0;background:transparent;color:var(--text);font-weight:700;text-align:left;transition:all .2s;}
+.sns-menu-btn:hover{background:#fff0f7;color:var(--accent);}
+.sns-menu-btn.active{background:var(--accent);color:#fff;}
+.sns-subview{display:none;}
+.sns-subview.active{display:block;}
+
+.account-card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.acc-card{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:16px;box-shadow:var(--shadow);}
+.acc-card .plat-name{font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.acc-metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#fafbfe;padding:10px;border-radius:10px;margin-bottom:10px;}
+.acc-metrics div span{font-size:11px;color:var(--muted);}
+.acc-metrics div b{font-size:18px;display:block;}
+
+.dark{--bg:#111522;--card:#181d2b;--text:#eef1f7;--muted:#9da6b8;--line:#2b3242}.dark .top,.dark .pill,.dark .icon,.dark .btn,.dark .input,.dark .select,.dark .textarea,.dark .auth-card{background:#181d2b;color:var(--text)}.dark .empty,.dark .mini>div,.dark .sns-box,.dark .acc-metrics{background:#141927}.dark .nav button{color:#aeb6c6}.dark .sns-sidebar{background:#181d2b}
 @media(max-width:1050px){.nav button{padding:9px 7px}.brand{min-width:200px}.stats{grid-template-columns:1fr 1fr}}
-@media(max-width:760px){.top{padding:0 13px}.brand span{display:none}.brand{min-width:auto;flex:1}.nav{display:none;position:absolute;left:0;right:0;top:68px;background:#fff;padding:8px;flex-direction:column;border-bottom:1px solid var(--line)}.nav.open{display:flex}.pill{display:none}main{padding:0 13px;margin-top:18px}.stats{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}.content-grid{grid-template-columns:1fr}.mini{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){.top{padding:0 13px}.brand span{display:none}.brand{min-width:auto;flex:1}.nav{display:none;position:absolute;left:0;right:0;top:68px;background:#fff;padding:8px;flex-direction:column;border-bottom:1px solid var(--line)}.nav.open{display:flex}.pill{display:none}main{padding:0 13px;margin-top:18px}.stats{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}.content-grid{grid-template-columns:1fr}.mini{grid-template-columns:1fr 1fr}.sns-layout{grid-template-columns:1fr;}.sns-sidebar{position:static;}}
 </style>
 </head>
 <body>
@@ -33,8 +50,8 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 <!-- 跨设备登录 Modal -->
 <div id="authModal" class="auth-overlay">
   <div class="auth-card">
-    <h3 id="authTitle">账号跨设备云同步登录</h3>
-    <p class="subtle" style="margin:6px 0 14px" id="authSub">在一台设备导入或编辑后，切换任意电脑/手机登录即可自动同步</p>
+    <h3 id="authTitle">PartsPhoenix 云端账号登录</h3>
+    <p class="subtle" style="margin:6px 0 14px" id="authSub">在一台设备更新汽配数据后，切换任意电脑/手机登录即可自动同步</p>
     <input class="input" type="text" id="authAccount" placeholder="用户名/邮箱" style="margin-bottom:10px">
     <input class="input" type="password" id="authPassword" placeholder="密码" style="margin-bottom:16px">
     <button class="btn primary" style="width:100%;padding:10px" id="authSubmitBtn" onclick="handleAuthSubmit()">登录并加载云端数据</button>
@@ -42,7 +59,7 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 </div>
 
 <header class="top">
-  <div class="brand"><div class="logo">🦄</div><b id="brandName">VickyWork</b><span id="brandSub">跨境运营工作台</span><span class="sync-badge" id="syncStatusBadge">☁️ 云同步准备就绪</span></div>
+  <div class="brand"><div class="logo">🔧</div><b id="brandName">PartsPhoenix</b><span id="brandSub">汽配跨境运营工作台</span><span class="sync-badge" id="syncStatusBadge">☁️ 云同步准备就绪</span></div>
   <nav class="nav" id="nav"></nav>
   <div class="topright">
     <button class="btn small" style="margin-right:4px" onclick="showAuthModal()"><span id="userBadge">👤 登录/账号</span></button>
@@ -54,13 +71,13 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 
 <main>
 <div class="queue-status" id="globalQueueBanner">
-  <div><span id="queueProgressText">⚙️ 全局 AI 队列运行中：正在处理第 1/3 个视频...</span></div>
+  <div><span id="queueProgressText">⚙️ 全局 AI 队列运行中：正在处理第 1/3 个汽配视频...</span></div>
   <small>你可以自由切换页面，AI 将在后台自动识别</small>
 </div>
 
 <!-- 1. 首页 -->
 <section class="view active" id="home">
-  <div class="hero"><h1 id="greet">下午好 🌤️</h1><p id="heroDate"></p><div class="tip">💡 <span id="tipText">运营小贴士：每天结束前花 2 分钟记录售后数据，月底复盘会轻松很多。</span></div></div>
+  <div class="hero"><h1 id="greet">下午好 🌤️</h1><p id="heroDate"></p><div class="tip">💡 <span id="tipText">运营小贴士：社媒引流的核心是解答车主维修痛点，引导访问 partsphoenix.com 查车型适配！</span></div></div>
   
   <div class="stats">
     <div class="stat s1"><div class="t">🎯 本月售后挽回率</div><div class="v" id="monthRate">0<small>%</small></div><div class="n" id="monthNote">请先上传售后表格</div></div>
@@ -70,13 +87,13 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
   </div>
 
   <div class="grid2">
-    <div class="card"><div class="head"><div class="title">🚨 紧急问题 <span class="badge" id="urgentCount">0 待处理</span></div><button class="btn small" onclick="clearUrgent()">清空已处理</button></div><div class="row"><input class="input" id="urgentInput" placeholder="记录突发问题…"><button class="btn primary" onclick="addUrgent()">添加</button></div><div class="list" id="urgentList"></div></div>
+    <div class="card"><div class="head"><div class="title">🚨 紧急问题 <span class="badge" id="urgentCount">0 待处理</span></div><button class="btn small" onclick="clearUrgent()">清空已处理</button></div><div class="row"><input class="input" id="urgentInput" placeholder="记录突发问题（如某车型零件适配疑问）…"><button class="btn primary" onclick="addUrgent()">添加</button></div><div class="list" id="urgentList"></div></div>
     <div class="card"><div class="head"><div class="title">📋 今日待办 <span class="badge" id="todoText">0/0 完成</span></div><button class="btn primary small" onclick="addTodo()">＋任务</button></div><div class="progress"><i id="todoProgress"></i></div><div class="list" id="todoList"></div></div>
   </div>
 
   <div class="card">
     <div class="head">
-      <div class="title">📈 售后表格 Excel / WPS 上传与分析</div>
+      <div class="title">📈 汽配售后表格 Excel / WPS 上传与分析</div>
       <div style="display:flex;gap:8px;">
         <button class="btn small" onclick="openMappingModal()">⚙️ 字段映射设置</button>
         <label class="btn primary" style="cursor:pointer">
@@ -107,87 +124,231 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 </section>
 
 <!-- 2. 客服中心 -->
-<section class="view" id="service"><h2 class="page-title">💬 客服中心</h2><p class="desc">话术 FAQ 模板支持拆分上传。</p><div class="editbar"><button class="btn primary" onclick="openContent('service')">＋ 新增客服内容</button><label class="btn" style="cursor:pointer">📄 上传话术/Excel表格<input type="file" id="scriptFileInput" hidden accept=".xlsx,.xls,.txt,.md,.csv,.json" onchange="handleScriptUpload(event)"></label></div><div class="content-grid" id="serviceContent" style="margin-top:16px"></div></section>
+<section class="view" id="service"><h2 class="page-title">💬 汽配客服中心</h2><p class="desc">话术 FAQ 模板（适配疑问、OEM号查询、物流跟踪）支持拆分上传。</p><div class="editbar"><button class="btn primary" onclick="openContent('service')">＋ 新增客服内容</button><label class="btn" style="cursor:pointer">📄 上传话术/Excel表格<input type="file" id="scriptFileInput" hidden accept=".xlsx,.xls,.txt,.md,.csv,.json" onchange="handleScriptUpload(event)"></label></div><div class="content-grid" id="serviceContent" style="margin-top:16px"></div></section>
 
 <!-- 3. 产品运营 -->
-<section class="view" id="product"><h2 class="page-title">📦 产品运营</h2><p class="desc">选品、Listing、成本、上架流程集中管理。</p><button class="btn primary" onclick="openContent('product')">＋ 新增产品内容</button><div class="content-grid" id="productContent" style="margin-top:16px"></div></section>
+<section class="view" id="product"><h2 class="page-title">📦 汽配产品运营</h2><p class="desc">零部件 Fitment 适配表、OE 替换号、Listing、成本、上架流程集中管理。</p><button class="btn primary" onclick="openContent('product')">＋ 新增产品内容</button><div class="content-grid" id="productContent" style="margin-top:16px"></div></section>
 
-<!-- 4. 海外社媒 AI 矩阵 -->
+<!-- 4. 海外社媒 AI 矩阵 (全新设计：左侧边栏导航 + PartsPhoenix 汽配引流中台) -->
 <section class="view" id="platform">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-    <h2 class="page-title" style="margin:0;">🌐 海外社媒 AI 矩阵 (多视频后台排队版)</h2>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+    <div>
+      <h2 class="page-title" style="margin:0;">🌐 海外社媒矩阵与 PartsPhoenix 引流中台</h2>
+      <p class="desc" style="margin:4px 0 0;">围绕 partsphoenix.com 获客，全方位管理社媒粉丝、视频转化分析、爆款汽配脚本与矩阵生成。</p>
+    </div>
     <div style="display:flex;gap:8px;align-items:center;">
       <span class="subtle" style="font-size:12px;">🔑 Gemini API Key:</span>
-      <input class="input" type="password" id="geminiApiKey" placeholder="输入 Key 开启视觉 AI..." style="width:210px;padding:6px 10px;font-size:12px;" onchange="saveGeminiKey()">
-    </div>
-  </div>
-  <p class="desc">支持多选多个视频，提交后系统将在网页后台全自动顺序排队识别，并把生成的文案自动保存入库。跨设备可随时同步查看！</p>
-
-  <div class="card">
-    <div class="head"><div class="title">🎬 第一步：批量选择视频文件与设置转化目标</div></div>
-    <div class="formgrid">
-      <div class="field">
-        <label>选择视频/图片素材 (支持多选文件)</label>
-        <input class="input" type="file" id="snsMediaFiles" accept="video/*,image/*" multiple onchange="handleBatchMediaSelect(event)">
-        <div class="subtle" id="snsBatchMediaTip" style="margin-top:4px">按住 Ctrl/Shift 可一次性选择多个视频</div>
-      </div>
-      <div class="field">
-        <label>独立站目标落地页 URL (带参转化链接)</label>
-        <input class="input" id="snsTargetUrl" value="https://partsphoenix.com?utm_source=social_matrix">
-      </div>
-      <div class="field">
-        <label>核心卖点/优惠亮点 (辅助 AI 理解)</label>
-        <input class="input" id="snsSellingPoint" placeholder="例如：50% OFF Today + Free Shipping">
-      </div>
-      <div class="field">
-        <label>选择 AI 模型</label>
-        <select class="select" id="geminiModelSelect">
-          <option value="gemini-2.5-flash">Gemini 2.5 Flash (推荐最新视觉模型)</option>
-          <option value="gemini-1.5-flash">Gemini 1.5 Flash (稳定高效模型)</option>
-        </select>
-      </div>
-    </div>
-    <div style="margin-top:16px;text-align:right">
-      <button class="btn primary" id="batchGenerateBtn" style="padding:10px 24px;" onclick="startBatchQueueProcess()">🚀 提交多视频，启动后台排队识别</button>
+      <input class="input" type="password" id="geminiApiKey" placeholder="输入 Key 开启视觉 AI..." style="width:200px;padding:6px 10px;font-size:12px;" onchange="saveGeminiKey()">
     </div>
   </div>
 
-  <div class="card" id="snsResultCard" style="display:none;">
-    <div class="head">
-      <div class="title">✨ 当前预览：<span id="currentVideoTitle">视频 1</span> 的社媒矩阵文案</div>
-      <button class="btn small primary" onclick="saveSnsToContent()">💾 保存本套方案到内容库</button>
+  <div class="sns-layout">
+    <!-- 左侧二级功能菜单栏 -->
+    <div class="sns-sidebar">
+      <button class="sns-menu-btn active" onclick="switchSnsSubView('assets', this)">📊 账号资产与粉丝监控</button>
+      <button class="sns-menu-btn" onclick="switchSnsSubView('analytics', this)">🎬 视频流量与订单 CVR 诊断</button>
+      <button class="sns-menu-btn" onclick="switchSnsSubView('planner', this)">🛠️ 汽配爆款内容与AI脚本</button>
+      <button class="sns-menu-btn" onclick="switchSnsSubView('generator', this)">🚀 批量 AI 矩阵生成</button>
+      <button class="sns-menu-btn" onclick="switchSnsSubView('links', this)">🔗 引流 UTM 与 Bio 话术</button>
     </div>
-    <div class="sns-tabs" id="snsTabs"></div>
-    <div id="snsTabContent"></div>
-  </div>
 
-  <div class="head" style="margin-top:24px"><div class="title">📚 历史与后台排队自动生成的矩阵记录</div></div>
-  <div class="content-grid" id="platformContent"></div>
+    <!-- 右侧展示区域 -->
+    <div class="sns-main-content">
+      
+      <!-- 区块 1：账号资产与粉丝监控 -->
+      <div class="sns-subview active" id="sns-sub-assets">
+        <div class="card">
+          <div class="head">
+            <div class="title">📈 汽配社媒账号日常表现与粉丝关注看板</div>
+            <button class="btn primary small" onclick="openAddSnsAccountModal()">＋ 绑定/新增社媒主页</button>
+          </div>
+          <p class="subtle" style="margin-top:-8px;margin-bottom:16px">追踪 TikTok, YouTube Shorts, Instagram 等汽配主页的每日粉丝与作品获赞数。</p>
+          <div class="account-card-grid" id="snsAccountCards"></div>
+        </div>
+      </div>
+
+      <!-- 区块 2：视频流量与转化诊股 -->
+      <div class="sns-subview" id="sns-sub-analytics">
+        <div class="card">
+          <div class="head">
+            <div class="title">🧐 PartsPhoenix 引流作品流量与转化分析诊断</div>
+            <button class="btn primary small" onclick="addVideoRecordPrompt()">＋ 登记新发布视频</button>
+          </div>
+          <p class="subtle" style="margin-top:-8px;margin-bottom:12px">记录作品表现，AI 将自动分析该视频是否利于为 PartsPhoenix 带来订单，并提供改进行动建议。</p>
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>视频标题/主题</th>
+                  <th>平台</th>
+                  <th>播放量</th>
+                  <th>点赞量</th>
+                  <th>官网点击数</th>
+                  <th>产生零部件订单</th>
+                  <th>转化率(CVR)</th>
+                  <th>AI 汽配转化诊断建议</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="videoAnalyticsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 区块 3：汽配爆款内容策划与脚本 -->
+      <div class="sns-subview" id="sns-sub-planner">
+        <div class="card">
+          <div class="head"><div class="title">🛠️ 汽配引流爆款内容灵感与 AI 脚本生成器</div></div>
+          <p class="subtle" style="margin-top:-8px;margin-bottom:16px">选择汽配切入角度，AI 将为你生成符合海外车主（DIY玩家/修车厂）习惯的视频分镜与带货口播。</p>
+          
+          <div class="formgrid">
+            <div class="field">
+              <label>视频切入角度/选题模式</label>
+              <select class="select" id="chessAngleSelect">
+                <option value="highlight">🚨 汽车故障诊断 (刹车异响/发动机抖动/大灯模糊痛点)</option>
+                <option value="strategy">🔧 DIY 零件安装指导 (替换教程与 OE/Aftermarket 对比)</option>
+                <option value="promo">🎁 适配限时优惠 (输入年份/车型即享 10% OFF 折扣)</option>
+                <option value="humor">🚗 劣质零部件翻车现场 (对比 PartsPhoenix 品质保证)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>推广汽车配件品类</label>
+              <input class="input" id="chessGameType" value="Brake Pads & Rotors (刹车片与刹车盘) / Headlight Assembly">
+            </div>
+            <div class="field full">
+              <label>希望促成的转化动作 (Call to Action)</label>
+              <input class="input" id="chessCtaText" value="访问 partsphoenix.com 输入您的 Make-Model-Year 快速查询适配零件，输入折扣码 PHOENIX10 现省 10%！">
+            </div>
+          </div>
+          <div style="margin-top:14px;text-align:right;">
+            <button class="btn primary" onclick="generateChessScript()">✨ 生成汽配爆款短视频分镜脚本</button>
+          </div>
+        </div>
+
+        <div class="card" id="scriptResultCard" style="display:none;">
+          <div class="head"><div class="title">📜 AI 自动生成的汽配引流分镜脚本</div></div>
+          <div id="scriptResultBody" style="white-space:pre-wrap;background:#fafbfe;padding:16px;border-radius:12px;border:1px solid var(--line);font-size:14px;line-height:1.7;"></div>
+        </div>
+      </div>
+
+      <!-- 区块 4：批量 AI 矩阵生成 -->
+      <div class="sns-subview" id="sns-sub-generator">
+        <div class="card">
+          <div class="head"><div class="title">🎬 第一步：批量选择汽配视频/图片与引流目标</div></div>
+          <div class="formgrid">
+            <div class="field">
+              <label>选择视频/图片素材 (支持多选文件)</label>
+              <input class="input" type="file" id="snsMediaFiles" accept="video/*,image/*" multiple onchange="handleBatchMediaSelect(event)">
+              <div class="subtle" id="snsBatchMediaTip" style="margin-top:4px">按住 Ctrl/Shift 可一次性选择多个零部件视频</div>
+            </div>
+            <div class="field">
+              <label>PartsPhoenix 目标落地页 URL (带参链接)</label>
+              <input class="input" id="snsTargetUrl" value="https://partsphoenix.com?utm_source=social_matrix">
+            </div>
+            <div class="field">
+              <label>汽配核心卖点/优惠亮点</label>
+              <input class="input" id="snsSellingPoint" value="100% Fitment Guarantee + Fast Shipping + Free $10 Coupon">
+            </div>
+            <div class="field">
+              <label>选择 AI 模型</label>
+              <select class="select" id="geminiModelSelect">
+                <option value="gemini-2.5-flash">Gemini 2.5 Flash (推荐最新视觉模型)</option>
+                <option value="gemini-1.5-flash">Gemini 1.5 Flash (稳定高效模型)</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-top:16px;text-align:right">
+            <button class="btn primary" id="batchGenerateBtn" style="padding:10px 24px;" onclick="startBatchQueueProcess()">🚀 提交多视频，启动后台排队识别</button>
+          </div>
+        </div>
+
+        <div class="card" id="snsResultCard" style="display:none;">
+          <div class="head">
+            <div class="title">✨ 当前预览：<span id="currentVideoTitle">视频 1</span> 的社媒矩阵文案</div>
+            <button class="btn small primary" onclick="saveSnsToContent()">💾 保存本套方案到内容库</button>
+          </div>
+          <div class="sns-tabs" id="snsTabs"></div>
+          <div id="snsTabContent"></div>
+        </div>
+
+        <div class="head" style="margin-top:24px"><div class="title">📚 历史与后台排队自动生成的矩阵记录</div></div>
+        <div class="content-grid" id="platformContent"></div>
+      </div>
+
+      <!-- 区块 5：引流转化 UTM 与 Bio 话术 -->
+      <div class="sns-subview" id="sns-sub-links">
+        <div class="card">
+          <div class="head"><div class="title">🔗 UTM 汽配引流专属跟踪链接生成器</div></div>
+          <p class="subtle" style="margin-top:-8px;margin-bottom:12px">为 TikTok、IG、YouTube 各视频生成独一无二的追踪链接，精准统计是哪个零部件视频带来的零部件订单！</p>
+          <div class="formgrid">
+            <div class="field"><label>PartsPhoenix 官网域名</label><input class="input" id="utmBaseUrl" value="https://partsphoenix.com"></div>
+            <div class="field">
+              <label>发布平台 (utm_source)</label>
+              <select class="select" id="utmSource">
+                <option value="tiktok">TikTok</option>
+                <option value="youtube">YouTube Shorts</option>
+                <option value="instagram">Instagram Reels</option>
+                <option value="x_twitter">X (Twitter)</option>
+              </select>
+            </div>
+            <div class="field"><label>营销活动名称 (utm_campaign)</label><input class="input" id="utmCampaign" value="brake_pads_promo"></div>
+            <div class="field"><label>内容/零件特征 (utm_content)</label><input class="input" id="utmContent" value="diy_installation_vid1"></div>
+          </div>
+          <div style="margin-top:12px;background:#fafbfe;padding:12px;border-radius:10px;border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;">
+            <b id="generatedUtmLink" style="font-size:13px;color:var(--accent);">https://partsphoenix.com?utm_source=tiktok&utm_campaign=brake_pads_promo&utm_content=diy_installation_vid1</b>
+            <button class="btn small primary" onclick="copyText(document.getElementById('generatedUtmLink').textContent)">📋 复制引流链接</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="head"><div class="title">📌 高转化汽配社媒主页 (Bio) 简介模板</div></div>
+          <div class="content-grid">
+            <div class="content-card">
+              <h3>🎵 TikTok / IG 汽配账号主页简介</h3>
+              <div class="body">🚗 Quality OEM & Aftermarket Auto Parts
+💯 100% Fitment Guarantee | Fast Global Shipping
+🔍 Find exact parts for your Make/Model/Year below:
+👇 Shop & Save 10% Today:
+[你的UTM短链接/partsphoenix.com]</div>
+            </div>
+            <div class="content-card">
+              <h3>▶️ YouTube 频道简介与评论置顶</h3>
+              <div class="body">🔧 Your trusted auto parts partner - PartsPhoenix!
+📦 Need replacement parts or performance upgrades?
+👉 Search your car year/model & get instant discount: https://partsphoenix.com</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </section>
 
 <!-- 5. 独立站 -->
-<section class="view" id="shopify"><h2 class="page-title">🛍 独立站</h2><p class="desc">Shopify 页面、SEO、转化与广告资料。</p><button class="btn primary" onclick="openContent('shopify')">＋ 新增独立站内容</button><div class="content-grid" id="shopifyContent" style="margin-top:16px"></div></section>
+<section class="view" id="shopify"><h2 class="page-title">🛍 PartsPhoenix 独立站</h2><p class="desc">Shopify/建站页面、SEO、零件 Fitment 筛选与广告资料。</p><button class="btn primary" onclick="openContent('shopify')">＋ 新增独立站内容</button><div class="content-grid" id="shopifyContent" style="margin-top:16px"></div></section>
 
 <!-- 6. 工具中心 -->
 <section class="view" id="tools"><h2 class="page-title">🛠 工具中心</h2><p class="desc">支持全球 160+ 币种自选与在线更新。</p><div id="toolsModules"></div></section>
 
 <!-- 7. 账号环境 -->
-<section class="view" id="account"><h2 class="page-title">🔐 账号环境</h2><p class="desc">账号、IP、设备和风控资料集中保存。</p><button class="btn primary" onclick="openContent('account')">＋ 新增账号资料</button><div class="content-grid" id="accountContent" style="margin-top:16px"></div></section>
+<section class="view" id="account"><h2 class="page-title">🔐 账号环境</h2><p class="desc">汽配平台账号、IP、设备和风控资料集中保存。</p><button class="btn primary" onclick="openContent('account')">＋ 新增账号资料</button><div class="content-grid" id="accountContent" style="margin-top:16px"></div></section>
 
 <!-- 8. 设置后台 -->
 <section class="view" id="settings">
-<h2 class="page-title">⚙ 后台自定义与云同步备份</h2><p class="desc">修改外观与管理跨设备同步数据。</p>
+<h2 class="page-title">⚙ 后台自定义与云同步备份</h2><p class="desc">修改外观与管理 PartsPhoenix 跨设备同步数据。</p>
 <div class="card"><div class="head"><div class="title">🎨 全局外观</div></div><div class="formgrid"><div class="field"><label>工作台名称</label><input class="input" id="setName"></div><div class="field"><label>副标题</label><input class="input" id="setSub"></div><div class="field"><label>主色</label><div class="colorline"><input type="color" id="setColor"></div></div><div class="field"><label>首页运营小贴士</label><input class="input" id="setTip"></div></div><div class="actions"><button class="btn primary" onclick="saveAppearance()">保存外观</button></div></div>
 
 <div class="card"><div class="head"><div class="title">💾 跨设备数据导出与恢复</div></div>
-  <p class="subtle" style="margin-bottom:12px">如果在旧电脑填写的旧数据没有自动拉取过来，可以在旧电脑点击【导出本地 JSON】，再在当前电脑点击【导入 JSON 文件】即可 100% 恢复全量数据！</p>
+  <p class="subtle" style="margin-bottom:12px">如果在旧电脑填写的旧数据没有自动拉取过来，可以在旧电脑点击【导出本地 JSON】，再在当前电脑点击【导入 JSON 文件】即可 100% 恢复 PartsPhoenix 核心数据！</p>
   <button class="btn primary" onclick="exportBackup()">📤 导出本地 JSON 备份</button> 
   <button class="btn" onclick="document.getElementById('backupFile').click()">📥 导入 JSON 文件</button> 
   <button class="btn danger" onclick="resetData()">清空当前设备数据</button>
   <input type="file" id="backupFile" hidden accept=".json" onchange="importBackup(event)">
 </div>
 </section>
-<div class="subtle" style="text-align:center;padding:4px 0 30px">VickyWork 3.1 · 跨设备稳定云同步版</div>
+<div class="subtle" style="text-align:center;padding:4px 0 30px">PartsPhoenix · 汽配社媒引流与跨设备云同步工作台 v3.3</div>
 </main>
 
 <!-- 内容 Modal -->
@@ -233,9 +394,18 @@ const DEFAULT_NAV=[
 ];
 
 const defaultState={
-  appearance:{name:'VickyWork',sub:'跨境运营工作台',color:'#f487b8',tip:'运营小贴士：每天结束前花 2 分钟记录售后数据，月底复盘会轻松很多。'},
+  appearance:{name:'PartsPhoenix',sub:'汽配跨境运营工作台',color:'#f487b8',tip:'运营小贴士：社媒引流的核心是解答车主维修痛点，引导访问 partsphoenix.com 查车型适配！'},
   nav:DEFAULT_NAV,urgent:[],todos:[],aftersaleRecords:[],
   columnMapping:{order:'A',platform:'B',date:'D',reason:'E',action:'H',extra:''},
+  snsAccounts:[
+    { id:'1', platform:'TikTok', handle:'@PartsPhoenix_Official', followers:18200, likes:124000, dailyGain:'+420' },
+    { id:'2', platform:'YouTube', handle:'PartsPhoenix Auto Care', followers:52000, likes:410000, dailyGain:'+910' },
+    { id:'3', platform:'Instagram', handle:'@partsphoenix_auto', followers:11500, likes:68000, dailyGain:'+180' }
+  ],
+  videoAnalytics:[
+    { id:'v1', title:'刹车异响怎么查？Replacing Brake Pads DIY', platform:'TikTok', views:158000, likes:18200, clicks:2400, orders:68, cvr:'2.83%', advice:'🔥 爆款视频！成功解答了刹车异响痛点。建议置顶评论：“在 partsphoenix.com 输入年份车型查同款刹车片，用折扣码 AUTO10 现省 10%！”' },
+    { id:'v2', title:'OEM 替换件 vs 劣质件对质展示', platform:'YouTube', views:8500, likes:620, clicks:140, orders:3, cvr:'2.14%', advice:'⚠️ 播放量中等。建议在前 3 秒加入高能对比视觉，突出 PartsPhoenix 100% 适配保证。' }
+  ],
   contents:{service:[],product:[],platform:[],shopify:[],account:[]},
   dark:false
 };
@@ -270,6 +440,8 @@ async function syncPushCloudState(username, password, stateData){
 function loadState(){ 
   let s = JSON.parse(localStorage.getItem(getUserKey())||'null')||defaultState; 
   s.aftersaleRecords = s.aftersaleRecords || [];
+  s.snsAccounts = s.snsAccounts || defaultState.snsAccounts;
+  s.videoAnalytics = s.videoAnalytics || defaultState.videoAnalytics;
   s.columnMapping = s.columnMapping || defaultState.columnMapping;
   return s;
 }
@@ -295,27 +467,180 @@ function loadGeminiKey(){
   return k;
 }
 
-function colToIdx(colStr){
-  if(!colStr) return -1;
-  colStr = colStr.trim().toUpperCase();
-  let idx = 0;
-  for (let i = 0; i < colStr.length; i++) { idx = idx * 26 + (colStr.charCodeAt(i) - 64); }
-  return idx - 1;
+/* 社媒二级侧边栏视图切换 */
+function switchSnsSubView(subId, btnEl){
+  document.querySelectorAll('.sns-menu-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.sns-subview').forEach(v => v.classList.remove('active'));
+  if(btnEl) btnEl.classList.add('active');
+  const target = document.getElementById(`sns-sub-${subId}`);
+  if(target) target.classList.add('active');
 }
 
-function formatExcelDate(numOrStr){
-  if(!numOrStr) return `${new Date().getFullYear()}/${new Date().getMonth()+1}/${new Date().getDate()}`;
-  let str = String(numOrStr).trim();
-  if(typeof numOrStr === 'number' || (!isNaN(str) && Number(str) > 30000)){
-    const date = new Date((Number(str) - (25567 + 2)) * 86400 * 1000);
-    if(!isNaN(date.getTime())){ return `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`; }
-  }
-  if(str.includes('未') || str.includes('退款') || str.includes('索赔') || isNaN(Date.parse(str.replace(/\//g,'-')))){
-    if(/\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2}/.test(str)) return str.replace(/-/g, '/');
-    return `${new Date().getFullYear()}/${new Date().getMonth()+1}/${new Date().getDate()}`;
-  }
-  return str.replace(/-/g, '/');
+/* 社媒账号资产渲染与增加 */
+function renderSnsAccounts(){
+  const container = document.getElementById('snsAccountCards');
+  if(!container) return;
+  const accounts = state.snsAccounts || [];
+  container.innerHTML = accounts.map((acc, idx) => `
+    <div class="acc-card">
+      <div class="plat-name">
+        <span>${esc(acc.platform)}</span>
+        <span class="subtle" style="font-size:12px;font-weight:normal;">${esc(acc.handle)}</span>
+      </div>
+      <div class="acc-metrics">
+        <div><span>粉丝关注数</span><b>${Number(acc.followers).toLocaleString()}</b></div>
+        <div><span>总获赞数</span><b>${Number(acc.likes).toLocaleString()}</b></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="badge" style="background:#e6f4ea;color:#137333;">今日新增: ${esc(acc.dailyGain)}</span>
+        <div>
+          <button class="btn small" onclick="editSnsAccount(${idx})">更新</button>
+          <button class="btn small danger" onclick="deleteSnsAccount(${idx})">删除</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
 }
+
+function openAddSnsAccountModal(){
+  const platform = prompt("请输入平台名称 (如 TikTok, YouTube, Instagram, X):", "TikTok"); if(!platform) return;
+  const handle = prompt("请输入账号 Handle/名称:", "@PartsPhoenix_Official"); if(!handle) return;
+  const followers = parseInt(prompt("当前粉丝关注数:", "5000")) || 0;
+  const likes = parseInt(prompt("当前作品总赞数:", "25000")) || 0;
+  state.snsAccounts.push({ id: String(Date.now()), platform, handle, followers, likes, dailyGain: '+0' });
+  persist();
+}
+
+function editSnsAccount(idx){
+  const acc = state.snsAccounts[idx]; if(!acc) return;
+  const f = prompt(`更新 [${acc.handle}] 的粉丝关注数:`, acc.followers); if(f === null) return;
+  const l = prompt(`更新 [${acc.handle}] 的作品总点赞数:`, acc.likes); if(l === null) return;
+  const gain = prompt(`今日新增粉丝数量 (如 +200):`, acc.dailyGain) || '+0';
+  acc.followers = parseInt(f) || acc.followers;
+  acc.likes = parseInt(l) || acc.likes;
+  acc.dailyGain = gain;
+  persist();
+}
+
+function deleteSnsAccount(idx){
+  if(confirm('确定删除该账号监控？')){ state.snsAccounts.splice(idx, 1); persist(); }
+}
+
+/* 视频分析与诊断渲染 */
+function renderVideoAnalytics(){
+  const tbody = document.getElementById('videoAnalyticsTable'); if(!tbody) return;
+  const list = state.videoAnalytics || [];
+  tbody.innerHTML = list.map((item, idx) => `
+    <tr>
+      <td><b>${esc(item.title)}</b></td>
+      <td>${esc(item.platform)}</td>
+      <td>${Number(item.views).toLocaleString()}</td>
+      <td>${Number(item.likes).toLocaleString()}</td>
+      <td>${Number(item.clicks).toLocaleString()}</td>
+      <td><b style="color:var(--accent);">${Number(item.orders).toLocaleString()} 单</b></td>
+      <td>${esc(item.cvr)}</td>
+      <td style="max-width:280px;font-size:12px;line-height:1.5;">${esc(item.advice)}</td>
+      <td><button class="btn small danger" onclick="deleteVideoRecord(${idx})">删除</button></td>
+    </tr>
+  `).join('');
+}
+
+function addVideoRecordPrompt(){
+  const title = prompt("请输入汽配视频标题/内容主题:"); if(!title) return;
+  const platform = prompt("发布平台 (TikTok / YouTube / IG):", "TikTok");
+  const views = parseInt(prompt("视频播放量:", "10000")) || 0;
+  const likes = parseInt(prompt("视频点赞量:", "800")) || 0;
+  const clicks = parseInt(prompt("引流到 PartsPhoenix 的点击数:", "200")) || 0;
+  const orders = parseInt(prompt("带来的零部件注册/购买订单数:", "5")) || 0;
+  
+  const cvr = clicks > 0 ? ((orders / clicks) * 100).toFixed(2) + '%' : '0.00%';
+  
+  let advice = "💡 汽配转化建议：";
+  if(orders > 10){
+    advice = "🔥 爆款汽配视频！建议将此素材二次剪辑用于不同车型的 DIY 教程，并在评论区第一条置顶 partsphoenix.com 折扣链接。";
+  } else if(clicks > 50 && orders === 0){
+    advice = "⚠️ 点击高但无订单：说明视频成功吸引了车主，但落地页缺少‘ Make-Model-Year 适配引导’，建议在零件详情页突出 100% Fitment 保障。";
+  } else {
+    advice = "⚡ 流量偏低：建议增加前 3 秒汽车故障声（如异响/发动机噪音）或零配件拆卸画面，提升完播率。";
+  }
+
+  state.videoAnalytics.unshift({ id: String(Date.now()), title, platform: platform||'TikTok', views, likes, clicks, orders, cvr, advice });
+  persist();
+}
+
+function deleteVideoRecord(idx){
+  if(confirm('确定删除该视频分析记录？')){ state.videoAnalytics.splice(idx, 1); persist(); }
+}
+
+/* 汽配爆款脚本生成 */
+function generateChessScript(){
+  const angle = document.getElementById('chessAngleSelect').value;
+  const game = document.getElementById('chessGameType').value;
+  const cta = document.getElementById('chessCtaText').value;
+
+  const cardBox = document.getElementById('scriptResultCard');
+  const bodyBox = document.getElementById('scriptResultBody');
+  cardBox.style.display = 'block';
+
+  let scriptText = '';
+  if(angle === 'highlight'){
+    scriptText = `🎬 【汽车故障诊断引流短视频脚本】
+🎯 核心目标：解决车主日常保养痛点，引导访问 partsphoenix.com 购买匹配配件
+
+【0-3秒 黄金 Hook (故障痛点)】
+画面：特写车轮/发动机噪音特写，听到明显吱吱异响，车主面露难色。
+台词/字幕："Hear this squeaking noise when you brake? Don't ignore it—your brake pads are completely worn out!" (踩刹车听到这异响？千万别忽视，你的刹车片磨透了！)
+
+【3-12秒 解决方案 (DIY/PartsPhoenix】
+画面：展示从 PartsPhoenix 收到包装精美的全新 OEM 级配件，快速展示安装或拆卸过程。
+台词/字幕："Stop paying $500 at the dealership. Get premium OEM-quality ${game} from PartsPhoenix for half the price!"
+
+【12-20秒 引导转化 (Call to Action)】
+画面：手机录屏展示输入 Make-Model-Year (如 2018 Honda Civic) 瞬间查出精确适配配件。
+口播台词："Check your exact car model fitment in 10 seconds!"
+👇 动作引导：${cta}`;
+  } else if(angle === 'promo'){
+    scriptText = `🎬 【汽配适配与优惠活动脚本】
+🎯 核心目标：消除买错型号顾虑，通过折扣促成首单
+
+【0-3秒 Hook】
+画面：展示劣质配件变形 vs PartsPhoenix 高品质配件对比。
+台词/字幕："Never buy cheap auto parts that don't fit! Here is how to get 100% guaranteed fitment."
+
+【3-12秒 过程展示】
+画面：展示在 partsphoenix.com 输入 VIN 码或车型的流畅界面。
+台词/字幕："Step 1: Go to partsphoenix.com. Step 2: Select your Year, Make & Model. Boom—100% matched parts guaranteed."
+
+【12-18秒 CTA】
+口播台词："Fast shipping & 10% OFF for new customers. Tap the link in bio now!"
+👇 动作引导：${cta}`;
+  } else {
+    scriptText = `🎬 【通用汽配带货脚本】
+【前 3 秒 Hook】："3 Car maintenance tricks your mechanic won't tell you..."
+【中间展示】：讲解零部件保养知识与更换周期（推广 ${game}）。
+【结尾引导】：${cta}`;
+  }
+
+  bodyBox.textContent = scriptText;
+}
+
+/* 关联 UTM 动态生成 */
+function updateUtmLink(){
+  const base = document.getElementById('utmBaseUrl').value.trim();
+  const src = document.getElementById('utmSource').value;
+  const cam = document.getElementById('utmCampaign').value.trim();
+  const con = document.getElementById('utmContent').value.trim();
+  const link = `${base}?utm_source=${src}&utm_campaign=${cam}&utm_content=${con}`;
+  const el = document.getElementById('generatedUtmLink');
+  if(el) el.textContent = link;
+}
+
+document.addEventListener('input', (e)=>{
+  if(['utmBaseUrl','utmCampaign','utmContent'].includes(e.target.id)) updateUtmLink();
+});
+document.addEventListener('change', (e)=>{
+  if(e.target.id === 'utmSource') updateUtmLink();
+});
 
 /* 1. 跨设备登录与数据同步 */
 function showAuthModal(){ document.getElementById('authModal').style.display = 'flex'; }
@@ -326,7 +651,7 @@ async function handleAuthSubmit(){
   const btn = document.getElementById('authSubmitBtn');
   if(!acc || !pwd){ alert('请输入账号和密码'); return; }
 
-  btn.textContent = '⏳ 正在加载云端数据...';
+  btn.textContent = '⏳ 正在加载 PartsPhoenix 云端数据...';
   btn.disabled = true;
 
   currentUser = acc;
@@ -336,9 +661,8 @@ async function handleAuthSubmit(){
   const cloudState = await syncFetchCloudState(acc, pwd);
   if(cloudState){
     state = cloudState;
-    alert(`🎉 登录成功！已为您自动下载并同步账号 [${acc}] 的云端售后与客服数据！`);
+    alert(`🎉 登录成功！已为您自动下载并同步账号 [${acc}] 的汽配云端数据！`);
   } else {
-    // 首次设置，自动把本地当前积累的数据上传
     await syncPushCloudState(acc, pwd, state);
     alert(`🎉 账号 [${acc}] 已激活！当前设备的数据已成功同步上传至云端！`);
   }
@@ -410,11 +734,29 @@ function uploadAftersaleExcel(event){
          imported.push({ order, platform, date: dateStr, reason, action, recover: isRec ? 'yes' : 'no' });
        }
      });
-     if(imported.length > 0){ state.aftersaleRecords = imported; persist(); alert(`✅ 成功读取 ${imported.length} 条售后数据并保存！`); }
+     if(imported.length > 0){ state.aftersaleRecords = imported; persist(); alert(`✅ 成功读取 ${imported.length} 条汽配售后数据并保存！`); }
      else { alert('未检测到有效数据'); }
    }catch(err){ alert('解析失败'); }
  };
  reader.readAsArrayBuffer(file);
+}
+
+function colToIdx(colStr){
+  if(!colStr) return -1;
+  colStr = colStr.trim().toUpperCase();
+  let idx = 0;
+  for (let i = 0; i < colStr.length; i++) { idx = idx * 26 + (colStr.charCodeAt(i) - 64); }
+  return idx - 1;
+}
+
+function formatExcelDate(numOrStr){
+  if(!numOrStr) return `${new Date().getFullYear()}/${new Date().getMonth()+1}/${new Date().getDate()}`;
+  let str = String(numOrStr).trim();
+  if(typeof numOrStr === 'number' || (!isNaN(str) && Number(str) > 30000)){
+    const date = new Date((Number(str) - (25567 + 2)) * 86400 * 1000);
+    if(!isNaN(date.getTime())){ return `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`; }
+  }
+  return str.replace(/-/g, '/');
 }
 
 function clearAftersaleData(){ if(confirm('确定清空？')){ state.aftersaleRecords = []; persist(); } }
@@ -430,7 +772,7 @@ function editRecord(index){
 function deleteRecord(index){ if(confirm('确定删除？')){ state.aftersaleRecords.splice(index, 1); persist(); } }
 function addSingleRecordPrompt(){
   const order = prompt("请输入订单号："); if(!order) return;
-  const platform = prompt("请输入平台：", "eBay"), date = prompt("请输入日期：", new Date().toISOString().slice(0,10).replace(/-/g,'/')), reason = prompt("请输入原因：", "与描述不符"), action = prompt("请输入处理措施：", "已退款");
+  const platform = prompt("请输入平台：", "partsphoenix.com"), date = prompt("请输入日期：", new Date().toISOString().slice(0,10).replace(/-/g,'/')), reason = prompt("请输入原因：", "车型年份不匹配"), action = prompt("请输入处理措施：", "已换货重发");
   const isRec = action.includes('挽回') || action.includes('重发') || action.includes('补发');
   state.aftersaleRecords.unshift({ order, platform: platform||'-', date: date||'-', reason: reason||'-', action: action||'-', recover: isRec?'yes':'no' });
   persist();
@@ -482,7 +824,7 @@ function delTodo(i){state.todos.splice(i,1);persist()}
 function handleBatchMediaSelect(e){
   const files = Array.from(e.target.files);
   if(files.length > 0){
-    document.getElementById('snsBatchMediaTip').textContent = `✅ 已载入 ${files.length} 个文件，准备后台排队处理...`;
+    document.getElementById('snsBatchMediaTip').textContent = `✅ 已载入 ${files.length} 个汽配视频，准备后台排队处理...`;
   }
 }
 
@@ -491,10 +833,10 @@ async function startBatchQueueProcess(){
   const files = Array.from(filesInput.files);
   const apiKey = loadGeminiKey();
   const targetUrl = document.getElementById('snsTargetUrl').value.trim() || 'https://partsphoenix.com?utm_source=social_matrix';
-  const points = document.getElementById('snsSellingPoint').value.trim() || 'High Quality Deal';
+  const points = document.getElementById('snsSellingPoint').value.trim() || '100% Fitment Guarantee + Fast Shipping';
   const modelName = document.getElementById('geminiModelSelect').value;
 
-  if(files.length === 0){ alert('请先选择至少一个视频文件'); return; }
+  if(files.length === 0){ alert('请先选择至少一个汽配视频文件'); return; }
 
   videoBatchQueue = files.map((file, idx) => ({
     id: idx, file: file, name: file.name, mime: file.type || 'video/mp4', targetUrl: targetUrl, points: points, modelName: modelName
@@ -507,7 +849,7 @@ async function startBatchQueueProcess(){
 async function processNextInQueue(apiKey){
   if(videoBatchQueue.length === 0){
     document.getElementById('globalQueueBanner').style.display = 'none';
-    alert('🎉 所有后台队列视频已识别完毕并云端自动保存！');
+    alert('🎉 所有 PartsPhoenix 后台队列视频已识别完毕并云端自动保存！');
     return;
   }
 
@@ -549,7 +891,7 @@ function readFileAsBase64(file){
 }
 
 async function fetchGeminiApi(apiKey, modelName, base64Str, mimeType, targetUrl, points){
-  const promptText = `Analyze the video/image provided in detail. Identify what product or topic it is showing, what features or action is taking place, and its tone. Then, generate high-converting social media posts embedded with this target website link: "${targetUrl}" and selling point: "${points}".
+  const promptText = `Analyze the provided auto parts video/image in detail. It is for promoting partsphoenix.com (Auto Parts Online Store). Identify the parts, DIY action, or features shown. Generate high-converting social media posts with target site link: "${targetUrl}" and selling point: "${points}".
 
 Return strictly a valid JSON object without any Markdown text wrap. The JSON structure must match this EXACT format:
 {
@@ -583,20 +925,20 @@ Return strictly a valid JSON object without any Markdown text wrap. The JSON str
 
 function generateSnsMatrixFallback(url, points){
   return {
-    youtube: { title: `🔥 Official Showcase (${points})`, body: `Watch real product details!\n🔗 ${url}` },
-    instagram: { title: `✨ Discover Next-Level Excellence`, body: `Upgrade your daily routine today!\n🔗 ${url}` },
-    tiktok: { title: `Stop scrolling! Check this out 😱`, body: `POV: You found the product you need!\n🔗 ${url}` },
-    twitter: { title: `🚀 High Demand Alert!`, body: `Check out our latest release 🔥\n🔗 ${url}` },
-    linkedin: { title: `Industry Solutions & Performance`, body: `Learn more via our portal:\n🔗 ${url}` },
-    facebook: { title: `🎉 Upgrade Your Daily Life Today!`, body: `Order Now: ${url}` },
-    pinterest: { title: `Modern & Functional Essentials`, body: `Shop the exact look here:\n🔗 ${url}` }
+    youtube: { title: `🚗 How to Replace & Upgrade Auto Parts (${points})`, body: `Stop paying high dealer prices! Find exact fitment for your vehicle:\n🔗 Check Parts: ${url}` },
+    instagram: { title: `✨ Premium Auto Parts & Fitment Guarantee`, body: `Upgrade your ride today with OEM quality parts!\n🔗 ${url}` },
+    tiktok: { title: `Car Making Weird Noise? Fixed it in 5 mins! 😱`, body: `Find matched parts for your year/model in bio!\n🔗 ${url}` },
+    twitter: { title: `🚀 High-Quality Auto Parts In Stock!`, body: `Check exact vehicle fitment & fast shipping 🔥\n🔗 ${url}` },
+    linkedin: { title: `Automotive Aftermarket & OEM Parts Distribution`, body: `Explore parts catalog at PartsPhoenix:\n🔗 ${url}` },
+    facebook: { title: `🎉 Premium Auto Replacement Parts at Unbeatable Prices!`, body: `Order Now & Save: ${url}` },
+    pinterest: { title: `Sleek Auto Accessories & Replacement Parts`, body: `Shop exact fitment parts here:\n🔗 ${url}` }
   };
 }
 
 function autoSaveSnsRecord(videoName, snsData){
   let fullBody = '';
   Object.keys(snsData).forEach(key=>{ fullBody += `=== [ ${key.toUpperCase()} ] ===\n${snsData[key].title}\n\n${snsData[key].body}\n\n\n`; });
-  state.contents['platform'].unshift({ id: String(Date.now()+Math.random()), title: `🌐 《${videoName}》Gemini 社媒矩阵`, icon: '🌐', body: fullBody });
+  state.contents['platform'].unshift({ id: String(Date.now()+Math.random()), title: `🌐 《${videoName}》PartsPhoenix 矩阵`, icon: '🌐', body: fullBody });
   persist();
 }
 
@@ -620,7 +962,7 @@ function renderSnsTabs(){
 
 function switchSnsTab(tab){ activeSnsTab = tab; renderSnsTabs(); }
 function copyText(str){ navigator.clipboard.writeText(str).then(()=>{ alert('✅ 已复制到剪贴板！'); }); }
-function saveSnsToContent(){ autoSaveSnsRecord('预览记录', currentSnsData); alert('✅ 已保存至云端内容库！'); }
+function saveSnsToContent(){ autoSaveSnsRecord('预览记录', currentSnsData); alert('✅ 已保存至 PartsPhoenix 内容库！'); }
 
 /* 5. 客服与通用内容管理 */
 function handleScriptUpload(event){
@@ -684,7 +1026,7 @@ function renderContents(section){
 function delContent(section,id){ if(confirm('确定删除吗？')){ state.contents[section]=state.contents[section].filter(x=>x.id!==id); persist(); } }
 
 /* 6. 工具与汇率 */
-const GLOBAL_CURRENCIES = { CNY:"人民币 CN", USD:"美元 US", EUR:"欧元 EU", GBP:"英镑 GB", JPY:"日元 JP", CAD:"加元 CA", AUD:"澳元 AU", HKD:"港币 HK", SGD:"新加坡元 SG", MXN:"墨西哥比索 MX", BRL:"巴西雷亚尔 BR", INR:"印度鲁比 IN", KRW:"韩元 KR", RUB:"俄罗斯卢布 RU" };
+const GLOBAL_CURRENCIES = { CNY:"人民币 CN", USD:"美元 US", EUR:"欧元 EU", GBP:"英镑 GB", JPY:"日元 JP", CAD:"加元 CA", AUD:"澳元 AU", HKD:"港币 HK", SGD:"新加坡元 SG", MXN:"墨西哥比索 MX", BRL:"巴西雷亚尔 BR", INR:"印度鲁比 IN", KRW:"韩元 KR", RUB:"俄罗斯鲁布 RU" };
 let myCurrencies = JSON.parse(localStorage.getItem('vicky_my_currencies')) || ['CNY','USD','EUR','GBP','JPY','CAD','AUD','HKD'];
 let ratesTable = JSON.parse(localStorage.getItem('vicky_rates')) || { USD: 1, CNY: 7.10, EUR: 0.92, GBP: 0.79, JPY: 147.00 };
 
@@ -745,8 +1087,8 @@ async function fetchOnlineRates(){
 }
 
 function saveAppearance(){
- state.appearance.name=document.getElementById('setName').value.trim()||'VickyWork';
- state.appearance.sub=document.getElementById('setSub').value.trim()||'跨境运营工作台';
+ state.appearance.name=document.getElementById('setName').value.trim()||'PartsPhoenix';
+ state.appearance.sub=document.getElementById('setSub').value.trim()||'汽配跨境运营工作台';
  state.appearance.color=document.getElementById('setColor').value;
  state.appearance.tip=document.getElementById('setTip').value.trim();
  persist(); alert('外观保存成功！');
@@ -754,7 +1096,7 @@ function saveAppearance(){
 
 function exportBackup(){
  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a');
- a.href=URL.createObjectURL(blob); a.download='VickyWork-backup-'+today()+'.json'; a.click();
+ a.href=URL.createObjectURL(blob); a.download='PartsPhoenix-backup-'+today()+'.json'; a.click();
 }
 
 function importBackup(event){
@@ -764,7 +1106,7 @@ function importBackup(event){
    try{
      state = JSON.parse(e.target.result);
      persist();
-     alert('🎉 跨设备全量数据恢复并同步成功！');
+     alert('🎉 PartsPhoenix 跨设备数据恢复并同步成功！');
    }catch(err){ alert('文件解析失败'); }
  };
  reader.readAsText(file);
@@ -791,13 +1133,15 @@ function renderAll(){
  applyAppearance();
  renderNav();
  renderHome();
+ renderSnsAccounts();
+ renderVideoAnalytics();
  ['service','product','platform','shopify','account'].forEach(s=>renderContents(s));
 }
 
 function clock(){
  const d=new Date(),days=['日','一','二','三','四','五','六'],h=d.getHours();
  document.getElementById('date').textContent=`📅 ${today()} 周${days[d.getDay()]}`;
- document.getElementById('heroDate').textContent=`${today()} · 周${days[d.getDay()]} · 又是推进业务的一天`;
+ document.getElementById('heroDate').textContent=`${today()} · 周${days[d.getDay()]} · PartsPhoenix 业务推进中`;
  document.getElementById('greet').textContent=h<12?'早上好 ☀️':h<18?'下午好 🌤️':'晚上好 🌙';
 }
 
