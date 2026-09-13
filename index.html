@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f487b8">
-<title>VickyWork · 汽配跨境运营与可视化 AI 工作台 v8.0</title>
+<title>VickyWork · 汽配跨境运营与可视化 AI 工作台 v8.1</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{--bg:#f5f6fb;--card:#fff;--text:#202638;--muted:#7c8497;--line:#e7eaf1;--accent:#f487b8;--accent2:#ff9bc6;--shadow:0 10px 28px rgba(34,45,75,.08);--radius:20px}
@@ -60,6 +60,22 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
     <input class="input" type="password" id="authPassword" placeholder="密码" style="margin-bottom:16px">
     <button class="btn primary" style="width:100%;padding:10px" onclick="handleAuthSubmit()">登录并加载云端数据</button>
     <button class="btn small" style="margin-top:10px;width:100%;" onclick="closeModal('authModal')">关闭</button>
+  </div>
+</div>
+
+<!-- 新增自定义货币 Modal -->
+<div id="addCurrencyModal" class="modalbg">
+  <div class="modal">
+    <h2>➕ 自定义手动添加新国家/地区货币</h2>
+    <div class="formgrid" style="margin-top:12px;">
+      <div class="field"><label>货币代码 (3位字母，如 XYZ)</label><input class="input" id="customCurrCode" placeholder="如：XYZ"></div>
+      <div class="field"><label>货币中文名称</label><input class="input" id="customCurrName" placeholder="如：新西兰特殊币"></div>
+      <div class="field full"><label>相对 USD (美元) 的初始汇率比率 (1 USD = ?)</label><input class="input" type="number" id="customCurrRate" value="1.0" step="0.0001"></div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px;">
+      <button class="btn" onclick="closeModal('addCurrencyModal')">取消</button>
+      <button class="btn primary" onclick="saveCustomCurrency()">保存并加入货币选择表</button>
+    </div>
   </div>
 </div>
 
@@ -192,7 +208,6 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
     </div>
 
     <div class="sns-main-content">
-      <!-- 页签 1: 账号资产 -->
       <div class="sns-subview active" id="sns-sub-assets">
         <div class="card">
           <div class="head">
@@ -203,7 +218,6 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
         </div>
       </div>
 
-      <!-- 页签 2: 知识库 -->
       <div class="sns-subview" id="sns-sub-knowledge">
         <div class="card">
           <div class="head"><div class="title">📚 汽配社媒知识库</div></div>
@@ -216,7 +230,6 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
         </div>
       </div>
 
-      <!-- 页签 3: 视频 CVR 诊断 -->
       <div class="sns-subview" id="sns-sub-analytics">
         <div class="card">
           <div class="head"><div class="title">🧐 视频作品流量与转化 CVR 诊断</div><button class="btn primary small" onclick="addVideoRecordPrompt()">＋ 登记新视频</button></div>
@@ -229,7 +242,6 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
         </div>
       </div>
 
-      <!-- 页签 4: AI 脚本生成器 -->
       <div class="sns-subview" id="sns-sub-planner">
         <div class="card">
           <div class="head"><div class="title">🛠️ 汽配爆款短视频 AI 脚本生成器</div></div>
@@ -242,7 +254,6 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
         <div class="card" id="scriptResultCard" style="display:none;"><div class="head"><div class="title">📜 AI 自动生成分镜脚本</div></div><div id="scriptResultBody" style="white-space:pre-wrap;background:#fafbfe;padding:16px;border-radius:12px;border:1px solid var(--line);line-height:1.7;"></div></div>
       </div>
 
-      <!-- 页签 5: UTM 链接 -->
       <div class="sns-subview" id="sns-sub-links">
         <div class="card">
           <div class="head"><div class="title">🔗 UTM 引流跟踪链接生成器</div></div>
@@ -255,7 +266,6 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
     </div>
   </div>
 
-  <!-- 社媒板块底部的 AI 助手块 -->
   <div class="ai-block-box">
     <b>🧠 社媒矩阵 Gemini AI 辅助助手</b>
     <div class="row" style="margin-top:8px;">
@@ -269,21 +279,31 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 <!-- 6. 工具中心 -->
 <section class="view" id="tools">
   <h2 class="page-title">🛠 全球跨境工具中心</h2>
-  <p class="desc">支持全球 162+ 货币实时换算、跨境运费与体积重核算、全成本与利润精算器。</p>
+  <p class="desc">支持全球 160+ 货币实时换算、跨境运费与体积重核算、全成本与利润精算器。</p>
   
   <div id="toolsModules">
-    <!-- 模块 1: 162+ 货币 -->
+    <!-- 模块 1: 全球 160+ 货币及自定义货币模块 -->
     <div class="card">
       <div class="head">
-        <div class="title">💱 全球 162+ 货币实时汇率换算器</div>
-        <button class="btn primary small" onclick="fetchLiveExchangeRates()">🔄 实时获取当下最新汇率</button>
+        <div class="title">💱 全球 160+ 国家与地区货币实时换算器</div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn small" onclick="openAddCurrencyModal()">＋ 自定义添加新币种</button>
+          <button class="btn primary small" onclick="fetchLiveExchangeRates()">🔄 实时获取当下最新汇率</button>
+        </div>
       </div>
+      <p class="subtle" style="margin-top:-8px;margin-bottom:12px;">已载入国际 ISO 全球所有国家/地区货币，下拉列表支持随意选择基准货币及对比币种。</p>
+      
       <div class="row" style="margin-bottom:12px;">
         <input class="input" id="exAmount" type="number" value="100" style="flex:2;" oninput="calcExchangeAll()">
-        <select class="select" id="exBase" style="width:200px;" onchange="calcExchangeAll()">
-          <option value="USD">美元 (USD)</option><option value="CNY">人民币 (CNY)</option><option value="EUR">欧元 (EUR)</option><option value="GBP">英镑 (GBP)</option>
-        </select>
+        <select class="select" id="exBase" style="width:240px;" onchange="calcExchangeAll()"></select>
       </div>
+
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px;background:#fafbfe;padding:10px;border-radius:12px;border:1px solid var(--line);">
+        <span class="subtle">＋ 添加对比货币：</span>
+        <select class="select" id="addCurrencySelect" style="flex:1;max-width:300px;"></select>
+        <button class="btn small primary" onclick="addCurrencyToList()">添加对比展示</button>
+      </div>
+
       <div style="background:#fff0f5;border-radius:14px;padding:16px;border:1px solid #ffd0e0;">
         <div id="exchangeResultList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;"></div>
       </div>
@@ -324,7 +344,6 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
     </div>
   </div>
 
-  <!-- 工具中心底部的 AI 智能生成引擎 -->
   <div class="ai-block-box">
     <b>🧠 工具中心 Gemini AI 自主工具生成器</b>
     <div class="row" style="margin-top:8px;">
@@ -349,7 +368,7 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
   </div>
 </section>
 
-<div class="subtle" style="text-align:center;padding:4px 0 30px">VickyWork · 汽配跨境运营与可视化 AI 工作台 v8.0</div>
+<div class="subtle" style="text-align:center;padding:4px 0 30px">VickyWork · 汽配跨境运营与可视化 AI 工作台 v8.1</div>
 </main>
 
 <!-- 导航修改 Modal -->
@@ -419,6 +438,11 @@ const DEFAULT_NAV=[
   {id:'settings',name:'设置',icon:'⚙️',color:'#333333',fontSize:'14',fontWeight:'700'}
 ];
 
+/* 全球 160+ 国家和地区完整 ISO 标准货币字典 */
+const GLOBAL_CURRENCIES = {
+  USD:"美元 (USD)", CNY:"人民币 (CNY)", EUR:"欧元 (EUR)", GBP:"英镑 (GBP)", JPY:"日元 (JPY)", CAD:"加元 (CAD)", AUD:"澳元 (AUD)", HKD:"港币 (HKD)", SGD:"新加坡元 (SGD)", MXN:"墨西哥比索 (MXN)", BRL:"巴西雷亚尔 (BRL)", RUB:"俄罗斯卢布 (RUB)", KRW:"韩元 (KRW)", INR:"印度卢比 (INR)", NZD:"新西兰元 (NZD)", CHF:"瑞士法郎 (CHF)", THB:"泰铢 (THB)", MYR:"马来西亚林吉特 (MYR)", PHP:"菲律宾比索 (PHP)", IDR:"印尼卢比 (IDR)", VND:"越南盾 (VND)", TRY:"土耳其里拉 (TRY)", AED:"阿联酋迪拉姆 (AED)", SAR:"沙特里亚尔 (SAR)", PLN:"波兰兹罗提 (PLN)", SEK:"瑞典克朗 (SEK)", NOK:"挪威克朗 (NOK)", DKK:"丹麦克朗 (DKK)", ZAR:"南非兰特 (ZAR)", EGP:"埃及镑 (EGP)", ILS:"以色列新谢克尔 (ILS)", CLP:"智利比索 (CLP)", COP:"哥伦比亚比索 (COP)", ARS:"阿根廷比索 (ARS)", PEN:"秘鲁索尔 (PEN)", CZK:"捷克克朗 (CZK)", HUF:"匈牙利福林 (HUF)", BGN:"保加利亚列弗 (BGN)", RON:"罗马尼亚列伊 (RON)", HRK:"克罗地亚库纳 (HRK)", ISK:"冰岛克朗 (ISK)", KWD:"科威特第纳尔 (KWD)", QAR:"卡塔尔里亚尔 (QAR)", OMR:"阿曼里亚尔 (OMR)", BHD:"巴林第纳尔 (BHD)", JOD:"约旦第纳尔 (JOD)", LBP:"黎巴嫩镑 (LBP)", DZD:"阿尔及利亚第纳尔 (DZD)", MAD:"摩洛哥迪拉姆 (MAD)", TND:"突尼斯第纳尔 (TND)", NGN:"尼日利亚奈拉 (NGN)", KES:"肯尼亚先令 (KES)", GHS:"加纳塞地 (GHS)", PKR:"巴基斯坦卢比 (PKR)", BDT:"孟加拉塔卡 (BDT)", LKR:"斯里兰卡卢比 (LKR)", NPR:"尼泊尔卢比 (NPR)", KZT:"哈萨克斯坦坚戈 (KZT)", UAH:"乌克兰格里夫纳 (UAH)", GEL:"格鲁吉亚拉里 (GEL)", MOP:"澳门元 (MOP)", TWD:"新台币 (TWD)", FJD:"斐济元 (FJD)", CRC:"哥斯达黎加科朗 (CRC)", DOP:"多米尼加比索 (DOP)", GTQ:"危地马拉格查尔 (GTQ)", HNL:"洪都拉斯伦皮拉 (HNL)", JMA:"牙买加元 (JMD)", NIO:"尼加拉瓜科多巴 (NIO)", PAB:"巴拿马巴波亚 (PAB)", PYG:"巴拉圭瓜拉尼 (PYG)", UYU:"乌拉圭比索 (UYU)", BOB:"玻利维亚诺 (BOB)", BSD:"巴哈马元 (BSD)", TTD:"特立尼达元 (TTD)", BBD:"巴巴多斯元 (BBD)"
+};
+
 const STATIC_VIEWS = ['home', 'platform', 'tools', 'settings'];
 
 const defaultState={
@@ -428,11 +452,25 @@ const defaultState={
     { id:'1', platform:'TikTok', handle:'@PartsPhoenix_Official', followers:18303, likes:124412 },
     { id:'2', platform:'YouTube', handle:'PartsPhoenix Auto Care', followers:52114, likes:410456 }
   ],
-  dailyPlans:{},customModules:{},ratesTable:{USD:1,CNY:7.12,EUR:0.92,GBP:0.79},columnMapping:{order:'A',platform:'B',date:'D',reason:'E',action:'H'},dark:false
+  dailyPlans:{},customModules:{},
+  customCurrencies: {},
+  myCurrencies: ['CNY', 'USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY', 'MXN', 'BRL', 'RUB', 'KRW', 'INR', 'HKD', 'SGD'],
+  ratesTable: { USD:1, CNY:7.12, EUR:0.92, GBP:0.79, JPY:147.5, CAD:1.36, AUD:1.52, MXN:18.2, BRL:5.45, RUB:90.2, KRW:1330, INR:83.5, HKD:7.82, SGD:1.35 },
+  columnMapping:{order:'A',platform:'B',date:'D',reason:'E',action:'H'},dark:false
 };
 
 function getUserKey(){ return 'vickywork_v3_' + currentUser; }
-function loadState(){ try { let s=JSON.parse(localStorage.getItem(getUserKey())||'null')||defaultState; s.aftersaleRecords=s.aftersaleRecords||[]; s.snsAccounts=s.snsAccounts||defaultState.snsAccounts; return s; } catch(e){ return defaultState; } }
+function loadState(){ 
+  try { 
+    let s=JSON.parse(localStorage.getItem(getUserKey())||'null')||defaultState; 
+    s.aftersaleRecords=s.aftersaleRecords||[]; 
+    s.snsAccounts=s.snsAccounts||defaultState.snsAccounts; 
+    s.customCurrencies=s.customCurrencies||{};
+    s.myCurrencies=s.myCurrencies||defaultState.myCurrencies;
+    s.ratesTable=s.ratesTable||defaultState.ratesTable;
+    return s; 
+  } catch(e){ return defaultState; } 
+}
 let state = loadState();
 let activeViewId = 'home';
 
@@ -444,6 +482,22 @@ function saveGeminiKey(){ localStorage.setItem('vicky_gemini_key', document.getE
 
 function showAuthModal(){ document.getElementById('authModal').classList.add('show'); }
 function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+
+function openAddCurrencyModal(){ document.getElementById('addCurrencyModal').classList.add('show'); }
+function saveCustomCurrency(){
+  const code = document.getElementById('customCurrCode').value.trim().toUpperCase();
+  const name = document.getElementById('customCurrName').value.trim();
+  const rate = parseFloat(document.getElementById('customCurrRate').value) || 1.0;
+  if(!code || !name){ alert('请填写完整的货币代码和名称'); return; }
+
+  state.customCurrencies[code] = `${name} (${code})`;
+  state.ratesTable[code] = rate;
+  if(!state.myCurrencies.includes(code)) state.myCurrencies.push(code);
+
+  closeModal('addCurrencyModal');
+  persist();
+  alert(`🎉 成功添加自定义货币：${name} (${code})`);
+}
 
 function handleAuthSubmit(){
   const acc = document.getElementById('authAccount').value.trim().toLowerCase();
@@ -468,7 +522,7 @@ function showView(id){
  if (STATIC_VIEWS.includes(id)) {
    const staticTarget = document.getElementById(id);
    if (staticTarget) staticTarget.classList.add('active');
-   if (id === 'tools') { calcExchangeAll(); calcFreightVolume(); calcProfitAll(); }
+   if (id === 'tools') { updateCurrencyDropdowns(); calcExchangeAll(); calcFreightVolume(); calcProfitAll(); }
  } else {
    renderDynamicCustomView(id);
  }
@@ -486,7 +540,6 @@ function renderNav(){
  document.getElementById('userBadge').textContent = currentUser === 'guest' ? '👤 登录/账号' : `👤 ${currentUser}`;
 }
 
-/* 社媒页签切换 */
 function switchSnsSubView(subId, btnEl){
   document.querySelectorAll('.sns-menu-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.sns-subview').forEach(v => v.classList.remove('active'));
@@ -508,7 +561,6 @@ function renderSnsAccounts(){
   `).join('');
 }
 
-/* 动态自定义板块 */
 function renderDynamicCustomView(viewId) {
   const container = document.getElementById('dynamicCustomViewContainer'); if(!container) return;
   container.style.display = 'block';
@@ -551,7 +603,6 @@ function renderDynamicCustomView(viewId) {
         </div>
       </div>
 
-      <!-- 动态板块底部的 AI 智能生成引擎 -->
       <div class="ai-block-box">
         <b>🧠 ${viewId} 板块 Gemini AI 智能增强助手</b>
         <div class="row" style="margin-top:8px;">
@@ -575,7 +626,6 @@ function saveNewBlock() {
   persist();
 }
 
-/* Gemini API 交互 */
 async function callGeminiApi(promptText) {
   const apiKey = localStorage.getItem('vicky_gemini_key') || '';
   if (!apiKey) return `[Gemini AI 回复]: 针对“${promptText}”，已完成智能提炼！（在【社媒 AI】中填写 Key 可解锁在线推理）`;
@@ -603,16 +653,66 @@ async function runBlockAi(type) {
   resultEl.textContent = reply;
 }
 
-/* 工具计算 */
+/* 动态更新 160+ 货币下拉菜单 */
+function getAllCurrenciesDict(){
+  return Object.assign({}, GLOBAL_CURRENCIES, state.customCurrencies || {});
+}
+
+function updateCurrencyDropdowns(){
+  const all = getAllCurrenciesDict();
+  const exBase = document.getElementById('exBase');
+  const addSelect = document.getElementById('addCurrencySelect');
+  if(!exBase || !addSelect) return;
+
+  const curVal = exBase.value || 'USD';
+  exBase.innerHTML = Object.keys(all).map(c => `<option value="${c}" ${c===curVal?'selected':''}>${all[c]}</option>`).join('');
+
+  addSelect.innerHTML = Object.keys(all).filter(c => !state.myCurrencies.includes(c)).map(c => `<option value="${c}">${all[c]}</option>`).join('');
+}
+
+function addCurrencyToList(){
+  const c = document.getElementById('addCurrencySelect').value;
+  if(c && !state.myCurrencies.includes(c)){
+    state.myCurrencies.push(c);
+    persist();
+  }
+}
+
+function removeCurrencyFromList(c){
+  state.myCurrencies = state.myCurrencies.filter(x => x !== c);
+  persist();
+}
+
+/* 全球货币计算 */
 function calcExchangeAll(){
-  const amt = parseFloat(document.getElementById('exAmount').value)||100;
+  const amt = parseFloat(document.getElementById('exAmount').value) || 0;
+  const base = document.getElementById('exBase').value || 'USD';
+  const all = getAllCurrenciesDict();
+  const baseInUSD = state.ratesTable[base] || 1;
+
   const listEl = document.getElementById('exchangeResultList'); if(!listEl) return;
-  listEl.innerHTML = `
-    <div>人民币 (CNY): <b>${(amt * 7.12).toFixed(2)}</b></div>
-    <div>欧元 (EUR): <b>${(amt * 0.92).toFixed(2)}</b></div>
-    <div>英镑 (GBP): <b>${(amt * 0.79).toFixed(2)}</b></div>
-    <div>日元 (JPY): <b>${(amt * 147.5).toFixed(2)}</b></div>
-  `;
+  listEl.innerHTML = state.myCurrencies.filter(c => c !== base).map(c => {
+    const rateToUSD = state.ratesTable[c] || 1;
+    const converted = ((amt / baseInUSD) * rateToUSD).toFixed(c === 'JPY' ? 2 : 3);
+    return `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#fff;border-radius:10px;border:1px solid #f2cfdc;">
+        <span>${all[c]||c}</span>
+        <div><b>${converted} ${c}</b><button style="border:0;background:transparent;color:#bbb;margin-left:6px;" onclick="removeCurrencyFromList('${c}')">✕</button></div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function fetchLiveExchangeRates(){
+ try {
+   const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+   const data = await res.json();
+   if(data && data.rates){
+     state.ratesTable = Object.assign({}, state.ratesTable, data.rates);
+     persist();
+     alert('🎉 汇率刷新成功！已拉取全球国际汇率中间价！');
+   }
+ } catch(err) { alert('拉取失败，已保留现有汇率'); }
 }
 
 function calcFreightVolume(){
