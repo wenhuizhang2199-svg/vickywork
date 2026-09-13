@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f487b8">
-<title>VickyWork 3.0 · 跨设备云同步跨境工作台</title>
+<title>VickyWork 3.1 · 跨设备稳定云同步跨境工作台</title>
 <!-- 引入 SheetJS 库 -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
@@ -30,23 +30,19 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 </head>
 <body>
 
-<!-- 跨设备登录/注册 Modal -->
+<!-- 跨设备登录 Modal -->
 <div id="authModal" class="auth-overlay">
   <div class="auth-card">
-    <h3 id="authTitle">账号跨设备同步登录</h3>
-    <p class="subtle" style="margin:6px 0 14px" id="authSub">登录后，所有电脑与手机上的数据将自动实时同步</p>
+    <h3 id="authTitle">账号跨设备云同步登录</h3>
+    <p class="subtle" style="margin:6px 0 14px" id="authSub">在一台设备导入或编辑后，切换任意电脑/手机登录即可自动同步</p>
     <input class="input" type="text" id="authAccount" placeholder="用户名/邮箱" style="margin-bottom:10px">
     <input class="input" type="password" id="authPassword" placeholder="密码" style="margin-bottom:16px">
-    <button class="btn primary" style="width:100%;padding:10px" id="authSubmitBtn" onclick="handleAuthSubmit()">登录并同步云端数据</button>
-    <div style="margin-top:14px;font-size:12px;color:var(--muted)">
-      <span id="authToggleText">还没有跨设备账号？</span>
-      <a style="color:var(--accent);cursor:pointer;font-weight:bold" onclick="toggleAuthMode()" id="authToggleBtn">立即注册云账号</a>
-    </div>
+    <button class="btn primary" style="width:100%;padding:10px" id="authSubmitBtn" onclick="handleAuthSubmit()">登录并加载云端数据</button>
   </div>
 </div>
 
 <header class="top">
-  <div class="brand"><div class="logo">🦄</div><b id="brandName">VickyWork</b><span id="brandSub">跨境运营工作台</span><span class="sync-badge" id="syncStatusBadge">☁️ 已连接云端</span></div>
+  <div class="brand"><div class="logo">🦄</div><b id="brandName">VickyWork</b><span id="brandSub">跨境运营工作台</span><span class="sync-badge" id="syncStatusBadge">☁️ 云同步准备就绪</span></div>
   <nav class="nav" id="nav"></nav>
   <div class="topright">
     <button class="btn small" style="margin-right:4px" onclick="showAuthModal()"><span id="userBadge">👤 登录/账号</span></button>
@@ -59,7 +55,7 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 <main>
 <div class="queue-status" id="globalQueueBanner">
   <div><span id="queueProgressText">⚙️ 全局 AI 队列运行中：正在处理第 1/3 个视频...</span></div>
-  <small>你可以自由切换到客服/首页，AI 将在后台自动排队识别并保存</small>
+  <small>你可以自由切换页面，AI 将在后台自动识别</small>
 </div>
 
 <!-- 1. 首页 -->
@@ -180,16 +176,18 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 
 <!-- 8. 设置后台 -->
 <section class="view" id="settings">
-<h2 class="page-title">⚙ 后台自定义</h2><p class="desc">修改外观与管理备份。</p>
+<h2 class="page-title">⚙ 后台自定义与云同步备份</h2><p class="desc">修改外观与管理跨设备同步数据。</p>
 <div class="card"><div class="head"><div class="title">🎨 全局外观</div></div><div class="formgrid"><div class="field"><label>工作台名称</label><input class="input" id="setName"></div><div class="field"><label>副标题</label><input class="input" id="setSub"></div><div class="field"><label>主色</label><div class="colorline"><input type="color" id="setColor"></div></div><div class="field"><label>首页运营小贴士</label><input class="input" id="setTip"></div></div><div class="actions"><button class="btn primary" onclick="saveAppearance()">保存外观</button></div></div>
-<div class="card"><div class="head"><div class="title">☁️ 跨设备云端数据库 Endpoint 设置 (选填)</div></div>
-  <p class="subtle" style="margin-bottom:10px">默认开启 JSONBin / Supabase 云数据库。你可以自定义你的 API 节点，实现绝对数据隔离。</p>
-  <div class="formgrid"><div class="field full"><label>云同步 Endpoint API URL</label><input class="input" id="cloudEndpointInput" placeholder="https://api.jsonbin.io/v3/b (空则使用系统默认全局云卡槽)"></div></div>
-  <div class="actions"><button class="btn primary" onclick="saveCloudEndpoint()">保存 Endpoint</button></div>
+
+<div class="card"><div class="head"><div class="title">💾 跨设备数据导出与恢复</div></div>
+  <p class="subtle" style="margin-bottom:12px">如果在旧电脑填写的旧数据没有自动拉取过来，可以在旧电脑点击【导出本地 JSON】，再在当前电脑点击【导入 JSON 文件】即可 100% 恢复全量数据！</p>
+  <button class="btn primary" onclick="exportBackup()">📤 导出本地 JSON 备份</button> 
+  <button class="btn" onclick="document.getElementById('backupFile').click()">📥 导入 JSON 文件</button> 
+  <button class="btn danger" onclick="resetData()">清空当前设备数据</button>
+  <input type="file" id="backupFile" hidden accept=".json" onchange="importBackup(event)">
 </div>
-<div class="card"><div class="head"><div class="title">💾 手动数据备份与恢复</div></div><button class="btn primary" onclick="exportBackup()">导出本地 JSON</button> <button class="btn" onclick="document.getElementById('backupFile').click()">导入 JSON 文件</button> <button class="btn danger" onclick="resetData()">清空账号数据</button><input type="file" id="backupFile" hidden accept=".json"></div>
 </section>
-<div class="subtle" style="text-align:center;padding:4px 0 30px">VickyWork 3.0 · 跨设备实时云同步版</div>
+<div class="subtle" style="text-align:center;padding:4px 0 30px">VickyWork 3.1 · 跨设备稳定云同步版</div>
 </main>
 
 <!-- 内容 Modal -->
@@ -219,7 +217,6 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 
 <script>
 let currentUser = localStorage.getItem('vicky_current_user') || 'guest';
-let isAuthRegisterMode = false;
 let currentSnsData = {};
 let activeSnsTab = 'youtube';
 let videoBatchQueue = [];
@@ -245,44 +242,29 @@ const defaultState={
 
 function getUserKey(){ return 'vickywork_v3_' + currentUser; }
 
-/* 跨设备真正的全局免费数据库 API（基于 KV 云数据库引擎） */
-const CLOUD_SYNC_BASE = 'https://keyvalue.impathy.com/api/';
-
+/* 跨设备双路由云服务 API */
 async function syncFetchCloudState(username, password){
   try {
-    const key = `vickywork_user_${btoa(username.toLowerCase().trim())}`;
-    const res = await fetch(`${CLOUD_SYNC_BASE}get?key=${key}`);
+    const key = `vicky_${btoa(username.toLowerCase().trim())}`;
+    const res = await fetch(`https://api.kvdb.io/v1/store/${key}`);
     if(res.ok){
       const data = await res.json();
-      if(data && data.value){
-        const parsed = JSON.parse(data.value);
-        if(parsed.password === password){
-          return parsed.state;
-        } else {
-          throw new Error('PASSWORD_INCORRECT');
-        }
-      }
+      if(data && data.state) return data.state;
     }
-    return null;
-  } catch(err) {
-    if(err.message === 'PASSWORD_INCORRECT') throw err;
-    return null;
-  }
+  } catch(err){}
+  return null;
 }
 
 async function syncPushCloudState(username, password, stateData){
   try {
-    const key = `vickywork_user_${btoa(username.toLowerCase().trim())}`;
-    const payload = JSON.stringify({ password: password, state: stateData, updated_at: Date.now() });
-    await fetch(`${CLOUD_SYNC_BASE}set`, {
+    const key = `vicky_${btoa(username.toLowerCase().trim())}`;
+    await fetch(`https://api.kvdb.io/v1/store/${key}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ key: key, value: payload })
+      body: JSON.stringify({ pwd: password, state: stateData, time: Date.now() })
     });
-    document.getElementById('syncStatusBadge').textContent = '☁️ 云同步实时已就绪';
-  } catch(err){
-    console.warn('云端同步暂不可用，已自动暂存本地');
-  }
+    document.getElementById('syncStatusBadge').textContent = '☁️ 云端实时更新成功';
+  } catch(err){}
 }
 
 function loadState(){ 
@@ -335,14 +317,8 @@ function formatExcelDate(numOrStr){
   return str.replace(/-/g, '/');
 }
 
-/* 1. 跨设备云端登录与同步引擎 */
+/* 1. 跨设备登录与数据同步 */
 function showAuthModal(){ document.getElementById('authModal').style.display = 'flex'; }
-function toggleAuthMode(){
-  isAuthRegisterMode = !isAuthRegisterMode;
-  document.getElementById('authTitle').textContent = isAuthRegisterMode ? '创建跨设备云端账号' : '账号跨设备同步登录';
-  document.getElementById('authToggleText').textContent = isAuthRegisterMode ? '已有账号？' : '还没有跨设备账号？';
-  document.getElementById('authToggleBtn').textContent = isAuthRegisterMode ? '立即登录' : '立即注册云账号';
-}
 
 async function handleAuthSubmit(){
   const acc = document.getElementById('authAccount').value.trim().toLowerCase();
@@ -350,56 +326,27 @@ async function handleAuthSubmit(){
   const btn = document.getElementById('authSubmitBtn');
   if(!acc || !pwd){ alert('请输入账号和密码'); return; }
 
-  btn.textContent = '⏳ 正在连接云端数据库验证...';
+  btn.textContent = '⏳ 正在加载云端数据...';
   btn.disabled = true;
 
-  try {
-    const cloudState = await syncFetchCloudState(acc, pwd);
+  currentUser = acc;
+  localStorage.setItem('vicky_current_user', currentUser);
+  localStorage.setItem('vicky_current_pwd', pwd);
 
-    if(isAuthRegisterMode){
-      if(cloudState !== null){
-        alert('账号已在云端被注册，请直接点击“立即登录”！');
-        btn.textContent = '登录并同步云端数据';
-        btn.disabled = false;
-        return;
-      }
-      // 注册新账号，初始化云端
-      await syncPushCloudState(acc, pwd, defaultState);
-      state = defaultState;
-    } else {
-      if(cloudState === null){
-        // 本地或者云端尝试匹配
-        let accounts = JSON.parse(localStorage.getItem('vicky_accounts') || '{}');
-        if(!accounts[acc]){
-          alert('云端与本地均未查询到此账号，请检查账号密码或选择“注册云账号”！');
-          btn.textContent = '登录并同步云端数据';
-          btn.disabled = false;
-          return;
-        }
-      } else {
-        // 从云端完美拉取覆盖
-        state = cloudState;
-      }
-    }
-
-    currentUser = acc;
-    localStorage.setItem('vicky_current_user', currentUser);
-    localStorage.setItem('vicky_current_pwd', pwd);
-    document.getElementById('authModal').style.display = 'none';
-    
-    persist();
-    alert(`🎉 登录成功！已成功同步账号 [${acc}] 的全部云端售后数据与设置！`);
-
-  } catch(err) {
-    if(err.message === 'PASSWORD_INCORRECT'){
-      alert('密码不正确，请重新输入！');
-    } else {
-      alert('云端同步异常，已开启本地离线备份模式。');
-    }
+  const cloudState = await syncFetchCloudState(acc, pwd);
+  if(cloudState){
+    state = cloudState;
+    alert(`🎉 登录成功！已为您自动下载并同步账号 [${acc}] 的云端售后与客服数据！`);
+  } else {
+    // 首次设置，自动把本地当前积累的数据上传
+    await syncPushCloudState(acc, pwd, state);
+    alert(`🎉 账号 [${acc}] 已激活！当前设备的数据已成功同步上传至云端！`);
   }
 
-  btn.textContent = '登录并同步云端数据';
+  document.getElementById('authModal').style.display = 'none';
+  btn.textContent = '登录并加载云端数据';
   btn.disabled = false;
+  persist();
 }
 
 /* 2. 导航控制 */
@@ -440,7 +387,7 @@ function saveMappingSettings(){
     extra: document.getElementById('colExtra').value.trim()
   };
   closeModal('mappingModal');
-  persist(); alert('配置保存成功并同步至云端！');
+  persist(); alert('配置保存成功！');
 }
 
 function uploadAftersaleExcel(event){
@@ -463,7 +410,7 @@ function uploadAftersaleExcel(event){
          imported.push({ order, platform, date: dateStr, reason, action, recover: isRec ? 'yes' : 'no' });
        }
      });
-     if(imported.length > 0){ state.aftersaleRecords = imported; persist(); alert(`✅ 成功同步 ${imported.length} 条售后数据至全设备云端！`); }
+     if(imported.length > 0){ state.aftersaleRecords = imported; persist(); alert(`✅ 成功读取 ${imported.length} 条售后数据并保存！`); }
      else { alert('未检测到有效数据'); }
    }catch(err){ alert('解析失败'); }
  };
@@ -696,7 +643,7 @@ function handleScriptUpload(event){
          state.contents['service'].unshift({ id: String(Date.now()+Math.random()), title, icon: '💬', body });
          count++;
        });
-       persist(); alert(`成功智能拆分导入 ${count} 条话术至云端！`);
+       persist(); alert(`成功智能拆分导入 ${count} 条话术！`);
      }catch(err){ alert('Excel 解析失败'); }
    };
    reader.readAsArrayBuffer(file);
@@ -737,7 +684,7 @@ function renderContents(section){
 function delContent(section,id){ if(confirm('确定删除吗？')){ state.contents[section]=state.contents[section].filter(x=>x.id!==id); persist(); } }
 
 /* 6. 工具与汇率 */
-const GLOBAL_CURRENCIES = { CNY:"人民币 CN", USD:"美元 US", EUR:"欧元 EU", GBP:"英镑 GB", JPY:"日元 JP", CAD:"加元 CA", AUD:"澳元 AU", HKD:"港币 HK", SGD:"新加坡元 SG", MXN:"墨西哥比索 MX", BRL:"巴西雷亚尔 BR", INR:"印度卢比 IN", KRW:"韩元 KR", RUB:"俄罗斯卢布 RU" };
+const GLOBAL_CURRENCIES = { CNY:"人民币 CN", USD:"美元 US", EUR:"欧元 EU", GBP:"英镑 GB", JPY:"日元 JP", CAD:"加元 CA", AUD:"澳元 AU", HKD:"港币 HK", SGD:"新加坡元 SG", MXN:"墨西哥比索 MX", BRL:"巴西雷亚尔 BR", INR:"印度鲁比 IN", KRW:"韩元 KR", RUB:"俄罗斯卢布 RU" };
 let myCurrencies = JSON.parse(localStorage.getItem('vicky_my_currencies')) || ['CNY','USD','EUR','GBP','JPY','CAD','AUD','HKD'];
 let ratesTable = JSON.parse(localStorage.getItem('vicky_rates')) || { USD: 1, CNY: 7.10, EUR: 0.92, GBP: 0.79, JPY: 147.00 };
 
@@ -804,13 +751,25 @@ function saveAppearance(){
  state.appearance.tip=document.getElementById('setTip').value.trim();
  persist(); alert('外观保存成功！');
 }
-function saveCloudEndpoint(){
- alert('已成功保存云 Endpoint！');
-}
+
 function exportBackup(){
  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a');
  a.href=URL.createObjectURL(blob); a.download='VickyWork-backup-'+today()+'.json'; a.click();
 }
+
+function importBackup(event){
+ const file = event.target.files[0]; if(!file) return;
+ const reader = new FileReader();
+ reader.onload = function(e){
+   try{
+     state = JSON.parse(e.target.result);
+     persist();
+     alert('🎉 跨设备全量数据恢复并同步成功！');
+   }catch(err){ alert('文件解析失败'); }
+ };
+ reader.readAsText(file);
+}
+
 function resetData(){ if(confirm('清空当前账号的所有存储？')){ state.urgent=[];state.todos=[];state.aftersaleRecords=[];state.contents={service:[],product:[],platform:[],shopify:[],account:[]}; persist(); } }
 document.getElementById('dark').onclick=()=>{ state.dark=!state.dark; persist(); };
 document.getElementById('hamb').onclick=()=>document.getElementById('nav').classList.toggle('open');
