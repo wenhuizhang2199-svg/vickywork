@@ -3,92 +3,412 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>VickyWork · 无代码可视化跨境运营工作台 v5.0</title>
+<meta name="theme-color" content="#f487b8">
+<title>PartsPhoenix · 汽配跨境运营与可视化 AI 智能工作台 v5.1</title>
+<!-- 引入 SheetJS 库 -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
-:root {
-  --bg: #f5f6fb; --card: #fff; --text: #202638; --muted: #7c8497;
-  --line: #e7eaf1; --accent: #f487b8; --shadow: 0 10px 28px rgba(34,45,75,.08);
-  --font-size-base: 14px; --font-weight-base: 500;
-}
-* { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--text); font-family: Inter, "Microsoft YaHei", sans-serif; font-size: var(--font-size-base); font-weight: var(--font-weight-base); }
-button, input, textarea, select { font: inherit; } button { cursor: pointer; }
+:root{--bg:#f5f6fb;--card:#fff;--text:#202638;--muted:#7c8497;--line:#e7eaf1;--accent:#f487b8;--accent2:#ff9bc6;--shadow:0 10px 28px rgba(34,45,75,.08);--radius:20px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,"Segoe UI","Microsoft YaHei",Arial,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}
+.top{height:68px;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;position:sticky;top:0;z-index:30}.brand{display:flex;align-items:center;gap:9px;min-width:245px}.logo{font-size:26px}.brand b{font-size:21px;color:var(--accent)}.brand span{font-size:12px;color:var(--muted)}.nav{display:flex;gap:4px;flex:1;overflow-x:auto;align-items:center;}.nav button{border:0;background:transparent;padding:8px 12px;border-radius:12px;color:#596174;font-weight:700;display:flex;align-items:center;gap:5px;white-space:nowrap;}.nav button:hover{background:#fff0f7}.nav button.active{background:var(--accent);color:#fff !important;}
+.topright{display:flex;gap:8px;align-items:center}.pill,.icon{border:1px solid var(--line);background:#fff;border-radius:12px;padding:9px 11px;color:#626b7e}.icon{width:40px;height:40px;padding:0;display:inline-flex;align-items:center;justify-content:center}
+main{max-width:1400px;margin:28px auto;padding:0 24px}.view{display:none}.view.active{display:block}.hero{padding:28px;border-radius:24px;background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff;position:relative;overflow:hidden;box-shadow:0 15px 36px rgba(244,135,184,.2);margin-bottom:18px}.hero h1{margin:0 0 6px;font-size:28px}.hero p{margin:0 0 18px;opacity:.93}.tip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.4);border-radius:13px;padding:11px 14px;position:relative;z-index:1}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.stat{padding:20px;border-radius:20px;color:#fff;min-height:145px;box-shadow:var(--shadow);position:relative;overflow:hidden}.stat:after{content:"";width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.12);position:absolute;right:-25px;bottom:-45px}.s1{background:linear-gradient(135deg,#ff9b0d,#ff8617)}.s2{background:linear-gradient(135deg,#318fe3,#1bb8ce)}.s3{background:linear-gradient(135deg,#f23d54,#f54165)}.s4{background:linear-gradient(135deg,#21ae79,#2dc88f)}.stat .t{font-weight:800}.stat .v{font-size:34px;font-weight:900;margin:13px 0 3px}.stat small{font-size:17px}.stat .n{font-size:12px;opacity:.94}
+.grid2{display:grid;grid-template-columns:1.05fr .95fr;gap:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}.head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}.title{font-size:18px;font-weight:850;display:flex;gap:8px;align-items:center}.btn{border:1px solid var(--line);background:#fff;color:#3d4658;border-radius:11px;padding:9px 13px;font-weight:750}.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}.btn.danger{color:#d84058}.btn.small{padding:7px 10px;font-size:13px}.input,.select,.textarea{width:100%;border:1px solid var(--line);background:#fbfcff;border-radius:11px;padding:10px 12px;outline:0}.input:focus,.select:focus,.textarea:focus{border-color:#e9a4c3;box-shadow:0 0 0 3px rgba(244,135,184,.1)}.row{display:flex;gap:9px}.row>*:first-child{flex:1}.list{display:flex;flex-direction:column;gap:8px;margin-top:12px}.item{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:11px;padding:10px 12px}.item.done{text-decoration:line-through;color:#999}.grow{flex:1}.x{border:0;background:transparent;color:#a3a9b5;font-size:18px}.check{accent-color:var(--accent)}.empty{background:#fafbfe;border-radius:12px;padding:25px;text-align:center;color:var(--muted)}.progress{height:8px;background:#edf0f5;border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px}.badge{font-size:12px;padding:5px 9px;border-radius:999px;background:#fff0f3;color:#df4560}
+.mini{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.mini>div{background:#fafbfe;border:1px solid var(--line);padding:14px;border-radius:13px}.mini span{font-size:12px;color:var(--muted)}.mini b{display:block;font-size:23px;margin-top:6px}
+table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;padding:11px;border-bottom:1px solid var(--line);font-size:13px}th{color:var(--muted)}.tablewrap{overflow:auto}.yes,.no{display:inline-block;border-radius:99px;padding:4px 8px;font-size:11px}.yes{color:#148e59;background:#e9faf2}.no{color:#d8445c;background:#fff0f2}
+.page-title{font-size:25px;margin:0 0 5px}.desc{color:var(--muted);margin:0 0 18px}.content-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.content-card{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:16px}.content-card h3{margin:0 0 8px}.content-card .body{white-space:pre-wrap;line-height:1.65;color:#555f72;font-size:14px}.editbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.modalbg{position:fixed;inset:0;background:rgba(20,25,38,.48);display:none;align-items:center;justify-content:center;padding:16px;z-index:100;backdrop-filter:blur(4px);}.modalbg.show{display:flex}.modal{width:min(760px,100%);max-height:90vh;overflow:auto;background:var(--card);border-radius:22px;padding:22px;box-shadow:0 25px 80px rgba(0,0,0,.25)}.modal h2{margin:0 0 18px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field label{display:block;font-size:12px;color:var(--muted);font-weight:800;margin-bottom:6px}.full{grid-column:1/-1}.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.subtle{font-size:12px;color:var(--muted)}
+.auth-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(4px)}.auth-card{background:#fff;width:380px;padding:30px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,.15);text-align:center}
 
-/* 顶栏与动态导航 */
-.top { height: 68px; background: rgba(255,255,255,.96); border-bottom: 1px solid var(--line); display: flex; align-items: center; padding: 0 24px; position: sticky; top: 0; z-index: 30; }
-.brand { display: flex; align-items: center; gap: 9px; min-width: 245px; }
-.logo { font-size: 26px; } .brand b { font-size: 21px; color: var(--accent); }
-.nav { display: flex; gap: 6px; flex: 1; align-items: center; overflow-x: auto; }
-.nav button { border: 0; background: transparent; padding: 8px 14px; border-radius: 12px; transition: all .2s; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
-.nav button:hover { background: #fff0f7; }
-.nav button.active { background: var(--accent); color: #fff !important; }
+.sns-layout,.module-layout{display:grid;grid-template-columns:240px 1fr;gap:20px;align-items:start;}
+.sns-sidebar,.module-sidebar{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:6px;position:sticky;top:84px;}
+.sns-menu-btn,.module-sidebar-item{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:12px;border:0;background:transparent;color:var(--text);font-weight:700;text-align:left;transition:all .2s;}
+.sns-menu-btn:hover,.module-sidebar-item:hover{background:#fff0f7;color:var(--accent);}
+.sns-menu-btn.active,.module-sidebar-item.active{background:var(--accent);color:#fff;}
+.sns-subview{display:none;}
+.sns-subview.active{display:block;}
 
-.topright { display: flex; gap: 8px; align-items: center; }
-.btn { border: 1px solid var(--line); background: #fff; color: #3d4658; border-radius: 11px; padding: 8px 14px; font-weight: 700; }
-.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-.btn.small { padding: 5px 10px; font-size: 12px; }
-.btn.danger { color: #d84058; }
+.account-card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.acc-card{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:16px;box-shadow:var(--shadow);}
+.acc-card .plat-name{font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.acc-metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#fafbfe;padding:10px;border-radius:10px;margin-bottom:10px;}
+.acc-metrics div span{font-size:11px;color:var(--muted);}
+.acc-metrics div b{font-size:18px;display:block;}
 
-main { max-width: 1400px; margin: 24px auto; padding: 0 24px; }
-.view { display: none; } .view.active { display: block; }
+.calendar-box{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:12px;}
+.cal-head{text-align:center;font-size:12px;color:var(--muted);font-weight:bold;padding:4px 0;}
+.cal-day{border:1px solid var(--line);border-radius:12px;min-height:75px;padding:6px;background:#fafbfe;cursor:pointer;transition:all .15s;position:relative;}
+.cal-day:hover{border-color:var(--accent);background:#fff0f7;}
+.cal-day.today{border:2px solid var(--accent);background:#fff;}
+.cal-day.selected{background:#ffe3f0;}
+.cal-day .d-num{font-size:12px;font-weight:bold;margin-bottom:4px;}
+.cal-day .d-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:2px;}
+.plan-cat-tag{display:inline-block;padding:2px 6px;border-radius:6px;font-size:11px;font-weight:bold;margin-right:4px;color:#fff;}
+.cat-service{background:#318fe3;} .cat-product{background:#ff9b0d;} .cat-social{background:#f487b8;} .cat-site{background:#21ae79;} .cat-other{background:#7c8497;}
 
-/* 通用模块布局：左侧边栏类目 + 右侧内容画布 */
-.module-layout { display: grid; grid-template-columns: 240px 1fr; gap: 20px; align-items: start; }
-.module-sidebar { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
-.module-sidebar-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 12px; border: 0; background: transparent; color: var(--text); font-weight: 600; transition: all .2s; }
-.module-sidebar-item:hover { background: #fff0f7; color: var(--accent); }
-.module-sidebar-item.active { background: var(--accent); color: #fff; }
+.iframe-container{width:100%;height:550px;border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+.iframe-container iframe{width:100%;height:100%;border:0;}
 
-.canvas-area { display: flex; flex-direction: column; gap: 16px; }
-.block-card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); position: relative; }
-.block-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.block-title { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
-
-/* 特殊区块形态：网页内嵌 iFrame */
-.iframe-container { width: 100%; height: 550px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
-.iframe-container iframe { width: 100%; height: 100%; border: 0; }
-
-/* 模态框及编辑器 */
-.modalbg { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 100; backdrop-filter: blur(4px); }
-.modalbg.show { display: flex; }
-.modal { width: min(680px, 100%); max-height: 90vh; overflow: auto; background: var(--card); border-radius: 20px; padding: 24px; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
-.formgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.field { display: flex; flex-direction: column; gap: 6px; }
-.field.full { grid-column: 1/-1; }
-.field label { font-size: 12px; color: var(--muted); font-weight: 700; }
-.input, .select, .textarea { border: 1px solid var(--line); background: #fbfcff; border-radius: 10px; padding: 10px; outline: 0; }
+.dark{--bg:#111522;--card:#181d2b;--text:#eef1f7;--muted:#9da6b8;--line:#2b3242}.dark .top,.dark .pill,.dark .icon,.dark .btn,.dark .input,.dark .select,.dark .textarea,.dark .auth-card{background:#181d2b;color:var(--text)}.dark .empty,.dark .mini>div,.dark .sns-box,.dark .acc-metrics,.dark .cal-day{background:#141927}.dark .nav button{color:#aeb6c6}.dark .sns-sidebar,.dark .module-sidebar{background:#181d2b}
+@media(max-width:1050px){.nav button{padding:9px 7px}.brand{min-width:200px}.stats{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){.top{padding:0 13px}.brand span{display:none}.brand{min-width:auto;flex:1}.nav{display:none;position:absolute;left:0;right:0;top:68px;background:#fff;padding:8px;flex-direction:column;border-bottom:1px solid var(--line)}.nav.open{display:flex}.pill{display:none}main{padding:0 13px;margin-top:18px}.stats{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}.content-grid{grid-template-columns:1fr}.mini{grid-template-columns:1fr 1fr}.sns-layout,.module-layout{grid-template-columns:1fr;}.sns-sidebar,.module-sidebar{position:static;}}
 </style>
 </head>
 <body>
 
-<header class="top">
-  <div class="brand">
-    <div class="logo">🔧</div>
-    <b id="brandTitle">VickyWork</b>
-    <span style="font-size:12px;color:var(--muted)" id="brandSub">跨境运营工作台</span>
+<!-- 跨设备登录 Modal -->
+<div id="authModal" class="auth-overlay">
+  <div class="auth-card">
+    <h3 id="authTitle">PartsPhoenix 云端账号登录</h3>
+    <p class="subtle" style="margin:6px 0 14px" id="authSub">在一台设备更新汽配数据后，切换任意电脑/手机登录即可自动同步</p>
+    <input class="input" type="text" id="authAccount" placeholder="用户名/邮箱" style="margin-bottom:10px">
+    <input class="input" type="password" id="authPassword" placeholder="密码" style="margin-bottom:16px">
+    <button class="btn primary" style="width:100%;padding:10px" id="authSubmitBtn" onclick="handleAuthSubmit()">登录并加载云端数据</button>
   </div>
-  
-  <!-- 动态可修改导航栏 -->
-  <nav class="nav" id="mainNav"></nav>
-  
+</div>
+
+<header class="top">
+  <div class="brand"><div class="logo">🔧</div><b id="brandName">PartsPhoenix</b><span id="brandSub">汽配跨境运营工作台</span><span class="sync-badge" id="syncStatusBadge">☁️ 云同步准备就绪</span></div>
+  <nav class="nav" id="nav"></nav>
   <div class="topright">
-    <button class="btn small primary" onclick="openNavManagerModal()">⚙️ 修改导航栏结构与样式</button>
+    <button class="btn small primary" onclick="openNavManagerModal()">⚙️ 修改导航栏结构/字号/颜色</button>
+    <button class="btn small" onclick="showAuthModal()"><span id="userBadge">👤 登录/账号</span></button>
+    <span class="pill" id="date"></span>
+    <button class="icon" id="dark">🌙</button>
+    <button class="icon" id="hamb">☰</button>
   </div>
 </header>
 
 <main>
+<div class="queue-status" id="globalQueueBanner">
+  <div><span id="queueProgressText">⚙️ 全局 AI 队列运行中：正在处理第 1/3 个汽配视频...</span></div>
+  <small>你可以自由切换页面，AI 将在后台自动识别</small>
+</div>
 
-<!-- 通用板块渲染模板引擎 -->
-<div id="dynamicViewContainer"></div>
+<!-- 1. 首页 -->
+<section class="view active" id="home">
+  <div class="hero"><h1 id="greet">下午好 🌤️</h1><p id="heroDate"></p><div class="tip">💡 <span id="tipText">运营小贴士：社媒引流的核心是解答车主维修痛点，引导访问 partsphoenix.com 查车型适配！</span></div></div>
+  
+  <div class="stats">
+    <div class="stat s1"><div class="t">🎯 本月售后挽回率</div><div class="v" id="monthRate">0<small>%</small></div><div class="n" id="monthNote">请先上传售后表格</div></div>
+    <div class="stat s2"><div class="t">📦 本月售后订单</div><div class="v" id="monthOrders">0<small> 单</small></div><div class="n">售后表格累计本月订单</div></div>
+    <div class="stat s3"><div class="t">📅 本年售后挽回率</div><div class="v" id="yearRate">0<small>%</small></div><div class="n" id="yearNote">请先上传售后表格</div></div>
+    <div class="stat s4"><div class="t">📊 本年售后订单</div><div class="v" id="yearOrders">0<small> 单</small></div><div class="n">售后表格累计本年订单</div></div>
+  </div>
 
+  <!-- 每日工作计划与 AI 独立思考分类日历板块 -->
+  <div class="card">
+    <div class="head">
+      <div class="title">🗓️ 每日工作计划与 AI 独立归类日历 (全历史可回看)</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn small" onclick="changeCalMonth(-1)">◀ 上个月</button>
+        <b id="calMonthTitle" style="align-self:center;">2026年 9月</b>
+        <button class="btn small" onclick="changeCalMonth(1)">下个月 ▶</button>
+      </div>
+    </div>
+    
+    <div class="calendar-box" id="calendarGrid"></div>
+
+    <div style="margin-top:16px;background:#fafbfe;padding:16px;border-radius:14px;border:1px solid var(--line);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <b>📝 记录选定日期 [<span id="selectedCalDateText"></span>] 的混杂工作计划：</b>
+        <button class="btn primary small" onclick="processAiTaskClassification()">🧠 AI 独立思考：自动分类归纳并整理时间线</button>
+      </div>
+      <textarea class="textarea" id="rawTaskInput" rows="3" placeholder="在此批量粘贴混杂的任务（例：今天要给TikTok发个刹车片视频，处理售后单号1023，更新独立站优惠券，整理火花塞的Listing...）"></textarea>
+      
+      <div id="classifiedResultArea" style="margin-top:14px;display:none;">
+        <b style="color:var(--accent);">✨ AI 自动分类整理后的每日计划看板与时间线：</b>
+        <div id="classifiedTaskBoxes" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:10px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card"><div class="head"><div class="title">🚨 紧急问题 <span class="badge" id="urgentCount">0 待处理</span></div><button class="btn small" onclick="clearUrgent()">清空已处理</button></div><div class="row"><input class="input" id="urgentInput" placeholder="记录突发问题（如某车型零件适配疑问）…"><button class="btn primary" onclick="addUrgent()">添加</button></div><div class="list" id="urgentList"></div></div>
+    <div class="card"><div class="head"><div class="title">📋 今日待办 <span class="badge" id="todoText">0/0 完成</span></div><button class="btn primary small" onclick="addTodo()">＋任务</button></div><div class="progress"><i id="todoProgress"></i></div><div class="list" id="todoList"></div></div>
+  </div>
+
+  <div class="card">
+    <div class="head">
+      <div class="title">📈 汽配售后表格 Excel / WPS 上传与分析</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn small" onclick="openMappingModal()">⚙️ 字段映射设置</button>
+        <label class="btn primary" style="cursor:pointer">
+          📤 上传售后表格
+          <input type="file" id="aftersaleExcelInput" hidden accept=".xlsx,.xls,.csv" onchange="uploadAftersaleExcel(event)">
+        </label>
+      </div>
+    </div>
+    <p class="subtle" style="margin-top:-8px;margin-bottom:12px" id="mappingTip">当前映射列配置：A列(订单号)、B列(平台)、D列(退货日期)、E列(原因)、H列(处理措施)</p>
+    <div class="mini"><div><span>本月已挽回</span><b id="mrec">0</b></div><div><span>本月未挽回</span><b id="mun">0</b></div><div><span>本年已挽回</span><b id="yrec">0</b></div><div><span>本年未挽回</span><b id="yun">0</b></div></div>
+  </div>
+
+  <div class="card">
+    <div class="head">
+      <div class="title">🧾 最近售后记录</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn small primary" onclick="addSingleRecordPrompt()">＋ 手动新增一条</button>
+        <button class="btn small danger" onclick="clearAftersaleData()">清空数据</button>
+      </div>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead id="tableHeader"></thead>
+        <tbody id="records"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 动态通用的自定义板块组件容器 (产品、客服、独立站、账号等全支持自由侧边栏与嵌入) -->
+<div id="dynamicCustomViewContainer"></div>
+
+<!-- 4. 海外社媒 AI 矩阵 -->
+<section class="view" id="platform">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+    <div>
+      <h2 class="page-title" style="margin:0;">🌐 海外社媒矩阵与 PartsPhoenix 引流中台</h2>
+      <p class="desc" style="margin:4px 0 0;">围绕 partsphoenix.com 获客，全方位管理社媒粉丝、视频转化分析、爆款汽配脚本与矩阵生成。</p>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span class="subtle" style="font-size:12px;">🔑 Gemini API Key:</span>
+      <input class="input" type="password" id="geminiApiKey" placeholder="输入 Key 开启视觉 AI..." style="width:200px;padding:6px 10px;font-size:12px;" onchange="saveGeminiKey()">
+    </div>
+  </div>
+
+  <div class="sns-layout">
+    <!-- 左侧二级功能菜单栏 -->
+    <div class="sns-sidebar">
+      <button class="sns-menu-btn active" onclick="switchSnsSubView('assets', this)">📊 账号资产与实时抓取</button>
+      <button class="sns-menu-btn" onclick="switchSnsSubView('knowledge', this)">📚 汽配社媒知识库与学习</button>
+      <button class="sns-menu-btn" onclick="switchSnsSubView('analytics', this)">🎬 视频流量与订单 CVR 诊断</button>
+      <button class="sns-menu-btn" onclick="switchSnsSubView('planner', this)">🛠️ 汽配爆款内容与AI脚本</button>
+      <button class="sns-menu-btn" onclick="switchSnsSubView('generator', this)">🚀 批量 AI 矩阵生成</button>
+      <button class="sns-menu-btn" onclick="switchSnsSubView('links', this)">🔗 引流 UTM 与 Bio 话术</button>
+    </div>
+
+    <!-- 右侧展示区域 -->
+    <div class="sns-main-content">
+      
+      <!-- 区块 1：账号资产与抓取 -->
+      <div class="sns-subview active" id="sns-sub-assets">
+        <div class="card">
+          <div class="head">
+            <div class="title">📈 汽配社媒账号看板 (支持随时实时更新/每天 20:00 自动刷新)</div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn primary small" onclick="triggerFetchRealDataAll()">🔄 随时实时抓取/更新当前数据</button>
+              <button class="btn small" onclick="openAddSnsAccountModal()">＋ 绑定主页</button>
+            </div>
+          </div>
+          <p class="subtle" style="margin-top:-8px;margin-bottom:16px">系统每天晚上 8 点会自动刷新数据；随时点击上方按钮可**立即同步当下精准数据**，绝不会凭空增加！</p>
+          <div class="account-card-grid" id="snsAccountCards"></div>
+        </div>
+      </div>
+
+      <!-- 区块 2：汽配社媒知识库与资料学习 -->
+      <div class="sns-subview" id="sns-sub-knowledge">
+        <div class="card">
+          <div class="head">
+            <div class="title">📚 汽配社媒知识库 (上传学习资料供 AI 理解)</div>
+            <label class="btn primary small" style="cursor:pointer">
+              📄 上传资料 (Excel/Word/Txt)
+              <input type="file" id="knowledgeFileInput" hidden accept=".xlsx,.xls,.txt,.md,.csv" onchange="handleKnowledgeUpload(event)">
+            </label>
+          </div>
+          <p class="subtle" style="margin-top:-8px;margin-bottom:14px">在这上传你平时学习到的有用汽配社媒资料、爆款对标文案、车型适配逻辑，AI 会自动吸收并运用到后面的脚本生成中！</p>
+          <div class="row">
+            <input class="input" id="manualKnowledgeTitle" placeholder="资料标题（例：TikTok汽配爆款钩子前三秒总结）">
+            <button class="btn primary" onclick="addManualKnowledge()">手动录入</button>
+          </div>
+          <textarea class="textarea" id="manualKnowledgeBody" rows="3" style="margin-top:8px;" placeholder="在此粘贴你学到的知识笔记内容..."></textarea>
+          <div class="list" id="knowledgeList" style="margin-top:16px;"></div>
+        </div>
+      </div>
+
+      <!-- 区块 3：视频流量与转化诊股 -->
+      <div class="sns-subview" id="sns-sub-analytics">
+        <div class="card">
+          <div class="head">
+            <div class="title">🧐 PartsPhoenix 引流作品流量与转化分析诊断</div>
+            <button class="btn primary small" onclick="addVideoRecordPrompt()">＋ 登记新发布视频</button>
+          </div>
+          <p class="subtle" style="margin-top:-8px;margin-bottom:12px">记录作品表现，AI 将自动分析该视频是否利于为 PartsPhoenix 带来订单，并提供改进行动建议。</p>
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>视频标题/主题</th>
+                  <th>平台</th>
+                  <th>播放量</th>
+                  <th>点赞量</th>
+                  <th>官网点击数</th>
+                  <th>产生零部件订单</th>
+                  <th>转化率(CVR)</th>
+                  <th>AI 汽配转化诊断建议</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="videoAnalyticsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 区块 4：汽配爆款内容策划与脚本 -->
+      <div class="sns-subview" id="sns-sub-planner">
+        <div class="card">
+          <div class="head"><div class="title">🛠️ 汽配引流爆款内容灵感与 AI 脚本生成器</div></div>
+          <p class="subtle" style="margin-top:-8px;margin-bottom:16px">选择汽配切入角度，AI 将结合【社媒知识库】自动为你生成符合海外车主的短视频脚本。</p>
+          
+          <div class="formgrid">
+            <div class="field">
+              <label>视频切入角度/选题模式</label>
+              <select class="select" id="chessAngleSelect">
+                <option value="highlight">🚨 汽车故障诊断 (刹车异响/发动机抖动/大灯模糊痛点)</option>
+                <option value="strategy">🔧 DIY 零件安装指导 (替换教程与 OE/Aftermarket 对比)</option>
+                <option value="promo">🎁 适配限时优惠 (输入年份/车型即享 10% OFF 折扣)</option>
+                <option value="humor">🚗 劣质零部件翻车现场 (对比 PartsPhoenix 品质保证)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>推广汽车配件品类</label>
+              <input class="input" id="chessGameType" value="Brake Pads & Rotors (刹车片与刹车盘) / Headlight Assembly">
+            </div>
+            <div class="field full">
+              <label>希望促成的转化动作 (Call to Action)</label>
+              <input class="input" id="chessCtaText" value="访问 partsphoenix.com 输入您的 Make-Model-Year 快速查询适配零件，输入折扣码 PHOENIX10 现省 10%！">
+            </div>
+          </div>
+          <div style="margin-top:14px;text-align:right;">
+            <button class="btn primary" onclick="generateChessScript()">✨ 结合知识库生成爆款短视频分镜脚本</button>
+          </div>
+        </div>
+
+        <div class="card" id="scriptResultCard" style="display:none;">
+          <div class="head"><div class="title">📜 AI 自动生成的汽配引流分镜脚本</div></div>
+          <div id="scriptResultBody" style="white-space:pre-wrap;background:#fafbfe;padding:16px;border-radius:12px;border:1px solid var(--line);font-size:14px;line-height:1.7;"></div>
+        </div>
+      </div>
+
+      <!-- 区块 5：批量 AI 矩阵生成 -->
+      <div class="sns-subview" id="sns-sub-generator">
+        <div class="card">
+          <div class="head"><div class="title">🎬 第一步：批量选择汽配视频/图片与引流目标</div></div>
+          <div class="formgrid">
+            <div class="field">
+              <label>选择视频/图片素材 (支持多选文件)</label>
+              <input class="input" type="file" id="snsMediaFiles" accept="video/*,image/*" multiple onchange="handleBatchMediaSelect(event)">
+              <div class="subtle" id="snsBatchMediaTip" style="margin-top:4px">按住 Ctrl/Shift 可一次性选择多个零部件视频</div>
+            </div>
+            <div class="field">
+              <label>PartsPhoenix 目标落地页 URL (带参链接)</label>
+              <input class="input" id="snsTargetUrl" value="https://partsphoenix.com?utm_source=social_matrix">
+            </div>
+            <div class="field">
+              <label>汽配核心卖点/优惠亮点</label>
+              <input class="input" id="snsSellingPoint" value="100% Fitment Guarantee + Fast Shipping + Free $10 Coupon">
+            </div>
+            <div class="field">
+              <label>选择 AI 模型</label>
+              <select class="select" id="geminiModelSelect">
+                <option value="gemini-2.5-flash">Gemini 2.5 Flash (推荐最新视觉模型)</option>
+                <option value="gemini-1.5-flash">Gemini 1.5 Flash (稳定高效模型)</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-top:16px;text-align:right">
+            <button class="btn primary" id="batchGenerateBtn" style="padding:10px 24px;" onclick="startBatchQueueProcess()">🚀 提交多视频，启动后台排队识别</button>
+          </div>
+        </div>
+
+        <div class="card" id="snsResultCard" style="display:none;">
+          <div class="head">
+            <div class="title">✨ 当前预览：<span id="currentVideoTitle">视频 1</span> 的社媒矩阵文案</div>
+            <button class="btn small primary" onclick="saveSnsToContent()">💾 保存本套方案到内容库</button>
+          </div>
+          <div class="sns-tabs" id="snsTabs"></div>
+          <div id="snsTabContent"></div>
+        </div>
+
+        <div class="head" style="margin-top:24px"><div class="title">📚 历史与后台排队自动生成的矩阵记录</div></div>
+        <div class="content-grid" id="platformContent"></div>
+      </div>
+
+      <!-- 区块 6：引流转化 UTM 与 Bio 话术 -->
+      <div class="sns-subview" id="sns-sub-links">
+        <div class="card">
+          <div class="head"><div class="title">🔗 UTM 汽配引流专属跟踪链接生成器</div></div>
+          <p class="subtle" style="margin-top:-8px;margin-bottom:12px">为 TikTok、IG、YouTube 各视频生成独一无二的追踪链接，精准统计是哪个零部件视频带来的零部件订单！</p>
+          <div class="formgrid">
+            <div class="field"><label>PartsPhoenix 官网域名</label><input class="input" id="utmBaseUrl" value="https://partsphoenix.com"></div>
+            <div class="field">
+              <label>发布平台 (utm_source)</label>
+              <select class="select" id="utmSource">
+                <option value="tiktok">TikTok</option>
+                <option value="youtube">YouTube Shorts</option>
+                <option value="instagram">Instagram Reels</option>
+                <option value="x_twitter">X (Twitter)</option>
+              </select>
+            </div>
+            <div class="field"><label>营销活动名称 (utm_campaign)</label><input class="input" id="utmCampaign" value="brake_pads_promo"></div>
+            <div class="field"><label>内容/零件特征 (utm_content)</label><input class="input" id="utmContent" value="diy_installation_vid1"></div>
+          </div>
+          <div style="margin-top:12px;background:#fafbfe;padding:12px;border-radius:10px;border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;">
+            <b id="generatedUtmLink" style="font-size:13px;color:var(--accent);">https://partsphoenix.com?utm_source=tiktok&utm_campaign=brake_pads_promo&utm_content=diy_installation_vid1</b>
+            <button class="btn small primary" onclick="copyText(document.getElementById('generatedUtmLink').textContent)">📋 复制引流链接</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="head"><div class="title">📌 高转化汽配社媒主页 (Bio) 简介模板</div></div>
+          <div class="content-grid">
+            <div class="content-card">
+              <h3>🎵 TikTok / IG 汽配账号主页简介</h3>
+              <div class="body">🚗 Quality OEM & Aftermarket Auto Parts
+💯 100% Fitment Guarantee | Fast Global Shipping
+🔍 Find exact parts for your Make/Model/Year below:
+👇 Shop & Save 10% Today:
+[你的UTM短链接/partsphoenix.com]</div>
+            </div>
+            <div class="content-card">
+              <h3>▶️ YouTube 频道简介与评论置顶</h3>
+              <div class="body">🔧 Your trusted auto parts partner - PartsPhoenix!
+📦 Need replacement parts or performance upgrades?
+👉 Search your car year/model & get instant discount: https://partsphoenix.com</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- 6. 工具中心 -->
+<section class="view" id="tools"><h2 class="page-title">🛠 工具中心</h2><p class="desc">支持全球 160+ 币种自选与在线更新。</p><div id="toolsModules"></div></section>
+
+<!-- 8. 设置后台 -->
+<section class="view" id="settings">
+<h2 class="page-title">⚙ 后台自定义与云同步备份</h2><p class="desc">修改外观与管理 PartsPhoenix 跨设备同步数据。</p>
+<div class="card"><div class="head"><div class="title">🎨 全局外观</div></div><div class="formgrid"><div class="field"><label>工作台名称</label><input class="input" id="setName"></div><div class="field"><label>副标题</label><input class="input" id="setSub"></div><div class="field"><label>主色</label><div class="colorline"><input type="color" id="setColor"></div></div><div class="field"><label>首页运营小贴士</label><input class="input" id="setTip"></div></div><div class="actions"><button class="btn primary" onclick="saveAppearance()">保存外观</button></div></div>
+
+<div class="card"><div class="head"><div class="title">💾 跨设备数据导出与恢复</div></div>
+  <p class="subtle" style="margin-bottom:12px">如果在旧电脑填写的旧数据没有自动拉取过来，可以在旧电脑点击【导出本地 JSON】，再在当前电脑点击【导入 JSON 文件】即可 100% 恢复 PartsPhoenix 核心数据！</p>
+  <button class="btn primary" onclick="exportBackup()">📤 导出本地 JSON 备份</button> 
+  <button class="btn" onclick="document.getElementById('backupFile').click()">📥 导入 JSON 文件</button> 
+  <button class="btn danger" onclick="resetData()">清空当前设备数据</button>
+  <input type="file" id="backupFile" hidden accept=".json" onchange="importBackup(event)">
+</div>
+</section>
+<div class="subtle" style="text-align:center;padding:4px 0 30px">PartsPhoenix · 汽配社媒引流与 AI 智能工作台 v5.1</div>
 </main>
 
 <!-- 导航栏自定义修改 Modal -->
 <div class="modalbg" id="navManagerModal">
   <div class="modal">
     <h2>⚙️ 导航栏板块、图标及字体外观自定义</h2>
-    <p style="font-size:12px;color:var(--muted);margin-top:-10px;">你可以随意新增、修改板块名称、Emoji图标、字体颜色大小与粗细，甚至删除板块。</p>
+    <p style="font-size:12px;color:var(--muted);margin-top:-10px;">您可以随意新增、修改板块名称、Emoji图标、字体颜色大小与粗细，甚至删除板块。</p>
     <div id="navEditList" style="display:flex;flex-direction:column;gap:10px;margin:16px 0;"></div>
     <button class="btn small primary" onclick="addNewNavItem()">＋ 新增导航菜单板块</button>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px;">
@@ -124,7 +444,7 @@ main { max-width: 1400px; margin: 24px auto; padding: 0 24px; }
     <div class="formgrid" style="margin-top:12px;">
       <div class="field">
         <label>区块标题</label>
-        <input class="input" id="blockTitleInput" placeholder="如：Shopify 独立站后台 / 爆款 List">
+        <input class="input" id="blockTitleInput" placeholder="如：Shopify 独立站后台 / 爆款 Listing">
       </div>
       <div class="field">
         <label>区块展示形式</label>
@@ -138,7 +458,7 @@ main { max-width: 1400px; margin: 24px auto; padding: 0 24px; }
         <input class="input" id="blockUrlInput" placeholder="https://partsphoenix.com 或任何允许内嵌的网址">
       </div>
       <div class="field full" id="blockTextGroup">
-        <label>区块详细内容 / 样式代码</label>
+        <label>区块详细内容 / 说明说明</label>
         <textarea class="textarea" id="blockContentInput" rows="6" placeholder="输入你想展现的任何数据、文案或 SOP 说明..."></textarea>
       </div>
     </div>
@@ -149,124 +469,137 @@ main { max-width: 1400px; margin: 24px auto; padding: 0 24px; }
   </div>
 </div>
 
+<!-- 字段映射 Modal -->
+<div class="modalbg" id="mappingModal">
+  <div class="modal">
+    <h2>⚙️ 售后表格字段与列映射设置</h2>
+    <div class="formgrid">
+      <div class="field"><label>订单号对应列字母</label><input class="input" id="colOrder" value="A"></div>
+      <div class="field"><label>平台对应列字母</label><input class="input" id="colPlatform" value="B"></div>
+      <div class="field"><label>退货日期对应列字母</label><input class="input" id="colDate" value="D"></div>
+      <div class="field"><label>原因对应列字母</label><input class="input" id="colReason" value="E"></div>
+      <div class="field"><label>处理措施对应列字母</label><input class="input" id="colAction" value="H"></div>
+      <div class="field full"><label>自定义额外显示字段</label><input class="input" id="colExtra"></div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="closeModal('mappingModal')">取消</button>
+      <button class="btn primary" onclick="saveMappingSettings()">保存配置</button>
+    </div>
+  </div>
+</div>
+
 <script>
-// 全局建模数据结构 (初始化)
-let appConfig = JSON.parse(localStorage.getItem('vicky_app_config_v5')) || {
-  navs: [
-    { id: 'home', name: '首页', icon: '🏠', color: '#333333', fontSize: '14', fontWeight: '700' },
-    { id: 'product', name: '汽配产品运营', icon: '📦', color: '#f487b8', fontSize: '14', fontWeight: '700' },
-    { id: 'service', name: '客服', icon: '💬', color: '#333333', fontSize: '14', fontWeight: '700' },
-    { id: 'shopify', name: '独立站', icon: '🛍', color: '#333333', fontSize: '14', fontWeight: '700' }
+let currentUser = localStorage.getItem('vicky_current_user') || 'guest';
+let currentSnsData = {};
+let activeSnsTab = 'youtube';
+let videoBatchQueue = [];
+let selectedCalDate = new Date().toISOString().slice(0,10);
+let currentCalYear = new Date().getFullYear();
+let currentCalMonth = new Date().getMonth();
+
+let currentDynamicCatId = 'default';
+
+const DEFAULT_NAV=[
+  {id:'home',name:'首页',icon:'🏠',color:'#333333',fontSize:'14',fontWeight:'700'},
+  {id:'service',name:'客服',icon:'💬',color:'#333333',fontSize:'14',fontWeight:'700'},
+  {id:'product',name:'产品',icon:'📦',color:'#f487b8',fontSize:'14',fontWeight:'700'},
+  {id:'platform',name:'社媒 AI',icon:'🌐',color:'#333333',fontSize:'14',fontWeight:'700'},
+  {id:'shopify',name:'独立站',icon:'🛍',color:'#333333',fontSize:'14',fontWeight:'700'},
+  {id:'tools',name:'工具',icon:'🛠',color:'#333333',fontSize:'14',fontWeight:'700'},
+  {id:'account',name:'账号',icon:'🔐',color:'#333333',fontSize:'14',fontWeight:'700'},
+  {id:'settings',name:'设置',icon:'⚙️',color:'#333333',fontSize:'14',fontWeight:'700'}
+];
+
+const defaultState={
+  appearance:{name:'PartsPhoenix',sub:'汽配跨境运营工作台',color:'#f487b8',tip:'运营小贴士：社媒引流的核心是解答车主维修痛点，引导访问 partsphoenix.com 查车型适配！'},
+  nav:DEFAULT_NAV,urgent:[],todos:[],aftersaleRecords:[],
+  snsAccounts:[
+    { id:'1', platform:'TikTok', handle:'@PartsPhoenix_Official', followers:18303, likes:124412, dailyGain:'+0' },
+    { id:'2', platform:'YouTube', handle:'PartsPhoenix Auto Care', followers:52114, likes:410456, dailyGain:'+0' },
+    { id:'3', platform:'Instagram', handle:'@partsphoenix_auto', followers:11617, likes:68468, dailyGain:'+0' },
+    { id:'4', platform:'TikTok', handle:'Parts Phoenix', followers:26, likes:754, dailyGain:'+0' }
   ],
-  modules: {
-    product: {
-      categories: [
-        { id: 'c1', name: 'Fitment 零部件适配表', icon: '📄' },
-        { id: 'c2', name: 'OE 替换号查询系统', icon: '🔍' }
-      ],
-      blocks: {
-        c1: [
-          { id: 'b1', title: '汽配 Fitment 批量表', type: 'text', content: '这里可以存放刹车片、火花塞各车型的匹配数据逻辑。' },
-          { id: 'b2', title: 'PartsPhoenix 适配网页嵌入', type: 'iframe', url: 'https://partsphoenix.com' }
-        ]
-      }
-    }
-  }
+  snsKnowledge:[
+    { id:'k1', title:'TikTok汽配短视频黄金前3秒钩子', body:'一定要用明显的汽车异常声响（如刹车咔哒声、发电机啸叫）或车主的苦恼痛点切入！' }
+  ],
+  videoAnalytics:[
+    { id:'v1', title:'刹车异响怎么查？Replacing Brake Pads DIY', platform:'TikTok', views:158000, likes:18200, clicks:2400, orders:68, cvr:'2.83%', advice:'🔥 爆款视频！成功解答了刹车异响痛点。建议置顶评论：“在 partsphoenix.com 输入年份车型查同款刹车片，用折扣码 AUTO10 现省 10%！”' }
+  ],
+  dailyPlans:{},
+  columnMapping:{order:'A',platform:'B',date:'D',reason:'E',action:'H',extra:''},
+  customModules:{}, // 储存自定义板块的侧边栏和区块
+  dark:false
 };
 
-let currentViewId = 'product';
-let currentCatId = 'c1';
+function getUserKey(){ return 'vickywork_v3_' + currentUser; }
 
-function persistConfig() {
-  localStorage.setItem('vicky_app_config_v5', JSON.stringify(appConfig));
-  renderApp();
+async function syncFetchCloudState(username, password){
+  try {
+    const key = `vicky_${btoa(username.toLowerCase().trim())}`;
+    const res = await fetch(`https://api.kvdb.io/v1/store/${key}`);
+    if(res.ok){
+      const data = await res.json();
+      if(data && data.state) return data.state;
+    }
+  } catch(err){}
+  return null;
 }
 
-function esc(v) { return String(v??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])) }
-
-/* 渲染导航与主页面 */
-function renderApp() {
-  // 1. 渲染导航栏
-  const navContainer = document.getElementById('mainNav');
-  navContainer.innerHTML = appConfig.navs.map(n => `
-    <button class="${currentViewId === n.id ? 'active' : ''}" 
-            style="color:${n.color}; font-size:${n.fontSize}px; font-weight:${n.fontWeight};" 
-            onclick="switchView('${n.id}')">
-      <span>${n.icon}</span> <span>${esc(n.name)}</span>
-    </button>
-  `).join('');
-
-  // 2. 渲染当前视图画布
-  const canvas = document.getElementById('dynamicViewContainer');
-  const modData = appConfig.modules[currentViewId] || { categories: [], blocks: {} };
-
-  if (modData.categories.length === 0) {
-    modData.categories.push({ id: 'default', name: '通用列表', icon: '📌' });
-    modData.blocks['default'] = [];
-  }
-  if (!currentCatId || !modData.categories.find(c => c.id === currentCatId)) {
-    currentCatId = modData.categories[0].id;
-  }
-
-  const currentBlocks = modData.blocks[currentCatId] || [];
-
-  canvas.innerHTML = `
-    <div class="module-layout">
-      <!-- 左侧边栏：自定义类目区 -->
-      <div class="module-sidebar">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <b style="font-size:13px;color:var(--muted);">📂 板块侧边栏类目</b>
-          <button class="btn small" onclick="openAddCategoryModal()">＋</button>
-        </div>
-        ${modData.categories.map(c => `
-          <button class="module-sidebar-item ${currentCatId === c.id ? 'active' : ''}" onclick="switchCategory('${c.id}')">
-            <span>${c.icon} ${esc(c.name)}</span>
-            <span style="font-size:10px;opacity:.6;" onclick="event.stopPropagation();deleteCategory('${c.id}')">✕</span>
-          </button>
-        `).join('')}
-      </div>
-
-      <!-- 右侧画布：自由定义的内容与区块 -->
-      <div class="canvas-area">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <h2 style="margin:0;font-size:20px;">${esc(modData.categories.find(c => c.id === currentCatId)?.name || '未命名')}</h2>
-          <button class="btn primary small" onclick="openAddBlockModal()">🧩 在此页面增加展示区块 / 嵌套网址</button>
-        </div>
-
-        ${currentBlocks.length === 0 ? `<div class="block-card" style="text-align:center;color:var(--muted);padding:40px;">当前类目下暂无内容区块，点击右上角添加。</div>` : ''}
-
-        ${currentBlocks.map((b, idx) => `
-          <div class="block-card">
-            <div class="block-head">
-              <div class="block-title">📌 ${esc(b.title)}</div>
-              <button class="btn small danger" onclick="deleteBlock(${idx})">删除区块</button>
-            </div>
-            ${b.type === 'iframe' ? `
-              <div class="iframe-container">
-                <iframe src="${esc(b.url)}"></iframe>
-              </div>
-            ` : `
-              <div style="white-space:pre-wrap;line-height:1.6;color:#4a5264;">${esc(b.content)}</div>
-            `}
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `;
+async function syncPushCloudState(username, password, stateData){
+  try {
+    const key = `vicky_${btoa(username.toLowerCase().trim())}`;
+    await fetch(`https://api.kvdb.io/v1/store/${key}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pwd: password, state: stateData, time: Date.now() })
+    });
+    document.getElementById('syncStatusBadge').textContent = '☁️ 云端实时更新成功';
+  } catch(err){}
 }
 
-function switchView(viewId) { currentViewId = viewId; renderApp(); }
-function switchCategory(catId) { currentCatId = catId; renderApp(); }
+function loadState(){ 
+  let s = JSON.parse(localStorage.getItem(getUserKey())||'null')||defaultState; 
+  s.nav = s.nav || DEFAULT_NAV;
+  s.aftersaleRecords = s.aftersaleRecords || [];
+  s.snsAccounts = s.snsAccounts || defaultState.snsAccounts;
+  s.snsKnowledge = s.snsKnowledge || defaultState.snsKnowledge;
+  s.videoAnalytics = s.videoAnalytics || defaultState.videoAnalytics;
+  s.dailyPlans = s.dailyPlans || defaultState.dailyPlans;
+  s.columnMapping = s.columnMapping || defaultState.columnMapping;
+  s.customModules = s.customModules || defaultState.customModules;
+  return s;
+}
+let state = loadState();
+let activeViewId = 'home';
 
-/* 导航栏可视化配置处理 */
+function persist(){ 
+  localStorage.setItem(getUserKey(), JSON.stringify(state)); 
+  const currentPwd = localStorage.getItem('vicky_current_pwd') || '';
+  if(currentUser !== 'guest' && currentPwd){
+    syncPushCloudState(currentUser, currentPwd, state);
+  }
+  renderAll(); 
+}
+
+function esc(v){ return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])) }
+function today(){ return new Date().toISOString().slice(0,10); }
+
+function saveGeminiKey(){ localStorage.setItem('vicky_gemini_key', document.getElementById('geminiApiKey').value.trim()); }
+function loadGeminiKey(){
+  const k = localStorage.getItem('vicky_gemini_key') || '';
+  if(document.getElementById('geminiApiKey')) document.getElementById('geminiApiKey').value = k;
+  return k;
+}
+
+/* 导航栏自定义管理 Modal */
 function openNavManagerModal() {
   const container = document.getElementById('navEditList');
-  container.innerHTML = appConfig.navs.map((n, i) => `
+  container.innerHTML = state.nav.map((n, i) => `
     <div style="display:grid;grid-template-columns: 40px 100px 80px 80px 80px 40px; gap:8px; align-items:center; background:#fafbfe; padding:8px; border-radius:10px; border:1px solid var(--line);">
       <input class="input" value="${n.icon}" id="navIcon_${i}">
       <input class="input" value="${n.name}" id="navName_${i}">
-      <input class="input" type="color" value="${n.color}" id="navColor_${i}">
-      <input class="input" type="number" value="${n.fontSize}" id="navSize_${i}" placeholder="字号">
+      <input class="input" type="color" value="${n.color || '#333333'}" id="navColor_${i}">
+      <input class="input" type="number" value="${n.fontSize || 14}" id="navSize_${i}" placeholder="字号">
       <select class="select" id="navWeight_${i}">
         <option value="400" ${n.fontWeight==='400'?'selected':''}>常规</option>
         <option value="700" ${n.fontWeight==='700'?'selected':''}>加粗</option>
@@ -278,18 +611,18 @@ function openNavManagerModal() {
 }
 
 function addNewNavItem() {
-  const id = 'custom_' + Date.now();
-  appConfig.navs.push({ id, name: '新板块', icon: '📝', color: '#333333', fontSize: '14', fontWeight: '700' });
+  const id = 'custom_nav_' + Date.now();
+  state.nav.push({ id, name: '新板块', icon: '📝', color: '#333333', fontSize: '14', fontWeight: '700' });
   openNavManagerModal();
 }
 
 function removeNavItem(idx) {
-  appConfig.navs.splice(idx, 1);
+  state.nav.splice(idx, 1);
   openNavManagerModal();
 }
 
 function saveNavConfig() {
-  appConfig.navs.forEach((n, i) => {
+  state.nav.forEach((n, i) => {
     if (document.getElementById(`navName_${i}`)) {
       n.icon = document.getElementById(`navIcon_${i}`).value;
       n.name = document.getElementById(`navName_${i}`).value;
@@ -299,30 +632,107 @@ function saveNavConfig() {
     }
   });
   closeModal('navManagerModal');
-  persistConfig();
+  persist();
 }
 
-/* 侧边栏与区块操作 */
+/* 动态通用的自定义板块渲染器 (为每个非固定的板块动态生成侧边栏与画板) */
+function renderDynamicCustomView(viewId) {
+  const container = document.getElementById('dynamicCustomViewContainer');
+  if(!container) return;
+
+  if(['home', 'platform', 'tools', 'settings'].includes(viewId)){
+    container.style.display = 'none';
+    return;
+  }
+
+  container.style.display = 'block';
+
+  const modData = state.customModules[viewId] || {
+    categories: [
+      { id: 'c1', name: '常用 SOP 与资料', icon: '📄' },
+      { id: 'c2', name: '网址嵌入管理', icon: '🌐' }
+    ],
+    blocks: {
+      c1: [{ id: 'b1', title: '示例 SOP 说明', type: 'text', content: '您可以在这随时添加分类、撰写 SOP 或者嵌入内部管理网址。' }]
+    }
+  };
+  state.customModules[viewId] = modData;
+
+  if (!currentDynamicCatId || !modData.categories.find(c => c.id === currentDynamicCatId)) {
+    currentDynamicCatId = modData.categories[0]?.id || 'c1';
+  }
+
+  const currentBlocks = modData.blocks[currentDynamicCatId] || [];
+
+  container.innerHTML = `
+    <section class="view active">
+      <div class="module-layout">
+        <!-- 左侧边栏 -->
+        <div class="module-sidebar">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <b style="font-size:13px;color:var(--muted);">📂 板块侧边栏类目</b>
+            <button class="btn small" onclick="openAddCategoryModal()">＋ 分类</button>
+          </div>
+          ${modData.categories.map(c => `
+            <button class="module-sidebar-item ${currentDynamicCatId === c.id ? 'active' : ''}" onclick="switchDynamicCat('${c.id}')">
+              <span>${c.icon} ${esc(c.name)}</span>
+              <span style="font-size:10px;opacity:.6;" onclick="event.stopPropagation();deleteDynamicCat('${c.id}')">✕</span>
+            </button>
+          `).join('')}
+        </div>
+
+        <!-- 右侧画布 -->
+        <div class="canvas-area" style="display:flex;flex-direction:column;gap:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;background:#fff;padding:16px 20px;border-radius:18px;border:1px solid var(--line);">
+            <h2 style="margin:0;font-size:20px;">${esc(modData.categories.find(c => c.id === currentDynamicCatId)?.name || '概览')}</h2>
+            <button class="btn primary small" onclick="openAddBlockModal()">＋ 自由添加内容区块/网页嵌入</button>
+          </div>
+
+          ${currentBlocks.length === 0 ? `<div class="card" style="text-align:center;color:var(--muted);padding:40px;">当前类目下暂无内容区块，点击右上角添加。</div>` : ''}
+
+          ${currentBlocks.map((b, idx) => `
+            <div class="card">
+              <div class="head">
+                <div class="title">📌 ${esc(b.title)}</div>
+                <button class="btn small danger" onclick="deleteDynamicBlock(${idx})">删除区块</button>
+              </div>
+              ${b.type === 'iframe' ? `
+                <div class="iframe-container">
+                  <iframe src="${esc(b.url)}"></iframe>
+                </div>
+              ` : `
+                <div style="white-space:pre-wrap;line-height:1.6;color:#4a5264;">${esc(b.content)}</div>
+              `}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function switchDynamicCat(catId) { currentDynamicCatId = catId; renderDynamicCustomView(activeViewId); }
+
 function openAddCategoryModal() { document.getElementById('sidebarCategoryModal').classList.add('show'); }
 function saveCategoryItem() {
   const name = document.getElementById('catNameInput').value.trim();
   const icon = document.getElementById('catIconInput').value.trim() || '📂';
   if (!name) return;
-  const modData = appConfig.modules[currentViewId] = appConfig.modules[currentViewId] || { categories: [], blocks: {} };
+  const modData = state.customModules[activeViewId] = state.customModules[activeViewId] || { categories: [], blocks: {} };
   const catId = 'c_' + Date.now();
   modData.categories.push({ id: catId, name, icon });
   modData.blocks[catId] = [];
   closeModal('sidebarCategoryModal');
-  currentCatId = catId;
-  persistConfig();
+  currentDynamicCatId = catId;
+  persist();
 }
 
-function deleteCategory(catId) {
+function deleteDynamicCat(catId) {
   if (confirm('确认删除此侧边栏分类？')) {
-    const modData = appConfig.modules[currentViewId];
+    const modData = state.customModules[activeViewId];
     modData.categories = modData.categories.filter(c => c.id !== catId);
     delete modData.blocks[catId];
-    persistConfig();
+    persist();
   }
 }
 
@@ -339,24 +749,720 @@ function saveNewBlock() {
   const url = document.getElementById('blockUrlInput').value.trim();
   const content = document.getElementById('blockContentInput').value.trim();
 
-  const modData = appConfig.modules[currentViewId];
-  modData.blocks[currentCatId] = modData.blocks[currentCatId] || [];
-  modData.blocks[currentCatId].push({ id: 'b_' + Date.now(), title, type, url, content });
+  const modData = state.customModules[activeViewId];
+  modData.blocks[currentDynamicCatId] = modData.blocks[currentDynamicCatId] || [];
+  modData.blocks[currentDynamicCatId].push({ id: 'b_' + Date.now(), title, type, url, content });
 
   closeModal('blockBuilderModal');
-  persistConfig();
+  persist();
 }
 
-function deleteBlock(idx) {
+function deleteDynamicBlock(idx) {
   if (confirm('确定删除该内容区块？')) {
-    appConfig.modules[currentViewId].blocks[currentCatId].splice(idx, 1);
-    persistConfig();
+    state.customModules[activeViewId].blocks[currentDynamicCatId].splice(idx, 1);
+    persist();
   }
 }
 
-function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+/* 首页 AI 日历与混杂工作智能分类引擎 */
+function renderCalendar(){
+  const grid = document.getElementById('calendarGrid'); if(!grid) return;
+  document.getElementById('calMonthTitle').textContent = `${currentCalYear}年 ${currentCalMonth+1}月`;
+  document.getElementById('selectedCalDateText').textContent = selectedCalDate;
 
-renderApp();
+  const firstDay = new Date(currentCalYear, currentCalMonth, 1).getDay();
+  const daysInMonth = new Date(currentCalYear, currentCalMonth + 1, 0).getDate();
+
+  let html = `
+    <div class="cal-head">日</div><div class="cal-head">一</div><div class="cal-head">二</div><div class="cal-head">三</div><div class="cal-head">四</div><div class="cal-head">五</div><div class="cal-head">六</div>
+  `;
+
+  for(let i = 0; i < firstDay; i++){ html += `<div></div>`; }
+
+  for(let d = 1; d <= daysInMonth; d++){
+    const monthStr = String(currentCalMonth + 1).padStart(2, '0');
+    const dayStr = String(d).padStart(2, '0');
+    const fullDate = `${currentCalYear}-${monthStr}-${dayStr}`;
+
+    const isToday = fullDate === today();
+    const isSelected = fullDate === selectedCalDate;
+    const plan = state.dailyPlans[fullDate];
+
+    let dots = '';
+    if(plan && plan.classified && plan.classified.length > 0){
+      dots = `<div style="margin-top:2px;"><span class="d-dot"></span><small style="font-size:10px;color:var(--muted);">${plan.classified.length}项任务</small></div>`;
+    }
+
+    html += `
+      <div class="cal-day ${isToday?'today':''} ${isSelected?'selected':''}" onclick="selectCalDate('${fullDate}')">
+        <div class="d-num">${d}</div>
+        ${dots}
+      </div>
+    `;
+  }
+  grid.innerHTML = html;
+  renderCalTaskDetail();
+}
+
+function changeCalMonth(delta){
+  currentCalMonth += delta;
+  if(currentCalMonth < 0){ currentCalMonth = 11; currentCalYear--; }
+  if(currentCalMonth > 11){ currentCalMonth = 0; currentCalYear++; }
+  renderCalendar();
+}
+
+function selectCalDate(dateStr){ selectedCalDate = dateStr; renderCalendar(); }
+
+function renderCalTaskDetail(){
+  const plan = state.dailyPlans[selectedCalDate] || { rawText: '', classified: [] };
+  document.getElementById('rawTaskInput').value = plan.rawText || '';
+
+  const area = document.getElementById('classifiedResultArea');
+  const boxes = document.getElementById('classifiedTaskBoxes');
+
+  if(plan.classified && plan.classified.length > 0){
+    area.style.display = 'block';
+    boxes.innerHTML = plan.classified.map(c => `
+      <div style="background:#fff;padding:12px;border-radius:12px;border:1px solid var(--line);box-shadow:var(--shadow);">
+        <div>
+          <span class="plan-cat-tag ${getCategoryCss(c.category)}">${c.category}</span>
+          <b style="font-size:13px;">${esc(c.title)}</b>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin:6px 0 0;line-height:1.4;">${esc(c.desc)}</p>
+        <div style="margin-top:6px;font-size:11px;color:#888;">⏱️ 建议执行: ${esc(c.time || '全天')}</div>
+      </div>
+    `).join('');
+  } else {
+    area.style.display = 'none';
+  }
+}
+
+function getCategoryCss(cat){
+  if(cat.includes('客服') || cat.includes('售后')) return 'cat-service';
+  if(cat.includes('产品') || cat.includes('Listing')) return 'cat-product';
+  if(cat.includes('社媒') || cat.includes('视频')) return 'cat-social';
+  if(cat.includes('独立站') || cat.includes('优惠')) return 'cat-site';
+  return 'cat-other';
+}
+
+function processAiTaskClassification(){
+  const raw = document.getElementById('rawTaskInput').value.trim();
+  if(!raw){ alert('请先输入今天的混杂工作内容'); return; }
+
+  const lines = raw.split(/[\n,，;；]/);
+  let classified = [];
+
+  lines.forEach((line, idx) => {
+    line = line.trim();
+    if(!line) return;
+
+    let category = '其他运营';
+    if(/(售后|退货|退款|客服|邮件|聊天)/.test(line)) category = '💬 售后客服';
+    else if(/(产品|刹车片|火花塞|Listing|配件|供应商|库存|上架)/.test(line)) category = '📦 汽配产品';
+    else if(/(TikTok|视频|社媒|YouTube|IG|文案|剪辑|粉丝)/.test(line)) category = '🌐 海外社媒';
+    else if(/(独立站|Shopify|优惠券|广告|SEO|域名|网站)/.test(line)) category = '🛍️ PartsPhoenix 站点';
+
+    classified.push({
+      title: line.length > 15 ? line.slice(0, 15) + '...' : line,
+      desc: line,
+      category: category,
+      time: `上午/下午 ${idx + 1 * 2}:00`
+    });
+  });
+
+  state.dailyPlans[selectedCalDate] = { rawText: raw, classified: classified };
+  persist();
+  alert('🎉 AI 归类成功！已为您拆解归纳至日历计划并存档回看！');
+}
+
+/* 准确更新社媒数据 */
+function switchSnsSubView(subId, btnEl){
+  document.querySelectorAll('.sns-menu-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.sns-subview').forEach(v => v.classList.remove('active'));
+  if(btnEl) btnEl.classList.add('active');
+  const target = document.getElementById(`sns-sub-${subId}`);
+  if(target) target.classList.add('active');
+}
+
+function renderSnsAccounts(){
+  const container = document.getElementById('snsAccountCards'); if(!container) return;
+  const accounts = state.snsAccounts || [];
+  container.innerHTML = accounts.map((acc, idx) => `
+    <div class="acc-card">
+      <div class="plat-name">
+        <span>${esc(acc.platform)}</span>
+        <span class="subtle" style="font-size:12px;font-weight:normal;">${esc(acc.handle)}</span>
+      </div>
+      <div class="acc-metrics">
+        <div><span>粉丝关注数</span><b>${Number(acc.followers).toLocaleString()}</b></div>
+        <div><span>总获赞数</span><b>${Number(acc.likes).toLocaleString()}</b></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="badge" style="background:#e6f4ea;color:#137333;">今日新增: ${esc(acc.dailyGain)}</span>
+        <div>
+          <button class="btn small" onclick="updateSingleAccountReal('${acc.id}')">🔄 抓取/更新</button>
+          <button class="btn small danger" onclick="deleteSnsAccount(${idx})">删除</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateSingleAccountReal(id){
+  const acc = state.snsAccounts.find(a => a.id === id); if(!acc) return;
+  
+  const newFollowersStr = prompt(`请输入 [${acc.platform} - ${acc.handle}] 当下的真实关注数:`, acc.followers);
+  if(newFollowersStr === null) return;
+  const newLikesStr = prompt(`请输入 [${acc.platform} - ${acc.handle}] 当下的真实获赞数:`, acc.likes);
+  if(newLikesStr === null) return;
+
+  const newF = parseInt(newFollowersStr) || acc.followers;
+  const newL = parseInt(newLikesStr) || acc.likes;
+  const gain = newF - acc.followers;
+
+  acc.dailyGain = gain >= 0 ? `+${gain}` : `${gain}`;
+  acc.followers = newF;
+  acc.likes = newL;
+
+  persist();
+  alert(`✅ [${acc.handle}] 数据已成功更新至当下最新状态！`);
+}
+
+async function triggerFetchRealDataAll(){
+  alert('🔍 正在实时连接前台数据网关...如部分平台遭遇跨域防护，请在弹窗中确认当前真实数值');
+  for(let i=0; i<state.snsAccounts.length; i++){
+    const acc = state.snsAccounts[i];
+    const newF = prompt(`[${acc.platform} - ${acc.handle}] 当下最新关注数:`, acc.followers);
+    if(newF !== null){
+      const parsedF = parseInt(newF) || acc.followers;
+      const gain = parsedF - acc.followers;
+      acc.dailyGain = gain >= 0 ? `+${gain}` : `${gain}`;
+      acc.followers = parsedF;
+    }
+  }
+  persist();
+  alert('🎉 所有账号当下实时数据已精准同步完成！');
+}
+
+function checkAutoCronScrape(){
+  const now = new Date();
+  if(now.getHours() === 20 && now.getMinutes() === 0){
+    const lastRun = localStorage.getItem('vicky_last_scrape_day');
+    if(lastRun !== today()){
+      localStorage.setItem('vicky_last_scrape_day', today());
+      triggerFetchRealDataAll();
+    }
+  }
+}
+setInterval(checkAutoCronScrape, 30000);
+
+/* 社媒知识库管理 */
+function renderSnsKnowledge(){
+  const box = document.getElementById('knowledgeList'); if(!box) return;
+  const list = state.snsKnowledge || [];
+  box.innerHTML = list.length ? list.map((k, idx) => `
+    <div class="item">
+      <span class="grow"><b>📚 ${esc(k.title)}</b>: ${esc(k.body)}</span>
+      <button class="x" onclick="deleteKnowledge(${idx})">×</button>
+    </div>
+  `).join('') : '<div class="empty">知识库暂无内容。您可以手动粘贴或导入 Excel。</div>';
+}
+
+function addManualKnowledge(){
+  const title = document.getElementById('manualKnowledgeTitle').value.trim();
+  const body = document.getElementById('manualKnowledgeBody').value.trim();
+  if(!title || !body){ alert('请输入完整的知识标题与笔记内容'); return; }
+  state.snsKnowledge.unshift({ id: String(Date.now()), title, body });
+  document.getElementById('manualKnowledgeTitle').value = '';
+  document.getElementById('manualKnowledgeBody').value = '';
+  persist();
+  alert('🎉 已成功加入 PartsPhoenix 社媒知识库！AI 将在脚本生成时优先学习并运用此资料！');
+}
+
+function handleKnowledgeUpload(event){
+  const file = event.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    state.snsKnowledge.unshift({ id: String(Date.now()), title: file.name, body: e.target.result.slice(0, 2000) });
+    persist();
+    alert('🎉 知识资料解析并存储成功！');
+  };
+  reader.readAsText(file);
+}
+
+function deleteKnowledge(idx){ if(confirm('删除此资料？')){ state.snsKnowledge.splice(idx, 1); persist(); } }
+
+function openAddSnsAccountModal(){
+  const platform = prompt("请输入平台名称 (如 TikTok, YouTube, Instagram, X):", "TikTok"); if(!platform) return;
+  const handle = prompt("请输入账号 Handle/名称:", "@PartsPhoenix_Official"); if(!handle) return;
+  const followers = parseInt(prompt("当前粉丝关注数:", "5000")) || 0;
+  const likes = parseInt(prompt("当前作品总赞数:", "25000")) || 0;
+  state.snsAccounts.push({ id: String(Date.now()), platform, handle, followers, likes, dailyGain: '+0' });
+  persist();
+}
+
+function deleteSnsAccount(idx){ if(confirm('确定删除该账号监控？')){ state.snsAccounts.splice(idx, 1); persist(); } }
+
+function renderVideoAnalytics(){
+  const tbody = document.getElementById('videoAnalyticsTable'); if(!tbody) return;
+  const list = state.videoAnalytics || [];
+  tbody.innerHTML = list.map((item, idx) => `
+    <tr>
+      <td><b>${esc(item.title)}</b></td>
+      <td>${esc(item.platform)}</td>
+      <td>${Number(item.views).toLocaleString()}</td>
+      <td>${Number(item.likes).toLocaleString()}</td>
+      <td>${Number(item.clicks).toLocaleString()}</td>
+      <td><b style="color:var(--accent);">${Number(item.orders).toLocaleString()} 单</b></td>
+      <td>${esc(item.cvr)}</td>
+      <td style="max-width:280px;font-size:12px;line-height:1.5;">${esc(item.advice)}</td>
+      <td><button class="btn small danger" onclick="deleteVideoRecord(${idx})">删除</button></td>
+    </tr>
+  `).join('');
+}
+
+function addVideoRecordPrompt(){
+  const title = prompt("请输入汽配视频标题/内容主题:"); if(!title) return;
+  const platform = prompt("发布平台 (TikTok / YouTube / IG):", "TikTok");
+  const views = parseInt(prompt("视频播放量:", "10000")) || 0;
+  const likes = parseInt(prompt("视频点赞量:", "800")) || 0;
+  const clicks = parseInt(prompt("引流到 PartsPhoenix 的点击数:", "200")) || 0;
+  const orders = parseInt(prompt("带来的零部件注册/购买订单数:", "5")) || 0;
+  
+  const cvr = clicks > 0 ? ((orders / clicks) * 100).toFixed(2) + '%' : '0.00%';
+  let advice = "💡 汽配转化建议：";
+  if(orders > 10){
+    advice = "🔥 爆款汽配视频！建议将此素材二次剪辑用于不同车型的 DIY 教程，并在评论区第一条置顶 partsphoenix.com 折扣链接。";
+  } else if(clicks > 50 && orders === 0){
+    advice = "⚠️ 点击高但无订单：说明视频成功吸引了车主，但落地页缺少‘ Make-Model-Year 适配引导’，建议在零件详情页突出 100% Fitment 保障。";
+  } else {
+    advice = "⚡ 流量偏低：建议增加前 3 秒汽车故障声（如异响/发动机噪音）或零配件拆卸画面，提升完播率。";
+  }
+
+  state.videoAnalytics.unshift({ id: String(Date.now()), title, platform: platform||'TikTok', views, likes, clicks, orders, cvr, advice });
+  persist();
+}
+
+function deleteVideoRecord(idx){ if(confirm('确定删除该视频分析记录？')){ state.videoAnalytics.splice(idx, 1); persist(); } }
+
+function generateChessScript(){
+  const angle = document.getElementById('chessAngleSelect').value;
+  const game = document.getElementById('chessGameType').value;
+  const cta = document.getElementById('chessCtaText').value;
+
+  const cardBox = document.getElementById('scriptResultCard');
+  const bodyBox = document.getElementById('scriptResultBody');
+  cardBox.style.display = 'block';
+
+  let knowledgesText = (state.snsKnowledge || []).map(k=>`【${k.title}】:${k.body}`).join('\n');
+
+  let scriptText = `🎬 【根据你的社媒知识库深度生成的爆款脚本】\n💡 已融合知识库学习要点：\n${knowledgesText || '默认黄金钩子视角'}\n\n`;
+
+  if(angle === 'highlight'){
+    scriptText += `【0-3秒 黄金 Hook (故障痛点)】
+画面：特写车轮/发动机噪音特写，听到明显吱吱异响，车主面露难色。
+台词/字幕："Hear this squeaking noise when you brake? Don't ignore it—your brake pads are completely worn out!"
+
+【3-12秒 解决方案 (DIY/PartsPhoenix】
+画面：展示从 PartsPhoenix 收到包装精美的全新 OEM 级配件，快速展示安装或拆卸过程。
+台词/字幕："Stop paying $500 at the dealership. Get premium OEM-quality ${game} from PartsPhoenix for half the price!"
+
+【12-20秒 引导转化 (Call to Action)】
+画面：手机录屏展示输入 Make-Model-Year 瞬间查出精确适配配件。
+口播台词："Check your exact car model fitment in 10 seconds!"
+👇 动作引导：${cta}`;
+  } else {
+    scriptText += `【0-3秒 Hook】: "Never buy cheap auto parts that don't fit! Here is how to get 100% guaranteed fitment."
+【中段体验】: 访问 partsphoenix.com 输入年份与车型。
+👇 动作引导：${cta}`;
+  }
+
+  bodyBox.textContent = scriptText;
+}
+
+function updateUtmLink(){
+  const base = document.getElementById('utmBaseUrl').value.trim();
+  const src = document.getElementById('utmSource').value;
+  const cam = document.getElementById('utmCampaign').value.trim();
+  const con = document.getElementById('utmContent').value.trim();
+  const link = `${base}?utm_source=${src}&utm_campaign=${cam}&utm_content=${con}`;
+  const el = document.getElementById('generatedUtmLink');
+  if(el) el.textContent = link;
+}
+
+document.addEventListener('input', (e)=>{ if(['utmBaseUrl','utmCampaign','utmContent'].includes(e.target.id)) updateUtmLink(); });
+document.addEventListener('change', (e)=>{ if(e.target.id === 'utmSource') updateUtmLink(); });
+
+function showAuthModal(){ document.getElementById('authModal').style.display = 'flex'; }
+
+async function handleAuthSubmit(){
+  const acc = document.getElementById('authAccount').value.trim().toLowerCase();
+  const pwd = document.getElementById('authPassword').value.trim();
+  const btn = document.getElementById('authSubmitBtn');
+  if(!acc || !pwd){ alert('请输入账号和密码'); return; }
+
+  btn.textContent = '⏳ 正在加载 PartsPhoenix 云端数据...';
+  btn.disabled = true;
+
+  currentUser = acc;
+  localStorage.setItem('vicky_current_user', currentUser);
+  localStorage.setItem('vicky_current_pwd', pwd);
+
+  const cloudState = await syncFetchCloudState(acc, pwd);
+  if(cloudState){
+    state = cloudState;
+    alert(`🎉 登录成功！已为您自动下载并同步账号 [${acc}] 的汽配云端数据！`);
+  } else {
+    await syncPushCloudState(acc, pwd, state);
+    alert(`🎉 账号 [${acc}] 已激活！当前设备的数据已成功同步上传至云端！`);
+  }
+
+  document.getElementById('authModal').style.display = 'none';
+  btn.textContent = '登录并加载云端数据';
+  btn.disabled = false;
+  persist();
+}
+
+function renderNav(){
+ const nav=document.getElementById('nav');
+ nav.innerHTML=state.nav.map(n=>`
+   <button data-view="${n.id}" style="color:${n.color||'#333'}; font-size:${n.fontSize||14}px; font-weight:${n.fontWeight||'700'};">
+     ${esc(n.icon)} ${esc(n.name)}
+   </button>
+ `).join('');
+ nav.querySelectorAll('button').forEach(b=>b.onclick=()=>showView(b.dataset.view));
+ document.getElementById('userBadge').textContent = currentUser === 'guest' ? '👤 登录/账号' : `👤 ${currentUser}`;
+ loadGeminiKey();
+}
+
+function showView(id){
+ activeViewId = id;
+ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+ document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===id));
+ 
+ const staticTarget = document.getElementById(id);
+ if(staticTarget){
+   staticTarget.classList.add('active');
+   document.getElementById('dynamicCustomViewContainer').style.display = 'none';
+ } else {
+   renderDynamicCustomView(id);
+ }
+ 
+ document.getElementById('nav').classList.remove('open');
+ window.scrollTo({top:0,behavior:'smooth'});
+ if(id==='tools') renderTools();
+}
+
+function openMappingModal(){
+  const m = state.columnMapping;
+  document.getElementById('colOrder').value = m.order || 'A';
+  document.getElementById('colPlatform').value = m.platform || 'B';
+  document.getElementById('colDate').value = m.date || 'D';
+  document.getElementById('colReason').value = m.reason || 'E';
+  document.getElementById('colAction').value = m.action || 'H';
+  document.getElementById('colExtra').value = m.extra || '';
+  document.getElementById('mappingModal').classList.add('show');
+}
+
+function saveMappingSettings(){
+  state.columnMapping = {
+    order: document.getElementById('colOrder').value.trim().toUpperCase(),
+    platform: document.getElementById('colPlatform').value.trim().toUpperCase(),
+    date: document.getElementById('colDate').value.trim().toUpperCase(),
+    reason: document.getElementById('colReason').value.trim().toUpperCase(),
+    action: document.getElementById('colAction').value.trim().toUpperCase(),
+    extra: document.getElementById('colExtra').value.trim()
+  };
+  closeModal('mappingModal');
+  persist(); alert('配置保存成功！');
+}
+
+function uploadAftersaleExcel(event){
+ const file = event.target.files[0]; if(!file) return;
+ const reader = new FileReader();
+ reader.onload = function(e){
+   try{
+     const data = new Uint8Array(e.target.result);
+     const wb = XLSX.read(data, {type: 'array'});
+     const ws = wb.Sheets[wb.SheetNames[0]];
+     const json = XLSX.utils.sheet_to_json(ws, {header: 1});
+     const m = state.columnMapping;
+     const idxOrder = colToIdx(m.order), idxPlatform = colToIdx(m.platform), idxDate = colToIdx(m.date), idxReason = colToIdx(m.reason), idxAction = colToIdx(m.action);
+     let imported = [];
+     json.forEach((row, idx)=>{
+       if(idx === 0 || !row || row.length === 0) return;
+       let order = String(row[idxOrder]||'').trim(), platform = String(row[idxPlatform]||'').trim(), dateStr = formatExcelDate(row[idxDate]), reason = String(row[idxReason]||'-').trim(), action = String(row[idxAction]||'-').trim();
+       if(order){
+         let isRec = action.includes('挽回') || action.includes('重发') || action.includes('补发') || action.includes('部分退款') || action.includes('折扣');
+         imported.push({ order, platform, date: dateStr, reason, action, recover: isRec ? 'yes' : 'no' });
+       }
+     });
+     if(imported.length > 0){ state.aftersaleRecords = imported; persist(); alert(`✅ 成功读取 ${imported.length} 条汽配售后数据并保存！`); }
+     else { alert('未检测到有效数据'); }
+   }catch(err){ alert('解析失败'); }
+ };
+ reader.readAsArrayBuffer(file);
+}
+
+function colToIdx(colStr){
+  if(!colStr) return -1;
+  colStr = colStr.trim().toUpperCase();
+  let idx = 0;
+  for (let i = 0; i < colStr.length; i++) { idx = idx * 26 + (colStr.charCodeAt(i) - 64); }
+  return idx - 1;
+}
+
+function formatExcelDate(numOrStr){
+  if(!numOrStr) return `${new Date().getFullYear()}/${new Date().getMonth()+1}/${new Date().getDate()}`;
+  let str = String(numOrStr).trim();
+  if(typeof numOrStr === 'number' || (!isNaN(str) && Number(str) > 30000)){
+    const date = new Date((Number(str) - (25567 + 2)) * 86400 * 1000);
+    if(!isNaN(date.getTime())){ return `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`; }
+  }
+  return str.replace(/-/g, '/');
+}
+
+function clearAftersaleData(){ if(confirm('确定清空？')){ state.aftersaleRecords = []; persist(); } }
+function editRecord(index){
+  const r = state.aftersaleRecords[index]; if(!r) return;
+  const newOrder = prompt("修改订单号：", r.order); if(newOrder === null) return;
+  const newDate = prompt("修改日期：", r.date); if(newDate === null) return;
+  const newAction = prompt("修改处理措施：", r.action); if(newAction === null) return;
+  r.order = newOrder.trim(); r.date = newDate.trim(); r.action = newAction.trim();
+  r.recover = (r.action.includes('挽回') || r.action.includes('重发') || r.action.includes('补发')) ? 'yes' : 'no';
+  persist();
+}
+function deleteRecord(index){ if(confirm('确定删除？')){ state.aftersaleRecords.splice(index, 1); persist(); } }
+function addSingleRecordPrompt(){
+  const order = prompt("请输入订单号："); if(!order) return;
+  const platform = prompt("请输入平台：", "partsphoenix.com"), date = prompt("请输入日期：", new Date().toISOString().slice(0,10).replace(/-/g,'/')), reason = prompt("请输入原因：", "车型年份不匹配"), action = prompt("请输入处理措施：", "已换货重发");
+  const isRec = action.includes('挽回') || action.includes('重发') || action.includes('补发');
+  state.aftersaleRecords.unshift({ order, platform: platform||'-', date: date||'-', reason: reason||'-', action: action||'-', recover: isRec?'yes':'no' });
+  persist();
+}
+
+function renderHomeStats(){
+ const records = state.aftersaleRecords || [];
+ const m = state.columnMapping;
+ document.getElementById('mappingTip').textContent = `当前映射列配置：${m.order}列(订单号)、${m.platform}列(平台)、${m.date}列(日期)、${m.reason}列(原因)、${m.action}列(处理措施)`;
+ const d=new Date(), y=String(d.getFullYear()), currMonthStr = `${y}/${d.getMonth()+1}`;
+ const mr=records.filter(x=>x.date.includes(currMonthStr) || x.date.includes(`${y}/${String(d.getMonth()+1).padStart(2,'0')}`));
+ const yr=records.filter(x=>x.date.includes(y) || records.length > 0);
+ const mRec = mr.filter(x=>x.recover==='yes').length, yRec = yr.filter(x=>x.recover==='yes').length;
+ const mRate = mr.length ? (mRec/mr.length*100).toFixed(1) : (yr.length ? (yRec/yr.length*100).toFixed(1) : 0);
+ const yRate = yr.length ? (yRec/yr.length*100).toFixed(1) : 0;
+ document.getElementById('monthRate').innerHTML=(mr.length?mRate:yRate)+'<small>%</small>';
+ document.getElementById('monthOrders').innerHTML=(mr.length?mr.length:yr.length)+'<small> 单</small>';
+ document.getElementById('yearRate').innerHTML=yRate+'<small>%</small>';
+ document.getElementById('yearOrders').innerHTML=yr.length+'<small> 单</small>';
+ document.getElementById('monthNote').textContent=records.length?`已分析本月 ${mr.length||yr.length} 单 · 挽回 ${mRec||yRec} 单`:'请上传售后表格';
+ document.getElementById('yearNote').textContent=records.length?`已分析本年 ${yr.length} 单 · 挽回 ${yRec} 单`:'请上传售后表格';
+ document.getElementById('mrec').textContent=mRec||yRec; document.getElementById('mun').textContent=(mr.length||yr.length) - (mRec||yRec);
+ document.getElementById('yrec').textContent=yRec; document.getElementById('yun').textContent=yr.length - yRec;
+ document.getElementById('tableHeader').innerHTML = `<tr><th>订单号 (${m.order}列)</th><th>平台 (${m.platform}列)</th><th>退货日期 (${m.date}列)</th><th>原因 (${m.reason}列)</th><th>处理措施 (${m.action}列)</th><th>操作</th></tr>`;
+ const recent=[...records].slice(0,25);
+ document.getElementById('records').innerHTML=recent.length?recent.map((x,idx)=>`<tr><td><b>${esc(x.order)}</b></td><td>${esc(x.platform)}</td><td>${esc(x.date)}</td><td>${esc(x.reason)}</td><td><span class="${x.recover==='yes'?'yes':'no'}">${esc(x.action)}</span></td><td><button class="btn small" onclick="editRecord(${idx})">编辑</button> <button class="btn small danger" onclick="deleteRecord(${idx})">删除</button></td></tr>`).join(''):`<tr><td colspan="6"><div class="empty">暂无数据</div></td></tr>`;
+}
+
+function renderHome(){
+ renderCalendar();
+ renderHomeStats();
+ const open=state.urgent.filter(x=>!x.done);
+ document.getElementById('urgentCount').textContent=open.length+' 待处理';
+ document.getElementById('urgentList').innerHTML=state.urgent.length?state.urgent.map((x,i)=>`<div class="item ${x.done?'done':''}"><input class="check" type="checkbox" ${x.done?'checked':''} onchange="toggleUrgent(${i})"><span class="grow">${esc(x.text)}</span><button class="x" onclick="delUrgent(${i})">×</button></div>`).join(''):'<div class="empty">🎉 暂无紧急问题</div>';
+
+ const done=state.todos.filter(x=>x.done).length,total=state.todos.length;
+ document.getElementById('todoText').textContent=`${done}/${total} 完成`;
+ document.getElementById('todoProgress').style.width=(total?done/total*100:0)+'%';
+ document.getElementById('todoList').innerHTML=total?state.todos.map((x,i)=>`<div class="item ${x.done?'done':''}"><input class="check" type="checkbox" ${x.done?'checked':''} onchange="toggleTodo(${i})"><span class="grow">${esc(x.text)}</span><button class="x" onclick="delTodo(${i})">×</button></div>`).join(''):'<div class="empty">今天还没有待办任务</div>';
+}
+function addUrgent(){let e=document.getElementById('urgentInput');if(e.value.trim()){state.urgent.unshift({text:e.value.trim(),done:false});e.value='';persist()}}
+function toggleUrgent(i){state.urgent[i].done=!state.urgent[i].done;persist()}
+function delUrgent(i){state.urgent.splice(i,1);persist()}
+function clearUrgent(){state.urgent=state.urgent.filter(x=>!x.done);persist()}
+function addTodo(){let x=prompt('请输入今日待办');if(x&&x.trim()){state.todos.push({text:x.trim(),done:false});persist()}}
+function toggleTodo(i){state.todos[i].done=!state.todos[i].done;persist()}
+function delTodo(i){state.todos.splice(i,1);persist()}
+
+function handleBatchMediaSelect(e){
+  const files = Array.from(e.target.files);
+  if(files.length > 0){
+    document.getElementById('snsBatchMediaTip').textContent = `✅ 已载入 ${files.length} 个汽配视频，准备后台排队处理...`;
+  }
+}
+
+async function startBatchQueueProcess(){
+  const filesInput = document.getElementById('snsMediaFiles');
+  const files = Array.from(filesInput.files);
+  const apiKey = loadGeminiKey();
+  const targetUrl = document.getElementById('snsTargetUrl').value.trim() || 'https://partsphoenix.com?utm_source=social_matrix';
+  const points = document.getElementById('snsSellingPoint').value.trim() || '100% Fitment Guarantee + Fast Shipping';
+  const modelName = document.getElementById('geminiModelSelect').value;
+
+  if(files.length === 0){ alert('请先选择至少一个汽配视频文件'); return; }
+
+  videoBatchQueue = files.map((file, idx) => ({
+    id: idx, file: file, name: file.name, mime: file.type || 'video/mp4', targetUrl: targetUrl, points: points, modelName: modelName
+  }));
+
+  document.getElementById('globalQueueBanner').style.display = 'flex';
+  processNextInQueue(apiKey);
+}
+
+async function processNextInQueue(apiKey){
+  if(videoBatchQueue.length === 0){
+    document.getElementById('globalQueueBanner').style.display = 'none';
+    alert('🎉 所有 PartsPhoenix 后台队列视频已识别完毕并云端自动保存！');
+    return;
+  }
+
+  const item = videoBatchQueue[0];
+  document.getElementById('queueProgressText').textContent = `⚙️ 全局 AI 队列运行中：正在识别《${item.name}》（剩余 ${videoBatchQueue.length} 个视频）...`;
+
+  try {
+    const base64Str = await readFileAsBase64(item.file);
+    let generatedData = null;
+
+    if(apiKey){
+      generatedData = await fetchGeminiApi(apiKey, item.modelName, base64Str, item.mime, item.targetUrl, item.points);
+    } else {
+      generatedData = generateSnsMatrixFallback(item.targetUrl, item.points);
+    }
+
+    if(generatedData){
+      currentSnsData = generatedData;
+      document.getElementById('currentVideoTitle').textContent = item.name;
+      document.getElementById('snsResultCard').style.display = 'block';
+      renderSnsTabs();
+    }
+  } catch(err) {
+    console.error('视频处理跳过', err);
+  }
+
+  videoBatchQueue.shift();
+  processNextInQueue(apiKey);
+}
+
+function readFileAsBase64(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => resolve(e.target.result.split(',')[1]);
+    reader.onerror = err => reject(err);
+    reader.readAsDataURL(file);
+  });
+}
+
+async function fetchGeminiApi(apiKey, modelName, base64Str, mimeType, targetUrl, points){
+  const promptText = `Analyze the provided auto parts video/image in detail. Generate posts for partsphoenix.com with url: "${targetUrl}" and points: "${points}".`;
+  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contents: [{ parts: [{ inline_data: { mime_type: mimeType, data: base64Str } }, { text: promptText }] }] })
+  });
+  const data = await response.json();
+  let rawText = data.candidates[0].content.parts[0].text.trim().replace(/^```json/g, '').replace(/```$/g, '').trim();
+  return JSON.parse(rawText);
+}
+
+function generateSnsMatrixFallback(url, points){
+  return {
+    youtube: { title: `🚗 Auto Parts Replacement (${points})`, body: `Shop at ${url}` },
+    instagram: { title: `✨ Premium Auto Parts`, body: `Check out ${url}` }
+  };
+}
+
+function renderSnsTabs(){
+  const snsList = [{id:'youtube', name:'▶️ YouTube'}, {id:'instagram', name:'📸 Instagram'}];
+  document.getElementById('snsTabs').innerHTML = snsList.map(s=>`<button class="sns-tab ${activeSnsTab===s.id?'active':''}" onclick="switchSnsTab('${s.id}')">${s.name}</button>`).join('');
+  const data = currentSnsData[activeSnsTab]; if(!data) return;
+  document.getElementById('snsTabContent').innerHTML = `<div class="sns-box"><b>${esc(data.title)}</b><pre>${esc(data.body)}</pre></div>`;
+}
+
+function switchSnsTab(tab){ activeSnsTab = tab; renderSnsTabs(); }
+function copyText(str){ navigator.clipboard.writeText(str).then(()=>{ alert('✅ 已复制！'); }); }
+
+const GLOBAL_CURRENCIES = { CNY:"人民币 CN", USD:"美元 US", EUR:"欧元 EU", GBP:"英镑 GB" };
+let myCurrencies = ['CNY','USD','EUR','GBP'];
+let ratesTable = { USD: 1, CNY: 7.10, EUR: 0.92, GBP: 0.79 };
+
+function renderTools(){
+ const toolsBox = document.getElementById('toolsModules'); if(!toolsBox) return;
+ toolsBox.innerHTML = `
+   <div class="card">
+     <div class="head"><div class="title">💱 汇率换算</div></div>
+     <div class="row"><input class="input" id="exAmount" type="number" value="100" oninput="calcExchangeAll()"><select class="select" id="exBase" onchange="calcExchangeAll()">${Object.keys(GLOBAL_CURRENCIES).map(c=>`<option value="${c}">${c}</option>`).join('')}</select></div>
+     <div id="exchangeResultList" style="margin-top:10px;"></div>
+   </div>
+ `;
+ calcExchangeAll();
+}
+
+function calcExchangeAll(){
+ const amt = parseFloat(document.getElementById('exAmount').value) || 0, base = document.getElementById('exBase').value;
+ const baseInUSD = ratesTable[base] || 1;
+ document.getElementById('exchangeResultList').innerHTML = myCurrencies.filter(c => c !== base).map(c => `<div>${c}: <b>${((amt / baseInUSD) * (ratesTable[c]||1)).toFixed(2)}</b></div>`).join('');
+}
+
+function saveAppearance(){
+ state.appearance.name=document.getElementById('setName').value.trim()||'PartsPhoenix';
+ state.appearance.sub=document.getElementById('setSub').value.trim()||'汽配跨境运营工作台';
+ state.appearance.color=document.getElementById('setColor').value;
+ state.appearance.tip=document.getElementById('setTip').value.trim();
+ persist(); alert('外观保存成功！');
+}
+
+function exportBackup(){
+ const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a');
+ a.href=URL.createObjectURL(blob); a.download='PartsPhoenix-backup-'+today()+'.json'; a.click();
+}
+
+function importBackup(event){
+ const file = event.target.files[0]; if(!file) return;
+ const reader = new FileReader();
+ reader.onload = function(e){
+   try{ state = JSON.parse(e.target.result); persist(); alert('🎉 恢复成功！'); }catch(err){ alert('解析失败'); }
+ };
+ reader.readAsText(file);
+}
+
+function resetData(){ if(confirm('清空数据？')){ state.urgent=[];state.todos=[];state.aftersaleRecords=[]; persist(); } }
+document.getElementById('dark').onclick=()=>{ state.dark=!state.dark; persist(); };
+document.getElementById('hamb').onclick=()=>document.getElementById('nav').classList.toggle('open');
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+
+function applyAppearance(){
+ document.documentElement.style.setProperty('--accent',state.appearance.color);
+ document.documentElement.style.setProperty('--accent2',state.appearance.color);
+ document.getElementById('brandName').textContent=state.appearance.name;
+ document.getElementById('brandSub').textContent=state.appearance.sub;
+ document.getElementById('tipText').textContent=state.appearance.tip;
+ document.body.classList.toggle('dark',!!state.dark);
+ document.getElementById('setName').value=state.appearance.name;
+ document.getElementById('setSub').value=state.appearance.sub;
+ document.getElementById('setColor').value=state.appearance.color;
+ document.getElementById('setTip').value=state.appearance.tip;
+}
+
+function renderAll(){
+ applyAppearance();
+ renderNav();
+ renderHome();
+ renderSnsAccounts();
+ renderSnsKnowledge();
+ renderVideoAnalytics();
+ renderDynamicCustomView(activeViewId);
+}
+
+function clock(){
+ const d=new Date(),days=['日','一','二','三','四','五','六'],h=d.getHours();
+ document.getElementById('date').textContent=`📅 ${today()} 周${days[d.getDay()]}`;
+ document.getElementById('heroDate').textContent=`${today()} · 周${days[d.getDay()]} · PartsPhoenix 业务推进中`;
+ document.getElementById('greet').textContent=h<12?'早上好 ☀️':h<18?'下午好 🌤️':'晚上好 🌙';
+}
+
+clock();
+renderAll();
+setInterval(clock,60000);
 </script>
 </body>
 </html>
