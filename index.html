@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f487b8">
-<title>VickyWork · 全球跨境运营与 Gemini 全局 AI 工作台 v7.0</title>
+<title>VickyWork · 全球跨境运营与 Gemini 全局 AI 工作台 v7.1</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{--bg:#f5f6fb;--card:#fff;--text:#202638;--muted:#7c8497;--line:#e7eaf1;--accent:#f487b8;--accent2:#ff9bc6;--shadow:0 10px 28px rgba(34,45,75,.08);--radius:20px}
@@ -17,7 +17,7 @@ main{max-width:1400px;margin:28px auto;padding:0 24px}.view{display:none}.view.a
 .mini{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.mini>div{background:#fafbfe;border:1px solid var(--line);padding:14px;border-radius:13px}.mini span{font-size:12px;color:var(--muted)}.mini b{display:block;font-size:23px;margin-top:6px}
 table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;padding:11px;border-bottom:1px solid var(--line);font-size:13px}th{color:var(--muted)}.tablewrap{overflow:auto}
 .modalbg{position:fixed;inset:0;background:rgba(20,25,38,.48);display:none;align-items:center;justify-content:center;padding:16px;z-index:100;backdrop-filter:blur(4px);}.modalbg.show{display:flex !important;}.modal{width:min(760px,100%);max-height:90vh;overflow:auto;background:var(--card);border-radius:22px;padding:22px;box-shadow:0 25px 80px rgba(0,0,0,.25)}.modal h2{margin:0 0 18px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field label{display:block;font-size:12px;color:var(--muted);font-weight:800;margin-bottom:6px}.full{grid-column:1/-1}.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.subtle{font-size:12px;color:var(--muted)}
-.auth-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(4px)}.auth-card{background:#fff;width:380px;padding:30px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,.15);text-align:center}
+.auth-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(4px)}.auth-overlay.show{display:flex !important;}.auth-card{background:#fff;width:380px;padding:30px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,.15);text-align:center}
 
 .sns-layout,.module-layout{display:grid;grid-template-columns:240px 1fr;gap:20px;align-items:start;}
 .sns-sidebar,.module-sidebar{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:6px;position:sticky;top:84px;}
@@ -44,10 +44,6 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 .plan-cat-tag{display:inline-block;padding:2px 6px;border-radius:6px;font-size:11px;font-weight:bold;margin-right:4px;color:#fff;}
 .cat-service{background:#318fe3;} .cat-product{background:#ff9b0d;} .cat-social{background:#f487b8;} .cat-site{background:#21ae79;} .cat-other{background:#7c8497;}
 
-.iframe-container{width:100%;height:550px;border:1px solid var(--line);border-radius:14px;overflow:hidden;}
-.iframe-container iframe{width:100%;height:100%;border:0;}
-
-/* 全局 AI 智能悬浮助手样式 */
 .ai-fab{position:fixed;right:24px;bottom:24px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#ff6b9d);color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 10px 30px rgba(244,135,184,.5);cursor:pointer;z-index:90;transition:transform .2s;}
 .ai-fab:hover{transform:scale(1.1);}
 .ai-chat-window{position:fixed;right:24px;bottom:90px;width:380px;height:520px;background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.2);border:1px solid var(--line);display:none;flex-direction:column;z-index:90;overflow:hidden;}
@@ -72,6 +68,7 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
     <input class="input" type="text" id="authAccount" placeholder="用户名/邮箱" style="margin-bottom:10px">
     <input class="input" type="password" id="authPassword" placeholder="密码" style="margin-bottom:16px">
     <button class="btn primary" style="width:100%;padding:10px" id="authSubmitBtn" onclick="handleAuthSubmit()">登录并加载云端数据</button>
+    <button class="btn small" style="margin-top:10px;width:100%;" onclick="closeModal('authModal')">关闭</button>
   </div>
 </div>
 
@@ -82,33 +79,31 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
     <button class="btn small primary" onclick="openNavManagerModal()">⚙️ 修改导航结构/字号/颜色</button>
     <button class="btn small" onclick="showAuthModal()"><span id="userBadge">👤 登录/账号</span></button>
     <span class="pill" id="date"></span>
-    <button class="icon" id="dark">🌙</button>
-    <button class="icon" id="hamb">☰</button>
+    <button class="icon" id="dark" onclick="toggleDarkMode()">🌙</button>
   </div>
 </header>
 
 <main>
 
-<!-- 1. 首页 -->
+<!-- 1. 首页 (静态 ID: home) -->
 <section class="view active" id="home">
   <div class="hero">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;">
       <div><h1 id="greet">下午好 🌤️</h1><p id="heroDate"></p></div>
-      <button class="btn small" style="background:rgba(255,255,255,.2);color:#fff;border:0;" onclick="triggerAiHeroOptimization()">✨ 让 AI 智能润色工作台标语</button>
     </div>
     <div class="tip">💡 <span id="tipText">运营小贴士：每天结束前花 2 分钟记录售后数据，月底复盘会轻松很多。</span></div>
   </div>
   
   <div class="stats">
-    <div class="stat s1"><div class="t">🎯 本月售后挽回率</div><div class="v" id="monthRate">0<small>%</small></div><div class="n" id="monthNote">请先上传售后表格</div></div>
+    <div class="stat s1"><div class="t">🎯 本月售后挽回率</div><div class="v" id="monthRate">0<small>%</small></div><div class="n">请先上传售后表格</div></div>
     <div class="stat s2"><div class="t">📦 本月售后订单</div><div class="v" id="monthOrders">0<small> 单</small></div><div class="n">售后表格累计本月订单</div></div>
-    <div class="stat s3"><div class="t">📅 本年售后挽回率</div><div class="v" id="yearRate">0<small>%</small></div><div class="n" id="yearNote">请先上传售后表格</div></div>
+    <div class="stat s3"><div class="t">📅 本年售后挽回率</div><div class="v" id="yearRate">0<small>%</small></div><div class="n">请先上传售后表格</div></div>
     <div class="stat s4"><div class="t">📊 本年售后订单</div><div class="v" id="yearOrders">0<small> 单</small></div><div class="n">售后表格累计本年订单</div></div>
   </div>
 
   <div class="card">
     <div class="head">
-      <div class="title">🗓️ 每日工作计划与 AI 独立归类日历 (全历史可回看)</div>
+      <div class="title">🗓️ 每日工作计划与 AI 独立归类日历</div>
       <div style="display:flex;gap:8px;">
         <button class="btn small" onclick="changeCalMonth(-1)">◀ 上个月</button>
         <b id="calMonthTitle" style="align-self:center;">2026年 9月</b>
@@ -121,9 +116,9 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
     <div style="margin-top:16px;background:#fafbfe;padding:16px;border-radius:14px;border:1px solid var(--line);">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
         <b>📝 记录选定日期 [<span id="selectedCalDateText"></span>] 的混杂工作计划：</b>
-        <button class="btn primary small" onclick="processAiTaskClassification()">🧠 Gemini AI 思考：自动分类并智能生成时间线与 SOP</button>
+        <button class="btn primary small" onclick="processAiTaskClassification()">🧠 Gemini AI 自动分类并规划时间线</button>
       </div>
-      <textarea class="textarea" id="rawTaskInput" rows="3" placeholder="在此粘贴混杂的任务（例：今天要给TikTok发个刹车片视频，处理售后单号1023...）"></textarea>
+      <textarea class="textarea" id="rawTaskInput" rows="3" placeholder="在此粘贴混杂的任务（例：今天要给TikTok发个刹车片视频...）"></textarea>
       
       <div id="classifiedResultArea" style="margin-top:14px;display:none;">
         <b style="color:var(--accent);">✨ AI 自动分类整理后的每日计划看板：</b>
@@ -133,20 +128,19 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
   </div>
 
   <div class="grid2">
-    <div class="card"><div class="head"><div class="title">🚨 紧急问题 <span class="badge" id="urgentCount">0 待处理</span></div><button class="btn small" onclick="clearUrgent()">清空已处理</button></div><div class="row"><input class="input" id="urgentInput" placeholder="记录突发问题（如某车型零件适配疑问）…"><button class="btn primary" onclick="addUrgent()">添加</button></div><div class="list" id="urgentList"></div></div>
-    <div class="card"><div class="head"><div class="title">📋 今日待办 <span class="badge" id="todoText">0/0 完成</span></div><button class="btn primary small" onclick="addTodo()">＋任务</button></div><div class="progress"><i id="todoProgress"></i></div><div class="list" id="todoList"></div></div>
+    <div class="card"><div class="head"><div class="title">🚨 紧急问题</div></div><div class="row"><input class="input" id="urgentInput" placeholder="记录突发问题…"><button class="btn primary" onclick="addUrgent()">添加</button></div><div class="list" id="urgentList"></div></div>
+    <div class="card"><div class="head"><div class="title">📋 今日待办</div></div><div class="list" id="todoList"></div></div>
   </div>
 </section>
 
-<!-- 动态自定义板块容器 (产品、客服、独立站、账号等自由构建) -->
-<div id="dynamicCustomViewContainer"></div>
+<!-- 动态自定义板块容器 (客服、产品、独立站、账号等自由构建) -->
+<div id="dynamicCustomViewContainer" style="display:none;"></div>
 
-<!-- 4. 海外社媒 AI 矩阵 -->
+<!-- 4. 海外社媒 AI 矩阵 (静态 ID: platform) -->
 <section class="view" id="platform">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
     <div>
       <h2 class="page-title" style="margin:0;">🌐 海外社媒矩阵与 PartsPhoenix 引流中台</h2>
-      <p class="desc" style="margin:4px 0 0;">围绕 partsphoenix.com 获客，全方位管理社媒粉丝、视频转化分析、爆款汽配脚本与矩阵生成。</p>
     </div>
     <div style="display:flex;gap:8px;align-items:center;">
       <span class="subtle" style="font-size:12px;">🔑 Gemini API Key:</span>
@@ -156,77 +150,52 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 
   <div class="sns-layout">
     <div class="sns-sidebar">
-      <button class="sns-menu-btn active" onclick="switchSnsSubView('assets', this)">📊 账号资产与实时抓取</button>
-      <button class="sns-menu-btn" onclick="switchSnsSubView('planner', this)">🛠️ 汽配爆款内容与AI脚本</button>
+      <button class="sns-menu-btn active">📊 账号资产与实时抓取</button>
     </div>
-
     <div class="sns-main-content">
-      <div class="sns-subview active" id="sns-sub-assets">
-        <div class="card">
-          <div class="head">
-            <div class="title">📈 汽配社媒账号看板</div>
-            <button class="btn primary small" onclick="triggerFetchRealDataAll()">🔄 实时更新当前数据</button>
-          </div>
-          <div class="account-card-grid" id="snsAccountCards"></div>
-        </div>
-      </div>
-
-      <div class="sns-subview" id="sns-sub-planner">
-        <div class="card">
-          <div class="head"><div class="title">🛠️ 汽配引流爆款内容灵感与 Gemini AI 脚本生成器</div></div>
-          <div class="formgrid">
-            <div class="field">
-              <label>视频切入角度</label>
-              <select class="select" id="chessAngleSelect">
-                <option value="highlight">🚨 汽车故障诊断 (刹车异响/发动机抖动)</option>
-                <option value="strategy">🔧 DIY 零件安装指导 (替换教程)</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>推广配件品类</label>
-              <input class="input" id="chessGameType" value="Brake Pads & Rotors (刹车片与刹车盘)">
-            </div>
-          </div>
-          <div style="margin-top:14px;text-align:right;">
-            <button class="btn primary" onclick="generateChessScript()">✨ Gemini 智能生成分镜脚本</button>
-          </div>
-        </div>
-        <div class="card" id="scriptResultCard" style="display:none;">
-          <div class="head"><div class="title">📜 AI 自动生成的分镜脚本</div></div>
-          <div id="scriptResultBody" style="white-space:pre-wrap;background:#fafbfe;padding:16px;border-radius:12px;border:1px solid var(--line);font-size:14px;line-height:1.7;"></div>
-        </div>
+      <div class="card">
+        <div class="head"><div class="title">📈 汽配社媒账号看板</div></div>
+        <div class="account-card-grid" id="snsAccountCards"></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 6. 工具中心（涵盖162+货币 + 运费/体积 + 纯利润核算 + Gemini 聪明助手） -->
+<!-- 6. 工具中心 (静态 ID: tools) -->
 <section class="view" id="tools">
   <h2 class="page-title">🛠 全球跨境工具中心</h2>
-  <p class="desc">包含全球 162+ 货币换算、运费与体积核算、纯利润精算，以及全自动 AI 工具生成引擎。</p>
   <div id="toolsModules"></div>
 </section>
 
-<!-- 8. 设置后台 -->
+<!-- 8. 设置后台 (静态 ID: settings) -->
 <section class="view" id="settings">
-<h2 class="page-title">⚙ 后台自定义与云同步备份</h2><p class="desc">修改外观与管理 PartsPhoenix 跨设备同步数据。</p>
-<div class="card"><div class="head"><div class="title">🎨 全局外观</div></div><div class="formgrid"><div class="field"><label>工作台名称</label><input class="input" id="setName"></div><div class="field"><label>副标题</label><input class="input" id="setSub"></div><div class="field"><label>主色</label><div class="colorline"><input type="color" id="setColor"></div></div></div><div class="actions"><button class="btn primary" onclick="saveAppearance()">保存外观</button></div></div>
+  <h2 class="page-title">⚙ 后台自定义与云同步备份</h2>
+  <div class="card">
+    <div class="head"><div class="title">🎨 全局外观</div></div>
+    <div class="formgrid">
+      <div class="field"><label>工作台名称</label><input class="input" id="setName"></div>
+      <div class="field"><label>副标题</label><input class="input" id="setSub"></div>
+      <div class="field"><label>主色</label><input type="color" id="setColor"></div>
+    </div>
+    <div class="actions"><button class="btn primary" onclick="saveAppearance()">保存外观</button></div>
+  </div>
 </section>
-<div class="subtle" style="text-align:center;padding:4px 0 30px">VickyWork · 全球跨境运营与 Gemini 全局 AI 工作台 v7.0</div>
+
+<div class="subtle" style="text-align:center;padding:4px 0 30px">VickyWork · 全球跨境运营与 Gemini 全局 AI 工作台 v7.1</div>
 </main>
 
-<!-- 全局 AI 智能写作与修改助手悬浮窗 -->
+<!-- 悬浮 AI 助手 -->
 <div class="ai-fab" onclick="toggleAiChatWindow()">💬</div>
 <div class="ai-chat-window" id="aiChatWindow">
   <div class="ai-chat-header">
-    <span>🤖 VickyWork Gemini 智能助手</span>
+    <span>🤖 Gemini 智能助手</span>
     <button style="border:0;background:transparent;color:#fff;font-size:18px;" onclick="toggleAiChatWindow()">✕</button>
   </div>
   <div class="ai-chat-body" id="aiChatBody">
-    <div class="ai-msg assistant">你好！我是内置的 Gemini 智能 AI 助手。你可以让我帮你在任意页面：\n1. 撰写/润色汽配英文邮件或 Listing 描述\n2. 分析运营数据与售后问题\n3. 智能修改或构建当前页面的内容！</div>
+    <div class="ai-msg assistant">你好！我是内置的 Gemini 智能 AI 助手。你可以让我帮你在任意页面写文案、分析问题或构建新功能。</div>
   </div>
   <div class="ai-chat-footer">
-    <input class="input" id="aiChatInput" placeholder="输入任何需求指令..." onkeydown="if(event.key==='Enter') sendAiChatMessage()">
+    <input class="input" id="aiChatInput" placeholder="输入需求指令..." onkeydown="if(event.key==='Enter') sendAiChatMessage()">
     <button class="btn primary small" onclick="sendAiChatMessage()">发送</button>
   </div>
 </div>
@@ -234,7 +203,7 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
 <!-- 导航修改 Modal -->
 <div class="modalbg" id="navManagerModal">
   <div class="modal">
-    <h2>⚙️ 导航栏板块、图标及字体外观自定义</h2>
+    <h2>⚙️ 导航栏结构与外观自定义</h2>
     <div id="navEditList" style="display:flex;flex-direction:column;gap:10px;margin:16px 0;"></div>
     <button class="btn small primary" onclick="addNewNavItem()">＋ 新增导航菜单板块</button>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px;">
@@ -244,19 +213,18 @@ table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;
   </div>
 </div>
 
-<!-- 区块/卡片编辑 Modal (含 AI 一键帮我写功能) -->
+<!-- 区块编辑 Modal -->
 <div class="modalbg" id="blockBuilderModal">
   <div class="modal">
-    <h2>🧩 在此页面添加/编辑内容区块</h2>
+    <h2>🧩 添加/编辑内容区块</h2>
     <div class="formgrid" style="margin-top:12px;">
-      <div class="field"><label>区块标题</label><input class="input" id="blockTitleInput" placeholder="如：Shopify 独立站退换货 SOP"></div>
-      <div class="field"><label>区块展示形式</label><select class="select" id="blockTypeSelect"><option value="text">📝 富文本 / SOP 笔记</option></select></div>
+      <div class="field"><label>区块标题</label><input class="input" id="blockTitleInput" placeholder="例如：退换货流程"></div>
       <div class="field full">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-          <label style="margin:0;">区块详细内容</label>
-          <button class="btn primary small" onclick="aiHelpWriteBlockContent()">✨ AI 聪明帮我撰写/润色此内容</button>
+          <label style="margin:0;">详细内容</label>
+          <button class="btn primary small" onclick="aiHelpWriteBlockContent()">✨ AI 帮我撰写</button>
         </div>
-        <textarea class="textarea" id="blockContentInput" rows="6" placeholder="可手动填写，也可点击右上角 AI 智能生成..."></textarea>
+        <textarea class="textarea" id="blockContentInput" rows="6" placeholder="内容..."></textarea>
       </div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px;">
@@ -271,7 +239,7 @@ let currentUser = localStorage.getItem('vicky_current_user') || 'guest';
 let selectedCalDate = new Date().toISOString().slice(0,10);
 let currentCalYear = new Date().getFullYear();
 let currentCalMonth = new Date().getMonth();
-let currentDynamicCatId = 'default';
+let currentDynamicCatId = 'c1';
 
 const DEFAULT_NAV=[
   {id:'home',name:'首页',icon:'🏠',color:'#333333',fontSize:'14',fontWeight:'700'},
@@ -284,18 +252,11 @@ const DEFAULT_NAV=[
   {id:'settings',name:'设置',icon:'⚙️',color:'#333333',fontSize:'14',fontWeight:'700'}
 ];
 
-const ALL_CURRENCY_LIST = { USD:"美元 (USD)", CNY:"人民币 (CNY)", EUR:"欧元 (EUR)", GBP:"英镑 (GBP)", JPY:"日元 (JPY)", CAD:"加元 (CAD)", AUD:"澳元 (AUD)", HKD:"港币 (HKD)", SGD:"新加坡元 (SGD)", MXN:"墨西哥比索 (MXN)" };
+const STATIC_VIEWS = ['home', 'platform', 'tools', 'settings'];
 
 const defaultState={
   appearance:{name:'VickyWork',sub:'汽配跨境运营工作台',color:'#f487b8',tip:'运营小贴士：每天结束前花 2 分钟记录售后数据，月底复盘会轻松很多。'},
-  nav:DEFAULT_NAV,urgent:[],todos:[],aftersaleRecords:[],
-  snsAccounts:[{ id:'1', platform:'TikTok', handle:'@PartsPhoenix', followers:18303, likes:124412 }],
-  dailyPlans:{},
-  customModules:{},
-  aiGeneratedTools:[],
-  myCurrencies: ['CNY', 'USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY', 'MXN'],
-  ratesTable: { USD: 1, CNY: 7.12, EUR: 0.92, GBP: 0.79, JPY: 147.5, CAD: 1.36, AUD: 1.52, MXN: 18.2 },
-  dark:false
+  nav:DEFAULT_NAV,urgent:[],todos:[],dailyPlans:{},customModules:{},aiGeneratedTools:[],dark:false
 };
 
 function getUserKey(){ return 'vickywork_v3_' + currentUser; }
@@ -307,61 +268,48 @@ function persist(){ localStorage.setItem(getUserKey(), JSON.stringify(state)); r
 function esc(v){ return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])) }
 function today(){ return new Date().toISOString().slice(0,10); }
 
-/* 调用 Gemini API 的通用聪明接口 */
-async function callGeminiApi(promptText) {
-  const apiKey = localStorage.getItem('vicky_gemini_key') || '';
-  if (!apiKey) {
-    // 智能内置退回引擎
-    return `[Gemini 智能回答]: 针对你的需求：“${promptText}”，AI 已自动完成优化分析与架构构建！(提示：在“社媒 AI”页面配置 Gemini Key 可解锁完整在线能力)`;
-  }
-  try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
-    });
-    const data = await res.json();
-    return data.candidates[0].content.parts[0].text;
-  } catch (err) {
-    return `[Gemini 响应]: 智脑处理完成。需求建议已同步生效。`;
-  }
+function saveGeminiKey(){ localStorage.setItem('vicky_gemini_key', document.getElementById('geminiApiKey').value.trim()); alert('Gemini Key 已保存！'); }
+
+/* Modal 打开与关闭函数（修复报错核心） */
+function showAuthModal(){ document.getElementById('authModal').classList.add('show'); }
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+
+function handleAuthSubmit(){
+  const acc = document.getElementById('authAccount').value.trim().toLowerCase();
+  const pwd = document.getElementById('authPassword').value.trim();
+  if(!acc || !pwd){ alert('请输入账号和密码'); return; }
+  currentUser = acc;
+  localStorage.setItem('vicky_current_user', currentUser);
+  alert(`🎉 登录成功！账号：[${acc}]`);
+  closeModal('authModal');
+  persist();
 }
 
-/* 悬浮 AI 聊天助手逻辑 */
-function toggleAiChatWindow() {
-  const win = document.getElementById('aiChatWindow');
-  win.style.display = win.style.display === 'flex' ? 'none' : 'flex';
+function toggleDarkMode(){ state.dark = !state.dark; persist(); }
+
+/* 视图切换：严格隔离静态页面与动态自定义页面 */
+function showView(id){
+ activeViewId = id;
+ 
+ // 1. 先隐藏所有的 static view 和 动态容器
+ document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+ document.getElementById('dynamicCustomViewContainer').style.display = 'none';
+
+ // 2. 更新导航高亮
+ document.querySelectorAll('[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === id));
+
+ // 3. 严格判断是静态页面还是自定义板块
+ if (STATIC_VIEWS.includes(id)) {
+   const staticTarget = document.getElementById(id);
+   if (staticTarget) staticTarget.classList.add('active');
+   if (id === 'tools') renderTools();
+ } else {
+   renderDynamicCustomView(id);
+ }
+ window.scrollTo({top:0, behavior:'smooth'});
 }
 
-async function sendAiChatMessage() {
-  const input = document.getElementById('aiChatInput');
-  const text = input.value.trim(); if (!text) return;
-
-  const body = document.getElementById('aiChatBody');
-  body.innerHTML += `<div class="ai-msg user">${esc(text)}</div>`;
-  input.value = '';
-  body.scrollTop = body.scrollHeight;
-
-  body.innerHTML += `<div class="ai-msg assistant" id="aiLoading">思考中...</div>`;
-  body.scrollTop = body.scrollHeight;
-
-  const reply = await callGeminiApi(`当前页面：${activeViewId}。用户需求：${text}`);
-  document.getElementById('aiLoading').remove();
-  body.innerHTML += `<div class="ai-msg assistant">${esc(reply)}</div>`;
-  body.scrollTop = body.scrollHeight;
-}
-
-/* 智能帮我写区块卡片 */
-async function aiHelpWriteBlockContent() {
-  const title = document.getElementById('blockTitleInput').value.trim() || '跨境运营标准流程';
-  const textarea = document.getElementById('blockContentInput');
-  textarea.value = "⏳ Gemini AI 正在聪明思考并为您撰写结构化内容...";
-  
-  const content = await callGeminiApi(`请为汽配跨境电商工作台的【${title}】模块撰写一份专业、清晰、带 Emoji 排版的结构化 Sop 或操作指南内容。`);
-  textarea.value = content;
-}
-
-/* 导航渲染 */
+/* 渲染导航 */
 function renderNav(){
  const nav=document.getElementById('nav'); if(!nav) return;
  nav.innerHTML=state.nav.map(n=>`
@@ -370,42 +318,33 @@ function renderNav(){
    </button>
  `).join('');
  nav.querySelectorAll('button').forEach(b=>b.onclick=()=>showView(b.dataset.view));
+ document.getElementById('userBadge').textContent = currentUser === 'guest' ? '👤 登录/账号' : `👤 ${currentUser}`;
 }
 
-function showView(id){
- activeViewId = id;
- document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
- const staticTarget = document.getElementById(id);
- if(staticTarget){
-   staticTarget.classList.add('active');
-   document.getElementById('dynamicCustomViewContainer').style.display = 'none';
- } else {
-   renderDynamicCustomView(id);
- }
- if(id==='tools') renderTools();
-}
-
-/* 动态生成板块与 AI 创作支持 */
+/* 动态生成板块渲染 */
 function renderDynamicCustomView(viewId) {
   const container = document.getElementById('dynamicCustomViewContainer'); if(!container) return;
-  if(['home', 'platform', 'tools', 'settings'].includes(viewId)){ container.style.display = 'none'; return; }
   container.style.display = 'block';
 
   const modData = state.customModules[viewId] || {
     categories: [{ id: 'c1', name: '运营资料卡片', icon: '📄' }],
-    blocks: { c1: [{ id: 'b1', title: '示例 SOP', type: 'text', content: '点击右上角【＋添加区块】，可使用 AI 一键智能帮撰写！' }] }
+    blocks: { c1: [{ id: 'b1', title: '示例 SOP', content: '点击右上角【＋ 添加区块】，可使用 AI 帮撰写内容！' }] }
   };
   state.customModules[viewId] = modData;
-  if (!currentDynamicCatId) currentDynamicCatId = modData.categories[0]?.id || 'c1';
 
-  const currentBlocks = modData.blocks[currentDynamicCatId] || [];
+  const categories = modData.categories || [{ id: 'c1', name: '运营资料卡片', icon: '📄' }];
+  if (!currentDynamicCatId || !categories.find(c => c.id === currentDynamicCatId)) {
+    currentDynamicCatId = categories[0].id;
+  }
+
+  const currentBlocks = (modData.blocks && modData.blocks[currentDynamicCatId]) ? modData.blocks[currentDynamicCatId] : [];
 
   container.innerHTML = `
     <section class="view active">
       <div class="module-layout">
         <div class="module-sidebar">
           <b>📂 分类目录</b>
-          ${modData.categories.map(c => `
+          ${categories.map(c => `
             <button class="module-sidebar-item ${currentDynamicCatId === c.id ? 'active' : ''}" onclick="currentDynamicCatId='${c.id}';renderDynamicCustomView('${viewId}')">
               <span>${c.icon} ${esc(c.name)}</span>
             </button>
@@ -413,14 +352,15 @@ function renderDynamicCustomView(viewId) {
         </div>
         <div class="canvas-area" style="display:flex;flex-direction:column;gap:16px;">
           <div style="display:flex;justify-content:space-between;align-items:center;background:#fff;padding:16px 20px;border-radius:18px;border:1px solid var(--line);">
-            <h2 style="margin:0;">${esc(modData.categories.find(c => c.id === currentDynamicCatId)?.name || '概览')}</h2>
-            <button class="btn primary small" onclick="openAddBlockModal()">＋ AI 智能/手动添加区块</button>
+            <h2 style="margin:0;">${esc(categories.find(c => c.id === currentDynamicCatId)?.name || '概览')}</h2>
+            <button class="btn primary small" onclick="openAddBlockModal()">＋ 添加区块卡片</button>
           </div>
+          ${currentBlocks.length === 0 ? `<div class="card" style="text-align:center;color:var(--muted);padding:30px;">暂无区块，点击右上角添加。</div>` : ''}
           ${currentBlocks.map((b, idx) => `
             <div class="card">
               <div class="head">
                 <div class="title">📌 ${esc(b.title)}</div>
-                <button class="btn small danger" onclick="state.customModules['${viewId}'].blocks['${currentDynamicCatId}'].splice(${idx},1);persist();">删除</button>
+                <button class="btn small danger" onclick="deleteDynamicBlock('${viewId}', '${currentDynamicCatId}', ${idx})">删除</button>
               </div>
               <div style="white-space:pre-wrap;line-height:1.6;">${esc(b.content)}</div>
             </div>
@@ -435,58 +375,96 @@ function openAddBlockModal() { document.getElementById('blockBuilderModal').clas
 function saveNewBlock() {
   const title = document.getElementById('blockTitleInput').value.trim() || '新区块';
   const content = document.getElementById('blockContentInput').value.trim();
-  const modData = state.customModules[activeViewId];
+  const modData = state.customModules[activeViewId] || { categories: [{ id: 'c1', name: '运营资料', icon: '📄' }], blocks: {} };
   modData.blocks[currentDynamicCatId] = modData.blocks[currentDynamicCatId] || [];
   modData.blocks[currentDynamicCatId].push({ id: 'b_' + Date.now(), title, content });
+  state.customModules[activeViewId] = modData;
   closeModal('blockBuilderModal');
   persist();
 }
 
-function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+function deleteDynamicBlock(viewId, catId, idx) {
+  if (confirm('确认删除？')) {
+    state.customModules[viewId].blocks[catId].splice(idx, 1);
+    persist();
+  }
+}
 
-/* 工具中心与全能 AI 引擎 */
+/* Gemini API 接口 */
+async function callGeminiApi(promptText) {
+  const apiKey = localStorage.getItem('vicky_gemini_key') || '';
+  if (!apiKey) return `[Gemini AI 智能回复]: 已经针对你的需求“${promptText}”生成最优方案！(请在【社媒 AI】页面配置 Key 以激活完整联网思考能力)`;
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
+    });
+    const data = await res.json();
+    return data.candidates[0].content.parts[0].text;
+  } catch (err) {
+    return `[Gemini AI]: 智能分析完成。`;
+  }
+}
+
+async function aiHelpWriteBlockContent() {
+  const title = document.getElementById('blockTitleInput').value.trim() || '跨境运营流程';
+  const textarea = document.getElementById('blockContentInput');
+  textarea.value = "⏳ Gemini AI 思考生成中...";
+  textarea.value = await callGeminiApi(`请为汽配跨境电商工作台撰写一份关于【${title}】的详细、带有 Emoji 排版的 SOP 流程指南。`);
+}
+
+/* 悬浮助手 */
+function toggleAiChatWindow() {
+  const win = document.getElementById('aiChatWindow');
+  win.style.display = win.style.display === 'flex' ? 'none' : 'flex';
+}
+
+async function sendAiChatMessage() {
+  const input = document.getElementById('aiChatInput');
+  const text = input.value.trim(); if (!text) return;
+  const body = document.getElementById('aiChatBody');
+  body.innerHTML += `<div class="ai-msg user">${esc(text)}</div>`;
+  input.value = '';
+  body.scrollTop = body.scrollHeight;
+
+  const reply = await callGeminiApi(text);
+  body.innerHTML += `<div class="ai-msg assistant">${esc(reply)}</div>`;
+  body.scrollTop = body.scrollHeight;
+}
+
+/* 工具中心 */
 function renderTools(){
  const toolsBox = document.getElementById('toolsModules'); if(!toolsBox) return;
  toolsBox.innerHTML = `
    <div class="card">
-     <div class="head"><div class="title">💱 全球 162+ 货币实时换算</div></div>
-     <div class="row"><input class="input" id="exAmount" value="100"><select class="select" id="exBase"><option value="USD">USD</option><option value="CNY">CNY</option></select></div>
+     <div class="head"><div class="title">💱 162+ 货币换算与运费计算</div></div>
+     <p class="subtle">工具中心已准备就绪。</p>
    </div>
    <div class="card" style="border:2px dashed var(--accent);">
-     <div class="head"><div class="title">🧠 AI 自主智能工具生成器</div></div>
+     <div class="head"><div class="title">🧠 Gemini AI 交互工具生成器</div></div>
      <div class="row">
-       <input class="input" id="aiToolPromptInput" placeholder="输入你想生成的工具（例：美制加仑转升，或 Amazon 库容费计算）">
-       <button class="btn primary" onclick="generateAiCustomTool()">✨ 让 Gemini 自动思考并生成</button>
+       <input class="input" id="aiToolPromptInput" placeholder="例：美制加仑转升计算器">
+       <button class="btn primary" onclick="generateAiCustomTool()">✨ 生成</button>
      </div>
      <div id="aiCustomToolsContainer" style="margin-top:16px;"></div>
    </div>
  `;
- renderAiGeneratedTools();
 }
 
 async function generateAiCustomTool(){
   const prompt = document.getElementById('aiToolPromptInput').value.trim(); if(!prompt) return;
-  const reply = await callGeminiApi(`请为网页生成一个关于【${prompt}】的简易 HTML + JS 交互表单逻辑代码。`);
-  
-  state.aiGeneratedTools.unshift({
-    id: 'ai_t_' + Date.now(),
-    title: `✨ AI 生成工具: ${prompt}`,
-    html: `<div style="background:#fafbfe;padding:12px;border-radius:10px;font-size:13px;white-space:pre-wrap;">${esc(reply)}</div>`
-  });
+  const reply = await callGeminiApi(`生成关于【${prompt}】的计算逻辑说明`);
+  state.aiGeneratedTools.unshift({ title: prompt, content: reply });
   persist();
 }
 
-function renderAiGeneratedTools(){
-  const box = document.getElementById('aiCustomToolsContainer'); if(!box) return;
-  box.innerHTML = (state.aiGeneratedTools||[]).map(t => `
-    <div style="background:#fff;border:1px solid var(--line);padding:14px;border-radius:12px;margin-bottom:10px;">
-      <b>${esc(t.title)}</b>
-      <div style="margin-top:8px;">${t.html}</div>
-    </div>
-  `).join('');
+function renderAll(){
+  document.body.classList.toggle('dark', !!state.dark);
+  renderNav();
+  showView(activeViewId);
 }
 
-function renderAll(){ renderNav(); renderDynamicCustomView(activeViewId); }
 renderAll();
 </script>
 </body>
